@@ -36,7 +36,7 @@ var Sqwidget;
 // ****
 
 /**
-* SQWIDGET CORE 
+* SQWIDGET CORE
 **/
 (function(){
 	var
