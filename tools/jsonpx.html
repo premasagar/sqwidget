@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset=utf-8 />
+    <title>jsonp-x</title>
+    <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js></script>
+    <script src=jsonpx.js></script>
+    
+    <style>
+        label, textarea, input, button {
+            display:block;
+        }
+        
+        textarea, input, button {
+            margin-bottom:2em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>JSON-PX-ify your code</h1>
+
+    <label for=source>Source code</label>
+    <textarea id=source rows=30 cols=80></textarea>
+    
+    <label for=callbackName>Callback name</label>
+    <input id=callbackName value=sqwidget.template />
+    
+    <button id=jsonpxify>Go</button>
+    
+    <script>
+        $('#source').val('');
+        
+
+        $('#jsonpxify')
+            .click(function(){
+                $('#source').val(
+                    jsonpx($('#source').val(), $('#callbackName').val())
+                );
+            });
+    </script>
+</body>
+</html>
