@@ -3,10 +3,15 @@
 <head>
     <meta charset=utf-8 />
     <title>sqwidge</title>
+    
+    <!-- <script src=standalone.js></script>
+        add this when loading the template in its own sandboxed document (e.g. as the parent window document); adds global methods like Sqwidget, require and config -->
+        
     <script>
-        require('aomi', 'nitelite', 'toggle'); // loads aomi, nitelite and toggle scripts as a single static file - http://assets.sqwidget.net/aomi+nitelite+toggle.js - (specified as an alphabetical listing of scripts)
+        require('aomi', 'nitelite', 'toggle'); // loads aomi, nitelite and toggle scripts as a single static file - http://assets.example.com/aomi+nitelite+toggle.js - (specified as an alphabetical listing of scripts)
         config(data); // optional data sent as second parameter to Sqwidget() constructor - e.g. Sqwidget('sqwidge.html', {foo:'bar'}, 0.1);
     </script>
+    
     <style>
         /* styling to go in the <head> of the main widget iframe */
         width:100%;
@@ -17,7 +22,7 @@
 </head>
 
 <body>
-    <h1>sqwidge: default view</h1>
+    <h1>default view</h1>
     <p>blah</p>
     
     <ul>
@@ -26,6 +31,20 @@
         <li><%= this.stuff %></li>
     </ul>
 
-    <footer>yada</footer>
+    <footer>yada</footer>    
+    
+    <script type=text/template id=lightbox>
+        // the lightbox template for this instance of the widget
+        <head>
+            <script>
+                require('aomi', 'nitelite')
+            </script>
+            <link rel=stylesheet href=lightbox.css />
+            <style></style>
+        </head>
+        <body>
+            <div>detail</div>
+        </body>
+    </script>
 </body>
 </html>
