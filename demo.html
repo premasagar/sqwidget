@@ -12,10 +12,13 @@
         Sqwidget('mysqwidge.js', {foo:'bar'}, ['100%',670], 0.1);
         
         /*
-            dimensions can be overriden by widget, once it loads
-            dimensions can be:
+            Here, ['100%',670] is a placeholder, which will be replaced by a space of the appropriate size. This will be overriden by the widget, once it loads.
+            
+            These placeholder dimensions can be:
                 [width, height] in pixels, or use '100%' etc as a property string 
                 [[width, minWidth, maxWidth], [height, minHeight, maxHeight]]
+                
+            Or the placeholder could be an HTML element, HTML string, or jQuery collection - e.g. <img src=default.png alt=loading...>    
         */ 
     </script>
 </body>
