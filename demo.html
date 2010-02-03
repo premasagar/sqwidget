@@ -9,7 +9,14 @@
     <h1>Sqwidget demo</h1>
 
     <script src="sqwidget.js">
-        Sqwidget('mywidget.js', {foo:'bar'}, 0.1); 
+        Sqwidget('mysqwidge.js', {foo:'bar'}, ['100%',670], 0.1);
+        
+        /*
+            dimensions can be overriden by widget, once it loads
+            dimensions can be:
+                [width, height] in pixels, or use '100%' etc as a property string 
+                [[width, minWidth, maxWidth], [height, minHeight, maxHeight]]
+        */ 
     </script>
 </body>
 </html>
