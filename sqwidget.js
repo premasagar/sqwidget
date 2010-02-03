@@ -92,23 +92,12 @@ var Sqwidget;
 			},
 			
 			// Compare a version string with another, e.g. '1.2.6' with '1.3.2'
-			// Returns -1 (a<b), 0 (a==b) or 1 (b>a)
-			// TODO: Treat '1.4.0' the same as '1.4'
+			// Returns -1 (a>b), 0 (a==b) or 1 (b>a)
 			compareVersion: function(a, b){
-				var i, n = Number;
-					a = a.split('.');
-					b = b.split('.');
-	 
-					for (i=0; i<a.length; i++){
-							if (typeof b[i] === 'undefined'){
-									return -1;
-							}
-							else if (n(a[i]) === n(b[i])){
-									continue;
-							}
-							return (n(a[i]) > n(b[i])) ? -1 : 1;
-					}
-					return (b.length > a.length) ? 1 : 0;
+				// Remove trailing zeros ( 1.4.0.0 )
+				a = a.replace(/(\.0+)+$/, '');
+				b = b.replace(/(\.0+)+$/, '');
+				return a === b ? 0 : a < b ? 1 : -1;
 			},
 			
 			// Test if a version string is at least as high as the minimum version required
