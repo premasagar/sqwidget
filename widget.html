@@ -10,9 +10,18 @@
     <script>
         require('aomi', 'nitelite'); // loads aomi, nitelite and toggle scripts as a single static file - http://assets.example.com/aomi+nitelite+toggle.js - (specified as an alphabetical listing of scripts)
         
-        (function init(data){}());
-        // the function closure would be optional - but *if* the function was executed from within a closure, then it would still work as expected
-        // data arg is optional, and sent via the optional second parameter to the Sqwidget() constructor - e.g. Sqwidget('sqwidge.html', {foo:'bar'}, 0.1);
+        (function init(data){
+            function process(thing){
+                return thing + Infinity;
+            }
+            // 'this' refers to the Sqwidget instance
+            this.stuff = data ? process(data.thing) : null;
+        }());
+        // 'data' arg is sent via the optional second argument to the Sqwidget() constructor - e.g. Sqwidget('widget.html', {foo:'bar'}, 0.1);
+        
+        /*
+            Data processing should happen up here, in this part of the document. No processing should happen in the templated HTML below, where <%= template.tags %> should be used to simply substitute data properties and template snippets.
+        */
     </script>
     
     <style>
@@ -30,7 +39,6 @@
     
     <ul>
         <li>thing</li>
-        <li><% process(thing); %>
         <li><%= this.stuff %></li>
     </ul>
 

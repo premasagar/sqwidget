@@ -8,7 +8,7 @@
 <body>
     <h1>Sqwidget demo</h1>
 
-    <script src="sqwidget.js">
+    <script src=sqwidget.js>
         Sqwidget('widget.html', {foo:'bar'}, ['100%', 618], 0.1);
         
         /*
@@ -18,8 +18,20 @@
                 [width, height] in pixels, or use '100%' etc as a property string 
                 [[width, minWidth, maxWidth], [height, minHeight, maxHeight]]
                 
-            Or the placeholder could be an HTML element, HTML string, or jQuery collection - e.g. <img src=default.png alt=loading...>    
+            Or the placeholder could be an HTML element, HTML string, or jQuery collection - e.g. <img src=default.png alt=loading...>
         */ 
     </script>
+    
+    <script
+        src=sqwidget.js
+        data-sqwidget-width=300
+        data-sqwidget-height=485
+        data-sqwidget-foo=bar
+        data-sqwidget-template=widget.html
+        data-sqwidget-version=0.1
+    ></script>
+    <!--
+        The script element above contains an optional src of sqwidget.js, and any number of data-sqwidget- attributes, to be used by Sqwidget and the template file.
+    -->
 </body>
 </html>
