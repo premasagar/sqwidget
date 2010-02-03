@@ -34,20 +34,30 @@
         <li><%= this.stuff %></li>
     </ul>
 
-    <footer>yada</footer>    
+    <footer>yada</footer>
     
     <script type=text/template id=lightbox>
-        // the lightbox template for this instance of the widget
+        // the lightbox sub-template for this instance of the widget
         <head>
             <script>
                 require('aomi', 'nitelite');
                 (function init(data){}());
             </script>
-            <link rel=stylesheet href=lightbox.css />
+            <link rel=stylesheet href=lightbox.css>
             <style></style>
         </head>
         <body>
             <div>detail</div>
+        </body>
+    </script>
+    
+    <script type=text/template id=somekindofui>
+        // a random sub-template
+        <body>
+            <h1>do</h1>
+            <form action=contact>
+                <input id=bing type=submit>
+            </form>
         </body>
     </script>
 </body>
