@@ -2,22 +2,25 @@
 <html lang=en>
 <head>
     <meta charset=utf-8>
-    <title>Sqwidget data</title>
+    <title>Sqwidget: possible embed code</title>
 </head>
 
 <body>
-    <h1>Script data demo</h1>
+    <h1><a href=http://github.com/premasagar/sqwidget>Sqwidget</a>: possible embed code</h1>    
+    <p>View the source to see what's happening. The document contains a <code>script</code> element with HTML5 <code>data-</code> attributes. The data attributes are read by the external script that is called. The attributes could be used for configuring the widget.</p>
+    
+    <p>It would be possible to have the <code>sqwidget.js</code> script check the DOM for other <code>script</code> element with the className <code>sqwidget</code>. Those elements would not need to have a <code>src</code> attribute, since <code>sqwidget.js</code> will already have been loaded.</p>
     
     <h2>The data:</h2>
     <pre><code id=report></code></pre>
     
     <script
-        class = sqwidget
         src = sqwidget.js
+        class = sqwidget
+        data-sqwidget-version = 0.1
         data-sqwidget-width = 300
         data-sqwidget-height = 485
         data-sqwidget-template = http://example.com/mywidget.html.js
-        data-sqwidget-version = 0.1
         data-mywidget-foo = bar
     ></script>
     <!--
