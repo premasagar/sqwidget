@@ -1,0 +1,816 @@
+<!--
+    Templating Instructions
+    =======================
+    
+    1) Separate different templates for different UI elements (e.g. main widget and lightbox) into sections wrapped with:
+        [script type="text/template"]
+            [...]
+        [/script]
+        
+    2) Use [% expr %] to execute a JavaScript expression and [%= expr %] to print it into the rendered template. Keep logic out of the template, wherever possbible. The simplest and best expressions are just variables to be printed.
+    
+    3) Optionally, include a [head] element within a template's [script] element, which will inject the contents of that [hea] element into the window's head (either the main window, or the UI's iframe)
+    
+    4) Optionally, include a [head] element at the top-level (as a sibling to the template [script] elements), to inject that content with every single template UI
+    
+    (currently, [head] content is not passed through tmpl(), but that can be changed)
+    
+-->
+<head>
+	<style type="text/css">
+		/*
+		Reset CSS
+		Based on http://html5doctor.com/html-5-reset-stylesheet/
+		*/
+		html, body, div, span, object, iframe,
+		h1, h2, h3, h4, h5, h6, p, big, blockquote, pre,
+		abbr, acronym, address, cite, code,
+		del, dfn, em, font, img, ins, kbd, q, samp,
+		small, strong, sub, sup, var,
+		b, i,
+		dl, dt, dd, ol, ul, li,
+		fieldset, form, label, legend,
+		table, caption, tbody, tfoot, thead, tr, th, td,
+		article, aside, dialog, figure, footer, header,
+		hgroup, menu, nav, section,
+		time, mark, audio, video {
+			margin:0;
+			padding:0;
+			border:0;
+			outline:0;
+			font-size:100%;
+			vertical-align:baseline;
+			background:transparent;
+		}
+		body {
+			line-height:1;
+		}
+		article, aside, dialog, figure, footer, header,
+		hgroup, nav, section {
+			display:block;
+		}
+		nav ul {
+			list-style:none;
+		}
+		blockquote, q {
+			quotes:none;
+		}
+		blockquote:before, blockquote:after,
+		q:before, q:after {
+			content:"";
+			content:none;
+		}
+		a {
+			margin:0;
+			padding:0;
+			border:0;
+			font-size:100%;
+			vertical-align:baseline;
+			background:transparent;
+		}
+		ins {
+			background-color:#ff9;
+			color:#000;
+			text-decoration:none;
+		}
+		mark {
+			background-color:#ff9;
+			color:#000;
+			font-style:italic;
+			font-weight:bold;
+		}
+		del {
+			text-decoration: line-through;
+		}
+		abbr[title], dfn[title] {
+			border-bottom:1px dotted #000;
+			cursor:help;
+		}
+		table {
+			border-collapse:collapse;
+			border-spacing:0;
+		}
+		hr {
+			display:block;
+			height:1px;
+			border:0;
+			border-top:1px solid #cccccc;
+			margin:1em 0;
+			padding:0;
+		}
+		input, select {
+			vertical-align:middle;
+		}
+		/* end RESET CSS */
+		
+		
+		/* Specific stuff */
+		.sqwidget {
+			font-size: 12px;
+			line-height: 1;
+			direction:ltr;
+			text-align:left;
+			font-family: Arial, Helvetica, sans-serif;
+			color: black;
+			font-style:normal;
+			font-weight:normal;
+			text-decoration:none;
+		}			
+		.sqwidget.mishorts {
+			position:relative;
+			max-width:220px;
+			min-width:186px;
+			background-color:#e0e0e0;
+			color:#333;
+			line-height:1.3;
+			border: 1px solid #999;
+		}
+		.sqwidget.mishorts .widget-innards {
+			border-bottom: 1px solid #8a8a8a;
+		}
+		.sqwidget.mishorts a {
+			color: #333;
+			text-decoration:none;
+			cursor:pointer;
+		}
+		.sqwidget.mishorts a:hover {
+			text-decoration:underline;
+		}
+		.sqwidget.mishorts img {
+			color:#999;
+		}		
+		.sqwidget.mishorts .widget-header {
+			border: 1px solid #4c4c4c;
+			border-bottom-width: 2px;
+			background: #666 url(images/widget-header.png) repeat-x 0px 0px;
+			padding: 0.6em 0.8em;
+		}
+		.sqwidget.mishorts .logo {
+			width:114px;
+			height:44px;
+			display:block;
+			text-indent:-9999px;
+			background-image: url(images/mishorts-logo.png);
+		}
+		.sqwidget.mishorts .widget-title {
+			font-size:0.9em;
+			margin-top:0.3em;
+			width:70%;
+			color: #fff;
+			font-weight: normal;
+		}
+		.sqwidget.mishorts .widget-title a {
+			color: #fff;
+			font-size: 1.2em;
+			display: block;
+			font-weight: bold;
+		}
+		.sqwidget.mishorts .vcard .photo {
+			max-width:52px;
+			max-height:52px;
+			border:1px solid #585755;
+			background-color:#eee;
+			float:right;
+			margin-top: -40px;
+		}		
+		.sqwidget.mishorts .main {
+			border: 1px solid #8a8a8a;
+			border-bottom-width: 0;
+			background: url(images/sprite4.png) no-repeat -10px 292px;
+			padding-bottom: 5px;
+		}
+		.sqwidget.mishorts .widget-content {
+			border: 1px solid #b5b5b5;
+			margin:0.5em;
+			background: #5e5e5e;
+			padding: 1px;
+		}				
+		.sqwidget.mishorts .films {
+			clear:left;
+			overflow:auto;
+			height:250px;
+			padding:0.3em;
+			border:1px solid #333;
+			background-color:#ddeef1;
+			font-size: 0.9em;
+		}
+		.sqwidget.mishorts .films > li {
+			clear:left;
+			padding-bottom: 0.62em;
+		}
+		.sqwidget.mishorts .films > li:last-child {
+			border-bottom:none;
+			padding-bottom:5px;
+		}
+		.sqwidget.mishorts .film-title {
+			margin-bottom:0.25em;
+			font-size: 1.1em;			
+		}
+		.sqwidget.mishorts .film-title a {
+			color: #fff;
+			display: block;
+			padding: 0.2em 30px 0.2em 0.3em;
+			background: #333 url(images/sprite1.png) 140px -127px no-repeat;
+		}
+		
+		.sqwidget.mishorts .film-img a {
+			position: relative;
+			display: block
+		}
+		
+		.sqwidget.mishorts .film-img span {
+			text-indent: -1000em;
+			display: block;
+			width: 25px;
+			height: 25px;
+			background: url(images/sprite1.png) -10px -10px no-repeat;
+			position: absolute;
+			top: 40%;
+			left: 40%;
+		}
+				
+		.sqwidget.mishorts .film-meta {
+			margin:0.3em 0 0.1em;
+			overflow:auto;
+			/* TODO: width may be needed to clear float in IE */
+		}	
+		.sqwidget.mishorts .film-meta dt {
+			color: #557875;
+			float:left;
+			clear:left;
+			padding-right:0.5em;
+			min-width:6em;
+		}
+		
+		.sqwidget.mishorts .film-meta a {
+		    text-decoration:underline;
+		}
+		
+		.sqwidget.mishorts .film-meta a:hover {
+		    background-color:#333;
+		    color:#fff;
+		    text-decoration:none;
+		}
+		
+		.sqwidget.mishorts .film-meta .categories ul {
+			float: left;
+		}
+		.sqwidget.mishorts .film-meta .categories li {
+			list-style-type:none;
+			float:left;
+			margin-right:0.62em;
+		}
+		
+		.sqwidget.mishorts .films .preview {
+			display:block;
+			margin:0.3em 0;
+			color: #557875;
+			font-weight: bold;
+		}
+		.sqwidget.mishorts .films .preview span.title-clip {
+			color: #333;
+			float:left;
+			clear:left;
+			padding-right:0.5em;
+			min-width:6em;
+		}			
+		.sqwidget.mishorts .films .download {
+			font-weight:normal;
+			display:block;
+			margin:0.3em 0 0;
+		}
+		.sqwidget.mishorts .widget-meta {
+			margin:0.5em;
+			overflow:auto;
+		}
+		.sqwidget.mishorts .widget-meta li {		
+			font-size:0.8em;
+			float:left;
+			list-style-type:none;
+		}
+		.sqwidget.mishorts .widget-meta a {
+			color:#676767;
+			font-weight:normal;
+			display:block;
+		}
+		.sqwidget.mishorts .widget-meta .dev {
+			float:right;
+			margin-right: 1px;
+		}
+		.sqwidget.mishorts .widget-meta .df {
+			color:#676767;
+			font-family:Calibri,Helvetica,Arial,sans-serif;
+			color:#A6C664;
+			font-weight:bold;
+			background-color:white;
+			text-transform:uppercase;
+			text-decoration:none;
+			padding:0 0.2em;
+			opacity:0.8;
+			line-height:1.1em;
+			display: block;
+		}
+		.sqwidget.mishorts .widget-meta .dev a:hover {
+			text-decoration:none;
+		}
+		.sqwidget.mishorts .widget-meta a:hover .df {
+			opacity:1;
+			background-color:#A6C664;
+			color:white;			
+		}
+		
+		/* LIGHTBOX */
+		.sqwidget.mishorts.lightbox {
+			min-width: 930px;
+			position:absolute;
+			top:0;
+			left:0;
+			background: #333 url(images/sprite4.png) -250px -10px no-repeat;
+			border: none;		
+		}
+		.sqwidget.mishorts.lightbox.active {
+			display:block;
+			left: 300px;
+		}		
+		.sqwidget.mishorts.lightbox .lightbox-container {
+			background: url(images/sprite4.png) -1200px bottom no-repeat;
+			padding-bottom: 16px;
+		}		
+		.sqwidget.mishorts.lightbox .lightbox-innards {
+			margin-top: 20px;
+			padding: 0 8px;
+			background: #333 url(images/lightbox-border_middle.png) repeat-y;
+		}		
+		.sqwidget.mishorts.lightbox .sqwidget-player {
+			width:100%;
+			height:100%;
+			border-top: 1px solid #ccc;
+		}		
+		.sqwidget.mishorts.lightbox .sqwidget-player .film-content {
+			padding: 0 69px;
+			background: url(images/sprite3.png) -10px 279px repeat-y;
+			width: 588px;
+			margin: 0 auto;
+			padding-bottom: 10px;
+			overflow: auto;
+		}		
+		.sqwidget.mishorts.lightbox .sqwidget-player .film-description {
+			background-color: #ddeef1;
+		}
+		.sqwidget.mishorts.lightbox .sqwidget-player .film-title {
+			width: 387px;
+			float: left;
+			margin-bottom: 0;
+		}
+		.sqwidget.mishorts.lightbox .sqwidget-player a.buy {
+			float: left;
+			background: #333 url(images/sprite1.png) no-repeat -10px -189px;
+			color: #fff;
+			padding: 3px 10px 0 20px;
+			font-size: 1.2em;
+			min-height: 24px;
+			border-right: 25px solid #557875;
+			width: 146px;
+			display: block;
+		}
+		.sqwidget.mishorts.lightbox .sqwidget-player .film-title a {
+			background: #333;
+			padding: 3px 30px 0 30px;
+			font-size: 1.2em;
+			min-height: 24px;
+		}
+		.sqwidget.mishorts.lightbox .widget-header {
+			min-height: 43px;
+			background: #333;
+			border: none;
+			padding-top: 0;
+		}
+		.sqwidget.mishorts.lightbox .logo {
+			float: left;
+		}
+		.sqwidget.mishorts.lightbox .close {
+			text-indent: -1000em;
+			position: relative;
+			width: 26px;
+			height: 26px;
+			background: url(images/sprite1.png) no-repeat -10px -81px;
+			float: right;
+			display: block;
+			margin: 0.7em 0.7em 0 0; 
+		}
+		.sqwidget.mishorts.lightbox .close:hover {
+			background-position: -10px -55px;
+		}		
+		.sqwidget.mishorts.lightbox .film-meta {
+			padding:20px 30px 0.62em;
+			clear: left;
+		}
+		.sqwidget.mishorts.lightbox .film-meta dt {
+			font-weight: bolder;
+			clear:both;
+			min-width: 0;			
+		}
+		.sqwidget.mishorts.lightbox .film-meta dd {
+			float: left;
+			min-width: 10em;
+		}
+		.sqwidget.mishorts.lightbox .film-meta dd.director {
+			float: none;
+		}
+		.sqwidget.mishorts.lightbox .description {
+			clear: both;
+			padding: 0 30px;
+			overflow: auto;
+			max-height: 80px;
+			border-bottom: 25px solid #DDEEF1;
+		}		
+		.sqwidget.mishorts.lightbox ul.categories {
+			list-style: none;
+			float: left;
+			width: 700px;
+			margin: 8px 0 0 12px;
+		}
+		.sqwidget.mishorts.lightbox ul.categories li {
+			float: left;
+			min-width: 114px;
+			margin: 0 2px 2px 0;
+		}
+		.sqwidget.mishorts.lightbox ul.categories a {
+			color: #fff;
+			padding: 0 0.3em;
+			display: block;
+			line-height: 1.1em;
+			font-weight: bolder;
+		}
+		.sqwidget.mishorts.lightbox ul.categories a:hover {
+			text-decoration: none;
+		}	
+			
+		.sqwidget.mishorts.lightbox li.animation a {
+			background-color: #54777d;
+		}
+		.sqwidget.mishorts.lightbox li.animation a:hover {
+			color: #54777d;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.comedy a {
+			background-color: #95956c;
+			
+		}
+		.sqwidget.mishorts.lightbox li.comedy a:hover {
+			color: #95956c;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.dance a {
+			background-color: #c04e41;
+		}
+		.sqwidget.mishorts.lightbox li.dance a:hover {
+			color: #c04e41;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.documentary a {
+			background-color: #84a7ac;
+		}
+		.sqwidget.mishorts.lightbox li.documentary a:hover {
+			color: #84a7ac;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.drama a {
+			background-color: #84a878;
+		}
+		.sqwidget.mishorts.lightbox li.drama a:hover {
+			color: #84a878;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.free a {
+			background-color: #a97269;
+		}
+		.sqwidget.mishorts.lightbox li.free a:hover {
+			color: #a97269;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.experimental a {
+			background-color: #a57ed7;
+		}
+		.sqwidget.mishorts.lightbox li.experimental a:hover {
+			color: #a57ed7;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.horror a {
+			background-color: #8f9321;
+			
+		}
+		.sqwidget.mishorts.lightbox li.horror a:hover {
+			color: #8f9321;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.musical a {
+			background-color: #be6c25;
+		}
+		.sqwidget.mishorts.lightbox li.musical a:hover {
+			color: #be6c25;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.sci-fi a {
+			background-color: #ce7cdf;
+		}
+		.sqwidget.mishorts.lightbox li.sci-fi a:hover {
+			color: #ce7cdf;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.ultra-shorts a {
+			background-color: #797979;
+		}
+		.sqwidget.mishorts.lightbox li.ultra-shorts a:hover {
+			color: #797979;
+			background-color: #fff; 
+		}
+		
+		.sqwidget.mishorts.lightbox li.youth a {
+			background-color: #64aaf7;
+		}
+		.sqwidget.mishorts.lightbox li.youth a:hover {
+			color: #64aaf7;
+			background-color: #fff; 
+		}
+	</style>
+	
+    <!--[if lte IE 8]>
+    <style type="text/css">
+        
+        .sqwidget.mishorts {
+			width:220px;
+		}
+		
+		.sqwidget.mishorts img {
+		    -ms-interpolation-mode:bicubic;
+		}
+        
+    	.sqwidget.mishorts .films {
+        	padding-top: 0.2em;
+        }
+        
+    </style>
+    <![endif]-->
+    
+	<!--[if lte IE 7]>
+    <style type="text/css">
+        .sqwidget.mishorts .film-title {   
+        	clear: left;
+        }
+    	.sqwidget.mishorts .film-img {
+			position: static;
+		}
+       	.sqwidget.mishorts .film-img a {
+        	position: static;
+        }
+        .sqwidget.mishorts .film-img span {
+        	display: none;
+        }
+        .sqwidget.mishorts .widget-meta {
+			height: 1.5em;
+            margin-bottom: 0;
+		}    
+    </style>
+    <![endif]-->
+    
+    <!--[if lte IE 6]>
+    <style type="text/css"> 
+    	.sqwidget.mishorts .widget-header {
+        	display: block;
+        }
+		.sqwidget.mishorts .film-title a {
+			background-image: url(images/sprite1-ie6.png);
+		}
+    	.sqwidget.mishorts .film-img span {
+        	display: none;
+        }
+        .sqwidget {
+        	position: static;
+        }
+        .sqwidget.mishorts {
+        	width: 220px;
+        }
+        .sqwidget.mishorts .vcard .photo {
+			width:52px;
+		}
+        .sqwidget.mishorts .film-title {
+        	clear: left;
+        }
+        .sqwidget.mishorts .main {
+        	clear: both;
+        }
+        .sqwidget.mishorts .widget-meta .df {
+        	font-size: 0.9em;
+        }
+        .sqwidget.mishorts .films .preview span.title-clip,
+        .sqwidget.mishorts .film-meta dt {
+			width:6em;
+		}
+        .sqwidget.mishorts .films li {
+			height: 250px;
+		}
+        .sqwidget.mishorts .film-meta .categories li {
+        	height: auto;
+        }
+        
+        /* LIGHTBOX */
+        .sqwidget.mishorts.lightbox .close {
+			background-image: url(images/sprite1-ie6.png);
+		}
+		.sqwidget.mishorts.lightbox {
+        	width: 930px;
+        }
+        .sqwidget.mishorts.lightbox ul.categories li {
+			width: 114px;
+		}
+        .sqwidget.mishorts.lightbox .film-meta dd {
+			width: 10em;
+		}
+        .sqwidget.mishorts.lightbox .widget-header {
+        	height: 43px;
+        }
+        .sqwidget.mishorts.lightbox .sqwidget-player .film-content {
+            overflow: hidden;
+		}
+        .sqwidget.mishorts.lightbox .close {
+        	margin-right: 0.35em;
+        }
+		.sqwidget.mishorts.lightbox .film-meta dt {
+        	width: auto;
+        }
+        .sqwidget.mishorts.lightbox .sqwidget-player a.buy {
+        	padding-bottom: 2px;
+            background-image: url(images/sprite1-ie6.png);
+        }
+
+    </style>
+    <![endif]-->
+</head>
+
+<script type="text/template" id="main">
+	<div class="mishorts sqwidget">
+		<div class="widget-innards">
+		
+        	<div class="widget-header">
+                <a class="logo" title="MiShorts: short films, on demand" href="http://mishorts.com">MiShorts</a>
+                
+                <% if (user.photos[0]){ %>
+                    <p class="vcard user-<%= user.id %>">
+                        <a class="url" title="<%= sqwidget.possessiveName(user.name) %> shorts" href="<%= user.url %>">
+                            <img class="fn photo" alt="<%= user.name %>" src="<%= user.photos[0].url %>" />
+                        </a>
+                    </p>
+                <% } %>
+                
+                <h2 class="widget-title">
+                    Directed by 
+                    <a title="<%= sqwidget.possessiveName(user.name) %> shorts" href="<%= user.url %>">
+                        <%= user.name %>
+                    </a>
+                </h2>
+            </div>
+			
+            <div class="main">
+            	<div class="widget-content">
+                    <ul class="films">
+                        <% $.each(user.films, function(i, film){ %>
+                            <li class="film-<%= film.id %>">
+                                <h3 class="film-title">
+                                    <a title="'<%= film.name %>' by <%= user.name %>" href="<%= film.url %>">
+                                        <%= film.name %>
+                                    </a>
+                                </h3>
+                                <% if (film.photos[0]){ %>
+                                	<div class="film-img">
+                            			<a title="Watch a clip" href="<%= film.url %>"><span>Watch a clip</span>
+                                        	<img src="<%= film.photos[0].url %>" alt="<%= film.name %>" width="<%= film.photos[0].width %>" height="<%= film.photos[0].height %>" />
+                                    	</a>
+                                    </div>
+                                <% } %>
+                                <p class="description">
+                                    <% if (film.desc){ %>
+                                        <%= sqwidget.truncate(film.summary, 10) %>
+                                    <% } %>
+                                </p>
+                                    
+                                <dl class="film-meta">
+                                    <dt>Year:</dt> 
+                                        <dd class="year">
+                                            <%= film.year %>
+                                        </dd> 
+                                    <dt>Category:</dt>
+                                        <dd class="categories">
+                                            <ul>
+                                                <% $.each(film.categories, function(i, category){ %>
+                                                    <li class="cat-<%= category.id %>">
+                                                        <a href="<%= category.url %>" title="<%= category.name %> shorts"><%= category.name %></a>
+                                                    </li>
+                                                <% });%>
+                                            </ul>
+                                        </dd>
+                                </dl>
+                            </li>
+                        <% });%>
+                    </ul>
+                </div>
+                <ul class="widget-meta">
+                    <li class="about">
+                        <a title="More info on the MiShorts widget" href="http://mishorts.com/widget">Widget info</a>
+                    </li>
+                    <li class="dev">
+                        <a title="Widget by Dharmafly" href="http://dharmafly.com"><span class="df">Dharmafly</span></a>
+                    </li>
+                </ul>
+            </div>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="lightbox">
+	<div class="sqwidget mishorts lightbox">
+    	<div class="lightbox-container">
+            <div class="lightbox-innards">
+                <div class="widget-header">
+                    <a class="logo" title="MiShorts, short films on demand" href="http://mishorts.com">MiShorts</a>  
+                    <ul class="categories">
+                        <li class="animation"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=1&Itemid=13" title="Animation">Animation</a></li>
+                        <li class="comedy"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=2&Itemid=13" title="Comedy">Comedy</a></li>
+                        <li class="dance"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=4&Itemid=13" title="Dance">Dance</a></li>
+                        <li class="documentary"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=5&Itemid=13" title="Documentary">Documentary</a></li>
+                        <li class="drama"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=3&Itemid=13" title="Drama">Drama</a></li>
+                        <li class="free"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=12&Itemid=13" title="Free">Free</a></li>
+                        <li class="experimental"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=6&Itemid=13" title="Experimental">Experimental</a></li>
+                        <li class="horror"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=7&Itemid=13" title="Horror">Horror</a></li>
+                        <li class="musical"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=8&Itemid=13" title="Musical">Musical</a></li>
+                        <li class="sci-fi"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=9&Itemid=13" title="Science Fiction">Science Fiction</a></li>
+                        <li class="ultra-shorts"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=10&Itemid=13" title="Ultra Shorts">Ultra Shorts</a></li>
+                        <li class="youth"><a href="http://www.mishorts.com/index.php?option=com_virtuemart&page=shop.browse&category_id=13&Itemid=13" title="Youth">Youth</a></li>
+                    </ul> 
+                    <a class="close" title="Close">Close</a>
+                </div>
+                <div class="sqwidget-player">
+                    <div class="film-content">
+                        <div class="video">
+                        <embed width="588" height="363" flashvars="&file=<%= user.films[0].videos[0].url %>&image=<%= user.films[0].photos[1].url %>&skin=http://mishorts.com/jw/snel.swf&plugins=hd-1&hd.file=<%= user.films[0].videos[0].url %>" wmode="opaque" allowfullscreen="true" allowscriptaccess="always" quality="high" name="mpl" style="" src="http://mishorts.com/jw/player.swf" type="application/x-shockwave-flash" />
+                        <!--
+                            <object width="<%= user.films[0].videos[0].width %>" height="<%= user.films[0].videos[0].height %>" type="application/x-shockwave-flash" data="http://mishorts.com/jw/player.swf"> 
+	                            <param name="allowfullscreen" value="true" /> 
+	                            <param name="allowscriptaccess" value="always" /> 
+	                            <param name="movie" value="http://mishorts.com/jw/player.swf" /> 
+                                <param name="wmode" value="transparent" />
+                                <param name="file" value="<%= user.films[0].videos[0].url %>" />
+                                <param name="image" value="<%= user.films[0].photos[1].url %>" />
+                                <param name="skin" value="http://mishorts.com/jw/snel.swf" />
+                                <param name="plugins" value="hd-1" />
+                                
+                                
+                                <embed width="650" height="397" flashvars="&file=http://mishorts.com/media/629.flv&image=http://mishorts.com/components/com_virtuemart/show_image_in_imgtag.php%3Ffilename%3DLaptop_Jam_4ab676b9e4632.png%26newxsize%3D565%26newysize%3D317&skin=http://mishorts.com/jw/snel.swf&plugins=hd-1&hd.file=http://mishorts.com/media/629.mp4" wmode="opaque" allowfullscreen="true" allowscriptaccess="always" quality="high" name="mpl" style="" src="http://mishorts.com/jw/player.swf" type="application/x-shockwave-flash"/>
+                                                                          
+                                                                           
+                                <img src="<%= user.films[0].photos[1].url %>" width="<%= user.films[0].photos[1].width %>" height="<%= user.films[0].photos[1].height %>" />
+                            </object> -->
+                        </div>
+                        <div class="film-description">
+                            <h3 class="film-title">
+                                <a title="'<%= user.films[0].name %>' by <%= user.name %>" href="<%= user.films[0].url %>">
+                                    <%= user.films[0].name %>
+                                </a>
+                            </h3><a href="<%= user.films[0].url %>" class="buy" title="Download for HDTV, mobile and more">Buy now on MiShorts</a>
+                              
+                            <dl class="film-meta">
+                                <dt>Director:</dt>
+                                <dd class="director"><a title="<%= sqwidget.possessiveName(user.name) %> shorts" href="<%= user.url %>"><%= user.name %></a></dd>
+                                <dt>Duration:</dt>
+                                <dd><%= sqwidget.prettyDuration(user.films[0].duration) %></dd>
+                                <dt>Year:</dt>
+                                <dd class="year"><%= user.films[0].year %></dd>
+                                <dt>Category:</dt>
+                                <dd class="categories">                       
+                                    <ul>
+                                        <% $.each(user.films[0].categories, function(i, category){ %>
+                                            <li class="cat-<%= category.id %>">
+                                                <a href="<%= category.url %>" title="<%= category.name %> shorts"><%= category.name %></a>
+                                            </li>
+                                        <% });%>
+                                    </ul>
+                                </dd>                          
+                            </dl>
+                            <p class="description"><%= user.films[0].desc %></p>							
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang=en>
 <head>
-    <meta charset=utf-8 />
+    <meta charset=utf-8>
     <title>jsonp-x</title>
-    <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js></script>
+    <script src=../jquery.js></script>
     <script src=jsonpx.js></script>
-     
+    
     <style>
         label, textarea, input, button {
             display:block;
@@ -24,18 +24,25 @@
     <textarea id=source rows=30 cols=80></textarea>
     
     <label for=callbackName>Callback name</label>
-    <input id=callbackName value=sqwidget.template />
+    <input id=callbackName value=mishorts.template>
+    
+    <label for=stripwhitespace>Strip HTML whitespace</label>
+    <input id=stripwhitespace type=checkbox checked>
     
     <button id=jsonpxify>Go</button>
     
     <script>
-        $('#source').val('');
+        $('#source')
+            .val('')
+            .focus(function(){
+                $(this).select();
+            });
         
 
         $('#jsonpxify')
             .click(function(){
                 $('#source').val(
-                    jsonpx($('#source').val(), $('#callbackName').val())
+                    jsonpx($('#source').val(), $('#callbackName').val(), $('#stripwhitespace')[0].checked)
                 );
             });
     </script>
