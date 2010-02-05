@@ -32,13 +32,6 @@
     }
     
     var
-        window = this,
-        document = window.document,
-        DOMContentLoaded,
-        isReady,
-        readyBound,
-        readyList = [],
-        
         scripts = document.getElementsByTagName('script'),
         elem = scripts.length ?
             scripts[scripts.length - 1] :
