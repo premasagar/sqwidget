@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <meta charset=utf-8>
+    <title>Sqwidget data</title>
+</head>
+
+<body>
+    <h1>Script data demo</h1>
+    
+    <h2>The data:</h2>
+    <pre><code id=report></code></pre>
+    
+    <script
+        class = sqwidget
+        src = sqwidget.js
+        data-sqwidget-width = 300
+        data-sqwidget-height = 485
+        data-sqwidget-template = http://example.com/mywidget.html.js
+        data-sqwidget-version = 0.1
+        data-mywidget-foo = bar
+    ></script>
+    <!--
+        The script element's list of classes (via the class attribute) must include 'sqwidget' - everything else is optional.
+        The src attribute is optional. If present, it will load Sqwidget from a url, e.g. http://example.com/sqwidget.js
+        The script element may include any number of data-sqwidget- attributes, to be accessible by Sqwidget and from the template file, which is specified via an id or a url as the value of the data-sqwidget-template attribute.
+    -->
+</body>
+</html>
