@@ -33,8 +33,8 @@
     // Find the <script> element that called this script, then grab its dataset object.
     var
         scripts = document.getElementsByTagName('script'),
-        elem = scripts[scripts.length-1],
-        data = dataset(elem);
+        widget = scripts[scripts.length-1],
+        data = dataset(widget);
         
         // **
         
@@ -45,7 +45,45 @@
             demo += '<br />' + prop + ': ' + data[prop];
         }
     }
-    document.getElementById('report').innerHTML = demo;
+    document.getElementById('datafound').innerHTML = demo;
+    
+    // **
+    
+    // Find data attributes for divs with data- attributes
+    // Needs to be run on document ready - after the DOM has loaded, or at least after all widgets have been included in the DOM, e.g. just before the closing body tag
+    
+    var
+        divs = document.getElementsByTagName('div'),
+        len = divs.length,
+        widgets = [],
+        div, i, j, attrs, attrlen, widgetslen, widget;
+        
+    for (i = len; i; i--){
+        div = divs[i-1];
+        attrs = div.attributes;
+        attrslen = attrs.length;
+        for (j = attrslen; j; j--){
+            if (attrs[j-1].name === 'data-sqwidget'){
+                widgets.push(div);
+                break;
+            }
+        }
+    }
+    
+    widgetslen = widgets.length;
+    for (i = widgetslen; i; i--){
+        widget = widgets[i-1];
+        data = dataset(widget);
+        
+        demo = '';
+        for (prop in data){
+            if (data.hasOwnProperty(prop)){
+                demo += '<br />' + prop + ': ' + data[prop];
+            }
+        }
+        document.getElementById('datafound').innerHTML += '<hr />' + demo;
+    }
+    
 }());
 
 /*jslint browser: true, devel: true, onevar: true, undef: true, eqeqeq: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */

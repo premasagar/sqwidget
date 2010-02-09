@@ -3,6 +3,17 @@
 <head>
     <meta charset=utf-8>
     <title>Sqwidget: possible embed code</title>
+    
+    <style>
+        .report, .widgets {
+            float:left;
+            margin:0 1.6em 1.6em 0;
+        }
+    </style>
+    <script>
+        // debug log
+        var _ = console.log;
+    </script>
 </head>
 
 <body>
@@ -11,22 +22,72 @@
     
     <p>It would be possible to have the <code>sqwidget.js</code> script check the DOM for other <code>script</code> element with the className <code>sqwidget</code>. Those elements would not need to have a <code>src</code> attribute, since <code>sqwidget.js</code> will already have been loaded.</p>
     
-    <h2>The data:</h2>
-    <pre><code id=report></code></pre>
+    <div class=report>
+        <h2>Embedded data</h2>
+        <pre><code id=datafound></code></pre>
+    </div>
     
-    <script
-        src = sqwidget.js
-        class = sqwidget
-        data-sqwidget-version = 0.1
-        data-sqwidget-width = 300
-        data-sqwidget-height = 485
-        data-sqwidget-template = http://example.com/mywidget.html.js
-        data-mywidget-foo = bar
-    ></script>
-    <!--
-        The script element's list of classes (via the class attribute) must include 'sqwidget' - everything else is optional.
-        The src attribute is optional. If present, it will load Sqwidget from a url, e.g. http://example.com/sqwidget.js
-        The script element may include any number of data-sqwidget- attributes, to be accessible by Sqwidget and from the template file, which is specified via an id or a url as the value of the data-sqwidget-template attribute.
-    -->
+    <div class=widgets>
+        <h2>Widgets</h2>
+    
+        <div
+            data-sqwidget = 0.1
+            data-sqwidget-template = http://example.com/mywidget.html.js
+            data-mywidget-foo = bar
+            style = "
+                width:160px;
+                height:240px;
+                background:url(default.png);
+                
+                /* basic reset rules */
+                padding:0;
+                margin:0;
+                border:none;
+            "
+        ></div>
+        <!--
+            sqwidget.js is called somewhere else in the document. on $(document).ready(), all elements matching the selector 'div[data-sqwidget]' that don't have boolean attribute 'data-sqwidget-loaded', are initialised, with the classname 'sqwidget' being added to them.
+        -->
+        
+        
+        
+        
+        <!-- inline widget -->
+        <p>The price of oil is <span data-sqwidget=0.1 data-sqwidget-template=priceofoil-inline.html></span> today.
+        
+        
+        <!-- block-level injection of data -->
+        <div
+            data-sqwidget=0.1
+            data-sqwidget-template=priceofgold.js
+        >
+            <p>The price of gold is £<span data-priceofgold-gbp></span> ($<span data-priceofgold-usd></span>).</p>
+        </div>
+        
+        
+        <!-- document-level template -->
+        <script type=text/x-tiddler>
+            This is my template. It includes a lovely <img data-mytiddler-imgsrc=blah.png />
+        </script>
+        
+        
+        
+        <!--
+            The following script element's data attributes must include 'data-sqwidget', whose value is the Sqwidget API version number. All other attributes are optional.
+            
+            The src attribute is optional. If present, it will load Sqwidget from a url, e.g. http://example.com/sqwidget.js
+            
+            The script element may include any number of data-sqwidget- attributes, to be accessible by Sqwidget and from the template file, which is specified via a url or a unique Sqwidget id, as the value of the data-sqwidget-template attribute.
+        -->        
+        <script
+            src = sqwidget.js
+            data-sqwidget = 0.1
+            data-sqwidget-width = 300
+            data-sqwidget-height = 485
+            data-sqwidget-template = http://example.com/mywidget.html.js
+            data-mywidget-foo = bar
+        ></script>
+        
+    </div>
 </body>
 </html>
