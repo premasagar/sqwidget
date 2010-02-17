@@ -65,17 +65,144 @@ var Sqwidget;
 			    var scripts = document.getElementsByTagName("script");
                 return scripts[scripts.length - 1];
             },
+			
+			ready: (function(){
+				
+				// onDocumentReady abstraction
+				// adapted from jQuery 1.4
+				
+				var doc = document,
+					docEl = doc.documentElement,
+					addEventListener = doc.addEventListener,
+					attachEvent = doc.attachEvent,
+					readyFns = [],
+					ready,
+					bound,
+					dcl = 'DOMContentLoaded',
+					orsc = 'onreadystatechange',
+					atTopLevel;
+					
+				function onReady(fn) {
+					
+					readyFns.push(fn);
+					
+					if ( ready ) { return fn(); }
+					if ( bound ) { return; }
+					
+					bound = true;
+					
+					if ( addEventListener ) {
+						doc.addEventListener(dcl, DOMContentLoaded, false);
+						window.addEventListener('load', fireReady, false); // fallback to window.onload
+					} else {
+						if ( attachEvent ) {
+							
+							// IE Event model
+							
+							doc.attachEvent(orsc, DOMContentLoaded);
+							window.attachEvent('onload', fireReady); // fallback to window.onload
+							
+							try {
+								atTopLevel = !window.frameElement;
+							} catch(e) {}
+							
+							if ( docEl.doScroll && atTopLevel ) {
+								scrollCheck();
+							}
+							
+						}
+					}
+					
+				}
+				
+				function scrollCheck() {
+					
+					if (ready) { return; }
+					
+					try {
+						// http://javascript.nwbox.com/IEContentLoaded/
+						docEl.doScroll("left");
+					} catch(e) {
+						setTimeout(scrollCheck, 1);
+						return;
+					}
+					
+					// DOM ready
+					fireReady();
+					
+				}
+				
+				function fireReady() {
+					
+					if (ready) { return; }
+					ready = true;
+					
+					for (var i = 0, l = readyFns.length; i < l; i++) {
+						readyFns[i]();
+					}
+					
+				}
+				
+				function DOMContentLoaded() {
+					
+					if ( addEventListener ) {
+						doc.removeEventListener(dcl, DOMContentLoaded, false);
+						fireReady();
+					} else {
+						if ( attachEvent && doc.readyState === 'complete' ) {
+							doc.detachEvent(orsc, DOMContentLoaded);
+							fireReady();
+						}
+					}
+					
+				}
+				
+				return onReady;
+				
+			})(),
+			
+			getScripts: function(srcs, callback, inOrder) {
+				
+				var length = srcs.length,
+					loaded = 0;
+				
+				if (inOrder) {
+					// Recursive, each callback re-calls getScripts
+					// with a shifted array.
+					Sqwidget.getScript(srcs.shift(), function() {
+						if (length === 1) {
+							callback();
+						} else {
+							Sqwidget.getScripts(srcs, callback);
+						}
+					});
+				} else {
+					// Plain old loop
+					// Doesn't call callback until all scripts have loaded.
+					for (var i = 0; i < length; ++i) {
+						Sqwidget.getScript(srcs[i], function(){
+							if (++loaded === length) {
+								callback();
+							}
+						});
+					}
+				}
+				
+			},
 	 
 			
 			// Load a script into a <script> element
 			// TODO: Look in DOM for script element with that src already, and don't load it again if found (allows multiple Sqwidget scripts not to keep loading jQuery, etc)
 			// TODO: allow various options: 1) multiple src args, where load order is not important; 2) [arrays of urls] where load order is to be maintained; 3) {url: src, callback: fn} objects to allow specific callbacks for particular scripts; 4) {lookForScriptSrcInDOM:false} options object; 5) callback function when all scripts loaded
 			getScript: function(src, callback){
-				var head, script, loaded;
-				head = document.getElementsByTagName('head')[0];
+				
+				var head = document.getElementsByTagName('head')[0],
+					script = document.createElement('script'),
+					loaded;
+				
 				callback = callback || function(){};
-				script = document.createElement('script');
 				script.src = src;
+				
 				script.onload = script.onreadystatechange = function(){
 					var state = this.readyState;
 					if (!loaded && (!state || state === 'complete' || state === 'loaded')){
@@ -88,6 +215,7 @@ var Sqwidget;
 						head.removeChild(script); // Worth removing script element once loaded?
 					}
 				};
+				
 				head.appendChild(script);
 			},
 			
@@ -166,11 +294,6 @@ var Sqwidget;
 					}
 				}
 				callback($);
-			},
-			
-			ready: function(callback){
-				_('Sqwidget.ready');
-				return this.onjQueryReady(callback);
 			}
 		};
 
