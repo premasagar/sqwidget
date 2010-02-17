@@ -294,11 +294,6 @@ var Sqwidget;
 					}
 				}
 				callback($);
-			},
-			
-			ready: function(callback){
-				_('Sqwidget.ready');
-				return this.onjQueryReady(callback);
 			}
 		};
 
