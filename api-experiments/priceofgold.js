@@ -16,11 +16,11 @@ Swidget.fn = Sqwidget.protoype = {
 
 // instance - e.g. mywidget.js
 priceofgold(function(data){
-    $('[data-sqwidget][data-priceofgold]')
+    $('[data-priceofgold]')
         .each(function(){
             $(this).text(
                 data[
-                    $(this).attr('[data-priceofgold]'); // e.g. 'gbp'
+                    $(this).attr('[data-priceofgold]'); // data lookup, e.g. for 'gbp'
                 ]
             );
             
