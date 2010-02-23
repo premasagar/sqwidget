@@ -56,6 +56,10 @@
         divs = document.getElementsByTagName('div'),
         len = divs.length,
         widgets = [],
+        rtrim = /^(\s|\u00A0)+|(\s|\u00A0)+$/g,
+        trim = function(str){
+            return str.replace(rtrim, '');
+        },
         div, i, j, attrs, attrlen, widgetslen, widget;
         
     for (i = len; i; i--){
@@ -78,7 +82,7 @@
         demo = '';
         for (prop in data){
             if (data.hasOwnProperty(prop)){
-                demo += '<br />' + prop + ': ' + data[prop];
+                demo += '<br />' + trim(prop) + ': ' + trim(data[prop]);
             }
         }
         document.getElementById('datafound').innerHTML += '<hr />' + demo;
