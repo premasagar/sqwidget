@@ -1,0 +1,112 @@
+<script async class=sqwidget src=http://sqwidget.net/sqwidget.js>
+    Sqwidget('mishorts.js', {user:256});
+</script>
+
+
+<script src=http://sqwidget.net/sqwidget.js>
+   {template:"mishorts.js", data:{user:256}}
+</script>
+
+
+
+<script src=http://sqwidget.net/sqwidget.js#mishorts.js,{user:256}></script>
+
+
+<script>
+    $('#container')
+        .sqwidget('mishorts.js', {user:256});
+    
+    // **
+        
+    Sqwidget('mishorts.js', {user:256})
+        .appendTo('#myContainer');
+</script>
+
+
+<!-- *** -->
+
+
+<script src=http://sqwidget.net/sqwidget.js></script>
+
+<div
+    data-sqwidget = 0.1
+    data-sqwidget-template = http://example.com/mywidget.html.js
+    data-mywidget-foo = bar
+    style = "
+        width:160px;
+        height:240px;
+        background:url(default.png);
+        
+        /* basic reset rules */
+        padding:0;
+        margin:0;
+        border:none;
+    "
+></div>
+
+
+<!-- *** -->
+<script src=http://sqwidget.net/sqwidget.js></script>
+<div
+    data-sqwidget = "template:mishorts.js"
+    data-mishorts = "user:256"
+    style = "padding:0; margin:0; border:none;"
+></div>
+
+
+<!-- *** -->
+
+<div
+    class = "sqwidget"
+    data-sqwidget = "v:0.1, template:mishorts.js"
+    data-mishorts = "user:256"
+    style = "padding:0; margin:0; border:none;"
+></div>
+
+
+
+
+<script type="text/x-sqwidget">
+    {
+        template:"mishorts.js",
+        settings:{
+            user:256
+        }
+    }
+</script>
+
+
+<div data-sqwidget="template:http://mishorts.com/widget/mishorts.1.3.2.js" style="padding:0; margin:0; border:none;">
+    <img src="http://mishorts.com/loading.png">
+    <script type="application/json">
+        {
+            "user":256,
+            "foo":"bar"
+        }
+    </script>
+</div>
+
+
+
+<div data-sqwidget="template:http://mishorts.com/widget/mishorts.1.3.2.js" data-sqwidget-settings="user:256, foo:bar" style="padding:0; margin:0; border:none;">
+    <img src="http://mishorts.com/loading.png">
+</div>
+
+
+
+<div data-sqwidget="template:http://mishorts.com/widget/mishorts.1.3.2.js" data-sqwidget-settings = "
+        {
+            blah: 1,
+            foo: <div></div>
+        }
+    "
+ style="padding:0; margin:0; border:none; background-image:url(loading.png);"></div>
+<script async="async" src="http://sqwidget.net/sqwidget.js"></script>
+
+
+
+
+
+
+<div data-sqwidget=template:mishorts.js data-mishorts=user:256 style="padding:0; margin:0; border:none;"></div>
+<script async=async src=http://sqwidget.net/sqwidget.js></script>
