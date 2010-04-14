@@ -10,9 +10,11 @@ Sqwidget provides useful things like:
 * widget configuration using html data- attributes
 * simple widget templates
 
-Sqwidget works with other extensions to add:
+Sqwidget can work with other extensions to add:
 * CSS cleanslate and important rule management
 * lightbox display
 * iframes
 
+h2. Status
 
+Sqwidget is under pretty rapid development at the moment, as a series of function from other widget are integrated back into the core and things are moved around.  Expect changes.
