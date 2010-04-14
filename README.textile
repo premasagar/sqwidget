@@ -1,1 +1,18 @@
- 
+h1. Sqwidget
+
+h2. What is it?
+
+*Sqwidget is a jQuery-based widget toolkit* for rapid development of multi-platform widgets.   The aim of sqwidget is to make it easy to make complex multi-platform widgets with most of the difficult work removed to allow getting on with widget making itself.
+
+Sqwidget provides useful things like:
+* automated jQuery loading plus management of required versions
+* support for multiple widgets per page
+* widget configuration using html data- attributes
+* simple widget templates
+
+Sqwidget works with other extensions to add:
+* CSS cleanslate and important rule management
+* lightbox display
+* iframes
+
+
