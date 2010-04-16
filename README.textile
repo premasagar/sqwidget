@@ -31,6 +31,11 @@ h2. Features & Vision
 * Widget instance configuration via HTML5 'data-' attributes in the embed code in the host document
 
 
+h2. Status of the project
+
+Sqwidget is under rapid development at the moment. An initial release is anticipated around Summer 2010. However, some of the plugins listed below are ready for production. Further documentation, examples and tutorials are on their way.
+
+
 h2. Plugins and complementary projects
 
 h3. AppleOfMyIframe
@@ -46,9 +51,9 @@ h3. CleanSlate
 
 "http://github.com/premasagar/cleanslate":http://github.com/premasagar/cleanslate
 
-CleanSlate sandboxes a widget from CSS in the host page, via the use of a reset stylesheet comprised solely of !important rules. This resets all CSS properties, for all HTML elements, back to sensible defaults.
+CleanSlate sandboxes a widget from CSS in the host page, via the use of a reset stylesheet comprised solely of @!important@ rules. This resets all CSS properties, for all HTML elements, back to sensible defaults.
 
-*Status*: Almost complete (requires small tweaks for IE6 and IE7).
+*Status*: Almost complete (requires small tweaks for IE6 and IE7). Modified from the @!important@-based stylesheet used in the "BBC World Service widget":http://dharmafly.com/bbc-world-service-widget.
 
 
 h3. Important
@@ -78,8 +83,3 @@ h3. Sqwidget Builder
 A Ruby on Rails tool for merging and minifying all the HTML, CSS, JavaScript and images used in developing a widget, to produce a single, compressed HTML file. This reduces the number of HTTP requests required to render a widget (potentially to just one request), and reduces the bandwidth transmitted over the wire to the bare minimum.
 
 *Status*: Incomplete. Under active development.
-
-
-h2. Status of the project
-
-Sqwidget is under rapid development at the moment. An initial release is anticipated around Summer 2010. However, some of the plugins listed above are ready for production. Further documentation, examples and tutorials are on their way.
