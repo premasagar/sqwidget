@@ -1,0 +1,15 @@
+// based on seedjs: http://seedjs.org/documentation/#defining_your_packagejson
+{
+  "name": "mywidget",
+  "version": "0.1.0",
+  "title": "My widget does stuff",
+  "desc": "Lorem ipsum",
+  "url": "http://example.com/widget", // get the widget, via your taskbar
+
+  "dependencies": {
+    "nitelite": "1.3.0",
+    "appleofmyiframe": "0.3.3",
+    "fusejs": "1.2.0",
+    "cleanslate": "6.1.8"
+  }
+}
