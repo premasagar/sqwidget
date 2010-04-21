@@ -1,0 +1,7 @@
+h1. Development Samples
+
+This folder has development sample widgets that are being used for sqwidget development.  So, don't expect them to work all of the time.
+
+For now, try loading widget.html in a browser and see what you get.  It renders four sample widget that are being used for template and script development.
+
+
