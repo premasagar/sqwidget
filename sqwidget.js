@@ -1,6 +1,6 @@
 'use strict';
 
-/*!
+/*!!
 * Sqwidget
 *   github.com/premasagar/sqwidget
 *
@@ -24,7 +24,6 @@
         
 */
 
-
 /**
 * GLOBALS VARS
 **/
@@ -38,130 +37,174 @@ var Sqwidget;
 /**
 * SQWIDGET CORE
 **/
-(function(){
-	var
-		$,
-		window = this,
-		document = window.document,
-		_ = window.sqwidgetDebug ? (window._ ? window._ : (window.console && window.console.firebug ? window.console.debug : function(){})) : function(){};
-	
-		// SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
-		// TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
-		Sqwidget = {
-			settings: { // TODO: Some props (e.g. 'lightbox') would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
-				jQuery: {
-					minVersion: '1.4', // minimum version of jQuery to allow, if already in DOM
-					src: 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js',
-					//src: 'jquery.js',
-					// Set noConflict properties to true to avoid global '$' and/or 'jQuery' variables in the global namespace. If '$' is false, then 'jQuery' is assumed to be false.
-					noConflict: {
-						$: false,
-						jQuery: false
-					}
-				}
-			},
-			
-			thisDomScript: function(){
-			    var scripts = document.getElementsByTagName("script");
+(function () {
+
+    // set up debug
+    if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1){
+        this.sqwidgetDebug = true;
+    }
+
+// **
+// NATIVE JAVASCRIPT DEPENDENCIES
+
+
+/*!
+* Ready
+*   github.com/premasagar/mishmash/tree/master/ready/
+*
+*//*
+    onDocumentReady abstraction, adapted from jQuery 1.4 by James Padolsey <james.padolsey.com>
+
+    license
+        opensource.org/licenses/mit-license.php
+        
+    v0.1
+
+*/
+
+var ready = (function(){
+    var
+        window = this,
+        doc = window.document,
+        docEl = doc.documentElement,
+        addEventListener = doc.addEventListener,
+        attachEvent = doc.attachEvent,
+        readyFns = [],
+        ready,
+        bound,
+        dcl = 'DOMContentLoaded',
+        orsc = 'onreadystatechange',
+        atTopLevel;
+    
+    function fireReady() {
+        
+        if (ready) { return; }
+        ready = true;
+        
+        for (var i = 0, l = readyFns.length; i < l; i++) {
+            readyFns[i]();
+        }
+        
+    }
+    
+    function scrollCheck() {
+        
+        if (ready) { return; }
+        
+        try {
+            // http://javascript.nwbox.com/IEContentLoaded/
+            docEl.doScroll("left");
+        } catch(e) {
+            setTimeout(scrollCheck, 1);
+            return;
+        }
+        
+        // DOM ready
+        fireReady();
+        
+    }
+    
+    function DOMContentLoaded() {
+        
+        if ( addEventListener ) {
+            doc.removeEventListener(dcl, DOMContentLoaded, false);
+            fireReady();
+        } else {
+            if ( attachEvent && doc.readyState === 'complete' ) {
+                doc.detachEvent(orsc, DOMContentLoaded);
+                fireReady();
+            }
+        }
+        
+    }
+        
+    function onReady(fn) {
+        
+        readyFns.push(fn);
+        
+        if ( ready ) { return fn(); }
+        if ( bound ) { return; }
+        
+        bound = true;
+        
+        if ( addEventListener ) {
+            doc.addEventListener(dcl, DOMContentLoaded, false);
+            window.addEventListener('load', fireReady, false); // fallback to window.onload
+        } else {
+            if ( attachEvent ) {
+                
+                // IE Event model
+                
+                doc.attachEvent(orsc, DOMContentLoaded);
+                window.attachEvent('onload', fireReady); // fallback to window.onload
+                
+                try {
+                    atTopLevel = !window.frameElement;
+                } catch(e) {}
+                
+                if ( docEl.doScroll && atTopLevel ) {
+                    scrollCheck();
+                }
+                
+            }
+        }
+        
+    }
+    
+    return onReady;
+    
+}());   
+
+// **
+
+
+
+    var
+        $,
+        window = this,
+        document = window.document,
+        _ = window.sqwidgetDebug ? (window._ ? window._ : (window.console && window.console.firebug ? window.console.debug : function(){})) : function(){};
+        
+        _('started console logging in sqwidget');
+        // SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
+        // TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
+        this.Sqwidget = Sqwidget = {
+            version: '0.2bbc', //TODO require version management here?
+            settings: { // TODO: Some props (e.g. 'lightbox') would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
+                jQuery: {
+                    minVersion: '1.4', // minimum version of jQuery to allow, if already in DOM
+                    src: 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
+                    //src: 'jquery.js',
+                    // Set noConflict properties to true to avoid global '$' and/or 'jQuery' variables in the global namespace. If '$' is false, then 'jQuery' is assumed to be false.
+                    noConflict: {
+                        $: false,
+                        jQuery: false
+                    }
+                }
+            },
+            /** Sqwidget's own dependencies */
+            dependencies: {},
+            
+            /** Sqwidget widget templates (classes) keyed by widget name */
+            widgetTemplates: {},
+            
+            
+            thisDomScript: function(){
+                var scripts = document.getElementsByTagName("script");
                 return scripts[scripts.length - 1];
             },
-			
-			ready: (function(){
-				
-				// onDocumentReady abstraction
-				// adapted from jQuery 1.4
-				
-				var doc = document,
-					docEl = doc.documentElement,
-					addEventListener = doc.addEventListener,
-					attachEvent = doc.attachEvent,
-					readyFns = [],
-					ready,
-					bound,
-					dcl = 'DOMContentLoaded',
-					orsc = 'onreadystatechange',
-					atTopLevel;
-					
-				function onReady(fn) {
-					
-					readyFns.push(fn);
-					
-					if ( ready ) { return fn(); }
-					if ( bound ) { return; }
-					
-					bound = true;
-					
-					if ( addEventListener ) {
-						doc.addEventListener(dcl, DOMContentLoaded, false);
-						window.addEventListener('load', fireReady, false); // fallback to window.onload
-					} else {
-						if ( attachEvent ) {
-							
-							// IE Event model
-							
-							doc.attachEvent(orsc, DOMContentLoaded);
-							window.attachEvent('onload', fireReady); // fallback to window.onload
-							
-							try {
-								atTopLevel = !window.frameElement;
-							} catch(e) {}
-							
-							if ( docEl.doScroll && atTopLevel ) {
-								scrollCheck();
-							}
-							
-						}
-					}
-					
-				}
-				
-				function scrollCheck() {
-					
-					if (ready) { return; }
-					
-					try {
-						// http://javascript.nwbox.com/IEContentLoaded/
-						docEl.doScroll("left");
-					} catch(e) {
-						setTimeout(scrollCheck, 1);
-						return;
-					}
-					
-					// DOM ready
-					fireReady();
-					
-				}
-				
-				function fireReady() {
-					
-					if (ready) { return; }
-					ready = true;
-					
-					for (var i = 0, l = readyFns.length; i < l; i++) {
-						readyFns[i]();
-					}
-					
-				}
-				
-				function DOMContentLoaded() {
-					
-					if ( addEventListener ) {
-						doc.removeEventListener(dcl, DOMContentLoaded, false);
-						fireReady();
-					} else {
-						if ( attachEvent && doc.readyState === 'complete' ) {
-							doc.detachEvent(orsc, DOMContentLoaded);
-							fireReady();
-						}
-					}
-					
-				}
-				
-				return onReady;
-				
-			})(),
-			
-			getScripts: function(srcs, callback, inOrder) {
+     
+            /**
+             * Load array of scripts into script elements.  
+             *
+             * Note, there is only one callback function here, called after each is loaded
+             *
+             * @param {Array} srcs array of source files to load
+             * @param {Function} callback 
+             * @param {Boolean} inOrder - if true, load scripts in given order
+             */
+     
+            getScripts: function(srcs, callback, inOrder) {
 				
 				var length = srcs.length,
 					loaded = 0;
@@ -173,7 +216,8 @@ var Sqwidget;
 						if (length === 1) {
 							callback();
 						} else {
-							Sqwidget.getScripts(srcs, callback);
+						    // preserve inOrder when recursing
+							Sqwidget.getScripts(srcs, callback, true);
 						}
 					});
 				} else {
@@ -189,153 +233,311 @@ var Sqwidget;
 				}
 				
 			},
-	 
 			
-			// Load a script into a <script> element
-			// TODO: Look in DOM for script element with that src already, and don't load it again if found (allows multiple Sqwidget scripts not to keep loading jQuery, etc)
-			// TODO: allow various options: 1) multiple src args, where load order is not important; 2) [arrays of urls] where load order is to be maintained; 3) {url: src, callback: fn} objects to allow specific callbacks for particular scripts; 4) {lookForScriptSrcInDOM:false} options object; 5) callback function when all scripts loaded
-			getScript: function(src, callback){
-				
-				var head = document.getElementsByTagName('head')[0],
-					script = document.createElement('script'),
-					loaded;
-				
-				callback = callback || function(){};
-				script.src = src;
-				
-				script.onload = script.onreadystatechange = function(){
-					var state = this.readyState;
-					if (!loaded && (!state || state === 'complete' || state === 'loaded')){
-						_('script loaded: ' + src);
-						loaded = true;
-						callback();
-						
-						// Handle memory leak in IE
-						script.onload = script.onreadystatechange = null;
-						head.removeChild(script); // Worth removing script element once loaded?
-					}
-				};
-				
-				head.appendChild(script);
-			},
-			
-			// Compare a version string with another, e.g. '1.2.6' with '1.3.2'
-			// Returns -1 (a>b), 0 (a==b) or 1 (b>a)
-			compareVersion: function(a, b){
-				// Remove trailing zeros ( 1.4.0.0 )
-				a = a.replace(/(\.0+)+$/, '');
-				b = b.replace(/(\.0+)+$/, '');
-				return a === b ? 0 : a < b ? 1 : -1;
-			},
-			
-			// Test if a version string is at least as high as the minimum version required
-			// Returns boolean true or false
-			hasMinVersion: function(testVersion, minVersion){
-				return this.compareVersion(minVersion, testVersion) >= 0;
-			},
-			
-			/* jQuery: function(callback){
-				// return jQuery or false; allow callback function; allow settings as props
-				// re-name to $ ?
-			}, */
-			
-			// Returns jQuery object or false
-			jQueryIsLoaded: function(minVersion){
-				if (!$){
-					var jQuery = window.jQuery;
-					if (jQuery && jQuery.fn && jQuery.fn.jquery &&
-						this.hasMinVersion(jQuery.fn.jquery, minVersion || this.settings.jQuery.minVersion)){
-						$ = jQuery;
-					}
-				}
-				return $;
-			},
-			
-			
-			// TODO: allow optional priority of execution, as with WordPress filters
-			onjQueryReady: function(callback){
-				_('Sqwidget.onjQueryReady');
-				var jQuery, jQuerySettings, callbacks;      
-				
-				if (!$){
-					jQuery = this.jQueryIsLoaded();
-					if (jQuery){
-						_('jQuery found');
-						$ = jQuery;
-					}
-					else {
-						_('jQuery not found');
-						jQuerySettings = this.settings.jQuery;
-						
-						// If this called for the first time, create array to store callbacks
-						callbacks = this.onjQueryReady.callbacks;
-						if (!callbacks){
-							callbacks = this.onjQueryReady.callbacks = [];
-							// load jQuery
-							this.getScript(jQuerySettings.src, function(){
+            /**
+             * Load a script into a <script> element
+             * @param {String} src The source url for the script to load
+             * @param {Function} callback Called when the script has loaded
+             * TODO: 
+             * 1) Look in DOM for script element with that src already, and don't load it 
+             *    again if found (allows multiple Sqwidget scripts not to keep loading jQuery, etc)
+             * 2) {url: src, callback: fn} objects to allow specific callbacks for particular scripts; 
+             * 3) {lookForScriptSrcInDOM:false} options object; 
+             * 4) callback function when all scripts loaded
+             */
+            getScript: function(src, callback){
+                var head, script, loaded;
+                head = document.getElementsByTagName('head')[0];
+                callback = callback || function(){};
+                script = document.createElement('script');
+                script.src = src;
+                script.onload = script.onreadystatechange = function(){
+                    var state = this.readyState;
+                    if (!loaded && (!state || state === 'complete' || state === 'loaded')){
+                        _('script loaded: ' + src);
+                        loaded = true;
+                        callback();
+                        
+                        // Handle memory leak in IE
+                        script.onload = script.onreadystatechange = null;
+                        head.removeChild(script); // Worth removing script element once loaded?
+                    }
+                };
+                head.appendChild(script);
+            },
+            
+            /**
+             * Compare a version string with another, e.g. '1.2.6' with '1.3.2'
+             * @returns -1 (a<b), 0 (a==b) or 1 (b>a)
+             * TODO: Treat '1.4.0' the same as '1.4'
+             */
+            compareVersion: function(a, b){
+                var i, n = Number;
+                    a = a.split('.');
+                    b = b.split('.');
+     
+                    for (i=0; i<a.length; i++){
+                            if (typeof b[i] === 'undefined'){
+                                    return -1;
+                            }
+                            else if (n(a[i]) === n(b[i])){
+                                    continue;
+                            }
+                            return (n(a[i]) > n(b[i])) ? -1 : 1;
+                    }
+                    return (b.length > a.length) ? 1 : 0;
+            },
+            
+            /**
+             * Test if a version string is at least as high as the minimum version required
+             * @returns boolean true or false
+             */
+            hasMinVersion: function(testVersion, minVersion){
+                return this.compareVersion(minVersion, testVersion) >= 0;
+            },
+            
+            
+            /**
+              * Return jQuery object or false if minimum version can't be satisfied
+              * @param {String} minVersion
+              * @returns jQuery object or false
+              */
+            jQueryIsLoaded: function(minVersion){
+                if (!$){
+                    var jQuery = window.jQuery;
+                    if (jQuery && jQuery.fn && jQuery.fn.jquery &&
+                        this.hasMinVersion(jQuery.fn.jquery, minVersion || this.settings.jQuery.minVersion)){
+                        $ = jQuery;
+                    }
+                }
+                return $;
+            },
+            
+            
+            /**
+             * Call callback when jQuery is ready
+             * @param {function} callback callback function to call when jquery ready
+             *
+             * TODO: allow optional priority of execution, as with WordPress filters
+             */
+            onjQueryReady: function(callback){
+                _('Sqwidget.onjQueryReady');
+                var jQuery, jQuerySettings, callbacks;      
+                
+                if (!$){
+                    jQuery = this.jQueryIsLoaded();
+                    if (jQuery){
+                        _('jQuery found');
+                        $ = jQuery;
+                    }
+                    else {
+                        _('jQuery not found');
+                        jQuerySettings = this.settings.jQuery;
+                        
+                        // If this called for the first time, create array to store callbacks
+                        callbacks = this.onjQueryReady.callbacks;
+                        if (!callbacks){
+                            callbacks = this.onjQueryReady.callbacks = [];
+                            // load jQuery
+                            this.getScript(jQuerySettings.src, function(){
                                 var
                                     jQuery = window.jQuery,
                                     $ = jQuery;
-								
-								// Hide or expose global '$' and 'jQuery' vars, depending on settings
-								if (jQuerySettings.noConflict.$){
-									jQuery.noConflict(jQuerySettings.noConflict.jQuery);
-								}
-								
-								// once loaded, pass jQuery to each stored callback
-								$.each(callbacks, function(){
-									callbacks.shift()($);
-								});
-							});
-						}
-						// Add callback to stack
-						callbacks.push(callback);
-						return;
-					}
-				}
-				callback($);
-			}
-		};
+                                
+                                // Hide or expose global '$' and 'jQuery' vars, depending on settings
+                                if (jQuerySettings.noConflict.$){
+                                    jQuery.noConflict(jQuerySettings.noConflict.jQuery);
+                                }
+                                
+                                // once loaded, pass jQuery to each stored callback
+                                $.each(callbacks, function(){
+                                    callbacks.shift()($);
+                                });
+                            });
+                        }
+                        // Add callback to stack
+                        callbacks.push(callback);
+                        return;
+                    }
+                }
+                callback($);
+            },
+            
+            // Sqwidget ready
+            // TODO this requires DOM ready and jqyery and dependencies ready
+            ready: function(callback){
+                _('Sqwidget.ready');
+                return this.onjQueryReady(callback);
+            },
+            
+            // Document DOM ready
+            domReady: ready,
+            /**
+             * @returns {Array} of the full set of widgets in the DOM, returning them as 
+             * as an array of SqwidgetWidget objects:
+             *
+             */
+            widgetsInDom: function(){
+                function trim(str){
+                    return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, '');
+                }
+                
+                function type(templateUrl){
+                    return templateUrl.replace(/^.*\/([\w]+)(?:\.[^\/]+)?$|^([\w]+)(?:\..*)?$/, '$1$2');
+                }
 
-		/////
+                function settings(str){
+                    if (!str){
+                        return {};
+                    }
+                
+                    var
+                        keyvalPairs = str.split(','),
+                        len = keyvalPairs.length,
+                        widgetSettings = {},
+                        keyval, i, pos;
+
+                    for (i = len; i; i--){
+                        keyval = keyvalPairs[i-1];
+                        pos = keyval.indexOf(':');
+                        if (pos !== -1){
+                             widgetSettings[trim(keyval.slice(0,pos))] = trim(keyval.slice(pos+1));
+                        }
+                    }
+                    return widgetSettings;
+                }
+            
+                // Find 'div[data-sqwidget]'                    
+                var
+                    divs = document.getElementsByTagName('div'),
+                    len = divs.length,
+                    widgets = [],
+                    div, dataSqwidgetSettings, dataSqwidget, widgetType, i;
+                
+                for (i = 0; i<divs.length; i++){
+                    div = divs[i];
+                    dataSqwidget = div.getAttribute('data-sqwidget');
+                    dataSqwidgetSettings = div.getAttribute('data-sqwidget-settings');
+                    
+                    if (dataSqwidget){
+                        dataSqwidget = settings(dataSqwidget);
+                        dataSqwidgetSettings = settings(dataSqwidgetSettings);
+                        widgetType = type(dataSqwidget.template || 'generic');
+                        
+                        widgets.push(
+                            new SqwidgetWidget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
+                    }
+                }
+                return widgets;
+            },
+            
+            /**
+             * Return SqwidgetTemplate for the given template name, creating it if not available
+             * @param templateName - The template filename (including extension), like templatename.html or 
+             * similar.
+             * @return {SqwidgetTemplate} the template
+             */
+            getTemplate: function(templateName) {
+                // check to see if already loaded, if so, return instance.
+                var t = this.widgetTemplates[templateName];
+                if (!t) {
+                    t = new SqwidgetTemplate(this, templateName);
+                    this.widgetTemplates[templateName] = t;
+                }
+                return t;
+            },
+            
+            
+            
+            
+            /**
+             * Register a widget
+             * This called from the head of an associated widget document.  
+             * This is where register a widget's properties and dependencies.
+             * Sqwidget grabs
+             * and keeps a copy of these, and then leads on to load dependencies.  So, this is called
+             * either as a part of parsing the widget html or json and evaling the head script element where
+             * it is defined.  Or it may be invoked if standalone-sqwidget.js (or however named) is provided
+             *
+             * @param properties Object containing properties defining this widget instance.
+             */
+            register: function(properties) {
+                _('Sqwidget,register() with props');
+                // parse and store properties
+                
+                
+                
+                // invoke dependencies and load anything that is needed
+                loadDependencies()
+                 
+            },
+            
+            /**
+             * Load dependencies (check that versions are satisfied, and issue script loading instructions
+             * as needed)
+             *
+             */
+            
+            loadDependencies: function(dependencies_block) {
+                
+        
+            },
+            
+            /**
+             * Load and parse widget template
+             * @param url The url to load the template from.  This is typically given in a 
+             * data-sqwidget block in the div where a widget is to be inserted.
+             * TODO is this the correct structure for doing this?
+             * TODO where do errors get reported?  options for this?
+             */
+            loadWidgetTemplate: function(url) {
+                
+                
+            },
+            
+            
+        };
+        
+
+        /////
 
 
 // Sqwidget - extend Sqwidget once jQuery is loaded, and assign to Sqwidget
 // *********
-	Sqwidget.onjQueryReady(function(jQuery){
-		var $ = jQuery, namespace, cloneFn, cachedFuncs;
-		
-		namespace = 'sqwidget';
-		function ns(props, delimiter){
-			delimiter = delimiter || '-';
-			if (!props){
-				return namespace;
-			}
-			else if (typeof props === 'string'){
-					return namespace + delimiter + props;
-			}
-			else {
-				return [namespace].concat(props).join(delimiter);
-			}
-		}
-		
-		// TEMP
-		//window.jQuery = $;
-		
-		// Store original jQuery functions so that when we extend them for Sqwidget, we can restore them for non-Sqwidget uses
-		cloneFn = $.extend({}).fn;
-		cachedFuncs = {
-			css: cloneFn.css,
-			show: cloneFn.show,
-			hide: cloneFn.hide
-		};
-		
-			
-		// EXTEND JQUERY
-		// =============
+    Sqwidget.onjQueryReady(function(jQuery){
+        var $ = jQuery, namespace, cloneFn, cachedFuncs;
+        
+        namespace = 'sqwidget';
+        function ns(props, delimiter){
+            delimiter = delimiter || '-';
+            if (!props){
+                return namespace;
+            }
+            else if (typeof props === 'string'){
+                    return namespace + delimiter + props;
+            }
+            else {
+                return [namespace].concat(props).join(delimiter);
+            }
+        }
+        
+        // TEMP
+        //window.jQuery = $;
+        
+        // Store original jQuery functions so that when we extend them for Sqwidget, we can restore them for non-Sqwidget uses
+        cloneFn = $.extend({}).fn;
+        cachedFuncs = {
+            css: cloneFn.css,
+            show: cloneFn.show,
+            hide: cloneFn.hide
+        };
+        
+            
+        // EXTEND JQUERY
+        // =============
 
 // **
-// PLUGIN DEPENDENCIES
+// JQUERY-DEPENDENT PLUGIN DEPENDENCIES
 
 /*!
 * AppleOfMyIframe
@@ -503,6 +705,8 @@ var Sqwidget;
                     
                     // If a url supplied, add it as the iframe src, to load the page
                     // NOTE: iframes intented to display external documents must have the src passed as the bodyContents arg, rather than setting the src later - or expect weirdness
+                    
+                    // TODO: Possible change: don't accept url as bodyContents arg. Instead include src in options attribute. bodyContents and headContents are still optional in such a case - when those args are present, and the src attribute is html from a trusted domain, then the args will be used to append to the iframe document on load.
                     if (isUrl(args.bodyContents)){
                         options.src = args.bodyContents;
                         
@@ -559,7 +763,9 @@ var Sqwidget;
                             
                                 .one('ready', function(){
                                     // Throttle the interval between iframe resize actions, and that between responses to the global window's 'resize' event
-                                    var resize = $.throttle(function(){
+                                    var resize, pollForVisibility;
+                                    
+                                    resize = $.throttle(function(){
                                         aomi.resize(autowidth, autoheight);
                                         
                                         if (firstResize){
@@ -568,6 +774,16 @@ var Sqwidget;
                                         }
                                     }, options.resizeThrottle, true);
                                     
+                                    // iframe container is not yet displayed. If the container has display:none (e.g. it's in a non-selected tab), then resize() can't determine the height of the body contents, and the iframe will have a height set to zero. So, we poll for the iframe container to be displayed. Hack!
+                                    // TODO: Does it matter that we stop polling once we're visible the first time? Are there practical situations where the body contents will be manipulated while the container is not displayed? Is that really our problem?
+                                    if (!this.is(':visible')){
+                                        pollForVisibility = win.setInterval(function(){
+                                            if (aomi.parent().is(':visible')){ // re-check parent in case iframe is moved in DOM?
+                                                resize();
+                                                win.clearInterval(pollForVisibility);
+                                            }
+                                        }, 1000);
+                                    }
                                     
                                     // Bind for later
                                     this
@@ -604,7 +820,7 @@ var Sqwidget;
                                         fromReload = false;
                                     }
                                     // Restore from cached nodes. Not restored if the body already has contents.
-                                    // TODO: Could it be problematic to not restore when there is already body contents? Should we check for head contents too?
+                                    // TODO: Could it be problematic to not restore when there is already body contents? Should we check if there's head contents too?
                                     else if (!this.body().children().length){
                                         this.restore();
                                     }
@@ -684,12 +900,18 @@ var Sqwidget;
                 },
                 
                 
+                // Avoid jQuery 1.4.2 bug, where it assumes that events are always bound to DOM nodes
+                addEventListener: function(){},
+                removeEventListener:function(){},
+                
+                
                 /*
-                Examples:
+                Ideas / Examples:
                 aomi.history(-1);
                 
-                aomi.load(0); // index in history
-                aomi.load(fn); // init? or bind callback for future 'load' events?
+                aomi.init(fn); // a function to do everything needed to initialise the widget; should be able to be re-run again at any time, to re-initialise the widget
+                aomi.load(0); // index number for screen history - e.g. url # fragments
+                aomi.load(fn); // bind callback for future 'load' events
                 => aomi.document(head, body); // etc
                 
                 $.iframe.doctypes = {
@@ -823,10 +1045,12 @@ var Sqwidget;
                                     .title(true)
                                     
                                     // Let anchor links open pages in the default target
-                                    .$('a').live('click', function(){
-                                        if (!$(this).attr('target') && $(this).attr('href')){
-                                            $(this).attr('target', options.target);
-                                        }
+                                    .ready(function(){
+                                        this.$('a').live('click', function(){
+                                            if (!$(this).attr('target') && $(this).attr('href')){
+                                                $(this).attr('target', options.target);
+                                            }
+                                        });
                                     });
                             }
                             return this;
@@ -1046,32 +1270,33 @@ var Sqwidget;
                     return !src || src === 'about:blank';
                 },
                 
-                cache: function(){	            
-	                // iframe is not in the DOM
-	                if (!this.$()[0]){
-	                    return this;
-	                }
-	                
-	                // Update the cached nodes
-	                this._cachedNodes = this.head().add(this.body());
-	                this.trigger('cache');
-	                return this;
+                cache: function(){                
+                    // iframe is not in the DOM
+                    if (!this.$()[0]){
+                        return this;
+                    }
+                    
+                    // Update the cached nodes
+                    this._cachedNodes = this.head().add(this.body());
+                    this.trigger('cache');
+                    return this;
                 },
                 
                 // TODO: It may be necessary to restore any possible cached events on the document and htmlElement, e.g. via .data('events') property
+                // TODO: This needs to restore the originally set doctype. Currently, it won't do so, except when the append methods fail, and the reload() method is called (e.g. Opera 10.10). The function needs to re-write the document from scratch, but without disturbing any load() callbacks. Perhaps we need a stealth load - temporary turning off and turning on of the load event listener. It's fortunate that IE does not generally need to be restored when the iframe is moved in the DOM, because the loss of the doctype would be most obvious there, due to the Quirks mode box model.
                 restore: function(){
                     // Methods to try, in order. If all fail, then the iframe will re-initialize.
                     var
                         methodsToTry = ['adoptNode', 'appendChild', 'importNode', 'cloneNode'],
                         appendMethod = $.iframe.appendMethod,
-	                    htmlElement = this.$('html').empty(),
+                        htmlElement = this.$('html').empty(),
                         doc = this.$()[0],
-	                    cachedNodes = this._cachedNodes;
-	                    
-	                if (!doc || !cachedNodes){
-	                    return this;
-	                }
-	                
+                        cachedNodes = this._cachedNodes;
+                        
+                    if (!doc || !cachedNodes){
+                        return this;
+                    }
+                    
                     // If we don't yet know the append method to use, then cycle through the different options. This only needs to be determined the first time an iframe is moved in the DOM, and only once per page view.
                     if (!appendMethod){
                         appendMethod = this._findAppendMethod(doc, methodsToTry, htmlElement, cachedNodes) || 'reload';
@@ -1295,6 +1520,9 @@ var Sqwidget;
         }
     );
     
+    // Expose AOMI prototype to $.iframe.fn
+    $.iframe.fn = AppleOfMyIframe.prototype;
+    
 }(jQuery));
 
 // **
@@ -1304,7 +1532,7 @@ var Sqwidget;
 *   github.com/premasagar/nitelite
 *
 *//*
-    Stipped-down lightbox plugin for jQuery
+    A stipped-down lightbox plugin for jQuery
 
     by Premasagar Rose
         dharmafly.com
@@ -1315,7 +1543,7 @@ var Sqwidget;
     **
 
     creates method
-        jQuery.lightbox()
+        jQuery.nitelite()
         
     **
     
@@ -1325,307 +1553,343 @@ var Sqwidget;
 */
 
 
-    /*
-    * Throttle
-    *   github.com/premasagar/mishmash/tree/master/throttle/
-    *
-    */ // removed from sqwidget.js, as already created by AppleOfMyIframe
-
-
-// **
-
-
 (function($){
     var
         namespace = 'nitelite',
-        version = '0.1',
+        version = '0.1.1',
        
         win = window,
         document = win.document,
         
         settings = {
             overlay: {
-				opacity: 0.7,
-				bgColor: '#000'
-			}
+                opacity: 0.7,
+                bgColor: '#000'
+            }
         },
         
         ns = function ns(props, delimiter){
-			delimiter = delimiter || '-';
-			if (!props){
-				return namespace;
-			}
-			else if (typeof props === 'string'){
-				return namespace + delimiter + props;
-			}
-			else {
-				return [namespace].concat(props).join(delimiter);
-			}
+            delimiter = delimiter || '-';
+            if (!props){
+                return namespace;
+            }
+            else if (typeof props === 'string'){
+                return namespace + delimiter + props;
+            }
+            else {
+                return [namespace].concat(props).join(delimiter);
+            }
         },
     
         notifyGlobalWindow = function(origin, eventTypes, namespace){ // origin is originating object (e.g. Overlay instance), eventTypes is array (e.g. ['add', 'remove']), namespace is optional - if not provided, the origin must have a 'type' property (e.g. 'overlay')
-			$.each(eventTypes, function(i, type){
-				try {
-				    $(origin)
-					    .bind(type, function(){
-						    $(win).trigger(ns(), {type: (namespace || origin.type) + '.' + type, origin:this});
-					    });
-			    }
-			    catch(e){}
-			});
-			return origin;
-		},
+            $.each(eventTypes, function(i, type){
+                try {
+                    $(origin)
+                        .bind(type, function(){
+                            $(win).trigger(ns(), {type: (namespace || origin.type) + '.' + type, origin:this});
+                        });
+                }
+                catch(e){}
+            });
+            return origin;
+        },
+        
+        // Find all visible object and embed elements that are not children of other visible object or embed elements
+        hideFlash = function(){
+            if (!hideFlash.hidden){
+                hideFlash.hidden = [];
+            }
+            $('object:visible, embed:visible')
+                .filter(function(){
+                    return !$(this).parents('embed:visible, object:visible').length;
+                })
+                .each(function(){
+                    var o = $(this);
+                    hideFlash.hidden.push([
+                        o, o.css('visibility')
+                    ]);
+                    o.css('visibility', 'hidden');
+                });
+        },
+        
+        // Return objects and embeds to original visibility value
+        showFlash = function(){
+            $.each(hideFlash.hidden, function(i, o){
+                o[0].css('visibility', o[1]);
+            });
+            hideFlash.hidden = [];
+        },
         
         Nitelite = {
             // TODO: Could use an iframe for overlay, to prevent small chance of CSS bleed
             Overlay: $.extend(
-	            function(opacity, bgColor){								
-		            if (opacity){ // TODO: This doesn't allow opacity=0. Perhaps we should check typeof==='number'||typeof==='string'
-			            this.opacity = opacity;
-		            }
-		            if (bgColor){
-			            this.bgColor = bgColor;
-		            }
-	            },
-	            {
-		            prototype: {
-			            type: 'overlay',
-			            opacity: settings.overlay.opacity, // TODO: This should use *instance* settings, not global settings
-			            bgColor: settings.overlay.bgColor, // TODO: as above
-			
-			            fillScreen: function(){
-			                this.node
-			                    // match document dimensions
-			                    .width($(document).width() + 'px')
-			                    .height($(document).height() + 'px');
-			                return this;
-			            },
-			            
-			            create: function(){
-				            var overlay = this;
-				            this.node = $('<div></div>')
-					            .addClass(ns() + ' ' + ns('overlay'))
-					            .css({ // TODO: Should this be moved to a <style> element in the <head>, along with other CSS? (except opacity and bgColor, if different from default)
-						            opacity:this.opacity,
-						            position:'absolute',
-						            top:0,
-						            left:0,
-						            margin:0,
-						            padding:0,
-						            'background-color':this.bgColor, // TODO: this previously used the property backgroundColor, but this showed problems when shown on a page with the bbcwswidget - to be investigated
-						            border:'0 none ' + this.bgColor
-					            });
-			                this.fillScreen();
-			                
-				            $(win).unload(function(){
-					            overlay.unload();
-				            });
-				            $(this).triggerHandler('create');
-				            return this;
-			            },
-			            
-			            add: function(callback){
-				            var overlay = this;
-				            
-				            if (callback){
-				                $(overlay).one('add', callback);
-				                return this.add();
-				            }
-				            
-				            if (!this.node){
-				                this.create();
-				            }
-				            
-				            this.node
-					            .hide()
-					            .data(ns(), this) /* add the Overlay object as the value of the 'sqwidget' data property - NOTE: the data is attached to the add() method and added every time the overlay is inserted into the DOM, rather than being attached to the create() method, because jQuery automatically destroys data on removal from the DOM TODO: probably the actual Sqwidget instance object should go here */
-					            .appendTo('body')
-					            .fadeIn(function(){
-						            $(overlay).triggerHandler('add');
-					            });
-				            return this;
-			            },
-			            
-			            remove: function(){
-				            var
-				                overlay = this,
-				                node = this.node;
-				            
-				            if (node){
-				                node.fadeOut(function(){
-					                $(this).remove();
-					                $(overlay).triggerHandler('remove');
-				                });
-					        }
-				            return this;
-			            },
-			            
-			            unload: function(){
-				            this.remove();
-				            delete this.node;
-				            $(this).triggerHandler('unload');
-				            return this;
-			            }
-		            }
-	            }
+                function(opacity, bgColor){                                
+                    if (opacity){ // TODO: This doesn't allow opacity=0. Perhaps we should check typeof==='number'||typeof==='string'
+                        this.opacity = opacity;
+                    }
+                    if (bgColor){
+                        this.bgColor = bgColor;
+                    }
+                },
+                {
+                    prototype: {
+                        type: 'overlay',
+                        opacity: settings.overlay.opacity, // TODO: This should use *instance* settings, not global settings
+                        bgColor: settings.overlay.bgColor, // TODO: as above
+            
+                        fillScreen: function(){
+                            this.node
+                                // match document dimensions
+                                .width($(document).width() + 'px')
+                                .height($(document).height() + 'px');
+                            return this;
+                        },
+                        
+                        create: function(){
+                            var overlay = this;
+                            this.node = $('<div></div>')
+                                .addClass(ns() + ' ' + ns('overlay'))
+                                .css({ // TODO: Should this be moved to a <style> element in the <head>, along with other CSS? (except opacity and bgColor, if different from default)
+                                    opacity:this.opacity,
+                                    position:'absolute',
+                                    top:0,
+                                    left:0,
+                                    margin:0,
+                                    padding:0,
+                                    'background-color':this.bgColor, // TODO: this previously used the property backgroundColor, but this showed problems when shown on a page with the bbcwswidget - to be investigated
+                                    border:'0 none ' + this.bgColor,
+                                    'z-index':99999
+                                });
+                            this.fillScreen();
+                            
+                            $(win).unload(function(){
+                                overlay.unload();
+                            });
+                            $(this).triggerHandler('create');
+                            return this;
+                        },
+                        
+                        add: function(callback){
+                            var overlay = this;
+                            
+                            if (callback){
+                                $(overlay).one('add', callback);
+                                return this.add();
+                            }
+                            
+                            if (!this.node){
+                                this.create();
+                            }
+                            
+                            this.node
+                                .hide()
+                                .data(ns(), this) /* add the Overlay object as the value of the 'sqwidget' data property - NOTE: the data is attached to the add() method and added every time the overlay is inserted into the DOM, rather than being attached to the create() method, because jQuery automatically destroys data on removal from the DOM TODO: probably the actual Sqwidget instance object should go here */
+                                .appendTo('body')
+                                .fadeIn(function(){
+                                    $(overlay).triggerHandler('add');
+                                });
+                            return this;
+                        },
+                        
+                        remove: function(){
+                            var
+                                overlay = this,
+                                node = this.node;
+                            
+                            if (node){
+                                node.fadeOut(function(){
+                                    $(this).remove();
+                                    $(overlay).triggerHandler('remove');
+                                });
+                            }
+                            return this;
+                        },
+                        
+                        unload: function(){
+                            this.remove();
+                            delete this.node;
+                            // try/catch added due to bug in jQuery 1.4.2
+                            try {
+                                $(this).triggerHandler('unload');
+                            }
+                            catch(e){}
+                            return this;
+                        }
+                    }
+                }
             ),
 
             Lightbox: $.extend(
-	            function(){
-		            var
-		                lb = this,
-		                centerHandler = $.throttle(
-		                    function(){
-		                        lb.center();
-		                        lb.overlay.fillScreen();
-		                    }, 250, true
-		                ),
-		                // track click of 'Esc' key - TODO not functioning
-		                escKeyHandler = function(ev){
-	                        if (ev.which === 27){ // ESC key
+                function(){
+                    var
+                        lb = this,
+                        centerHandler = $.throttle(
+                            function(){
+                                lb.center();
+                                lb.overlay.fillScreen();
+                            }, 250, true
+                        ),
+                        // track click of 'Esc' key - TODO not functioning
+                        escKeyHandler = function(ev){
+                            if (ev.which === 27){ // ESC key
                                 lb.close();
                             }
-		                };
-		
-		            $.extend(
-			            this,
-			            {
-				            overlay: $.extend(
-					            new Nitelite.Overlay(), // or $.lightbox.overlay()
-					            {lightbox:this}
-				            )
-			            }
-		            );
-		
-		            // Add handler to close the lightbox when the overlay is clicked
-		            // We bind one('click') to every overlay.add(). We can't bind click() on overlay.create(), because jQuery automatically removes the click handler when the node is removed from the DOM and so, it wouldn't remain the next time the overlay is added back to the DOM
-		            $(this.overlay)
-		                .bind('add', function(){
-			                this.node
-				                .one('click', function(){
-					                lb.close();
-				                });
-		                });
-		                
-		            $(this)
-		                .bind('open', function(){
-		                    $(win).resize(centerHandler);
-		                    
-		                    // 'Esc' key trapping
-		                    $(document).keydown(escKeyHandler);
-		                    win.setTimeout(function(){
-		                        $('iframe').each(
-		                            function(){
-		                                try {
-		                                    $(this.contentWindow.document)
-		                                        .keydown(escKeyHandler);
-		                                }
-		                                catch(e){}
-		                            }
-		                        );
-		                    }, 260); // leave enough time for iframes in container to initialise
-		                })
-		                .bind('close', function(){
-		                    $(win).unbind('resize', centerHandler);
-		                    
-		                    // Unbind 'Esc' key trapping
-		                    $(document).unbind('keydown', escKeyHandler);
-		                    $('iframe').each(
-	                            function(){
-	                                try {
-	                                    $(this.contentWindow.document)
-	                                        .unbind('keydown', escKeyHandler);
-	                                }
-	                                catch(e){}
-	                            }
-	                        );
-		                });
-	            },
-	            {
-		            prototype: {
-			            type: 'lightbox',
-			            
-			            center: function(){
-			                var
-			                    container = this.container,
-			                    lbLeft, lbTop;
-			                    
-			                if (container){
-			                    lbLeft = Math.floor(($(win).width() - container.width()) / 2) + $(document).scrollLeft();
-			                        lbTop = Math.floor(($(win).height() - container.height()) / 2) + $(document).scrollTop();
-			                        if (lbLeft < 0){
-				                        lbLeft = 0;
-			                        }
-			                        if (lbTop < 0){
-				                        lbTop = 0;
-			                        }
-			                        container  
-			                            .css({
-			                                left: lbLeft + 'px',
-			                                top: lbTop + 'px'
-			                            });
-			                }
-			                return this;
-			            },
-			            
-			            open: function(contents){
-			                var lb = this;
-			                
-			                this.overlay.add();
-			                if (!lb.container){
-		                        lb.container = $('<div></div>')
-		                            .hide()
-				                    .addClass(ns() + ' ' + ns([lb.type, 'container']))
-				                    .css({ // TODO: Should this be moved to a <style> element in the <head>, along with other CSS?
-					                    position:'absolute',
-					                    margin:0,
-					                    padding:0
-					                    //,position:'fixed' // TODO: only do this if the contents fits within the window viewport, and what about scrolling the background contents? and IE6?
-				                    });
-				                $(win).unload(function(){
-				                    lb.unload();
-			                    });
-	                        }
-		                    lb.container
-	                            .append(contents)
-	                            .appendTo('body');
-		                    lb
-		                        .center() // TODO: Is this necessary?
-		                        .container.show();
-		                    lb.overlay.fillScreen();
-		                    
-			                $(lb).triggerHandler('open'); // TODO: The 'open' and 'close' events will fire before the overlay has finished fading in. Is that OK? Should triggerHandler() be called before overlay.add(); Is it better to have an 'openstart' and 'open' event, plus 'closestart' and 'close'?
-			                lb.center();
-			                return this;
-			            },
-			            
-			            close: function(handler, eventType){
-			                var lb = this;
-			                
-			                // Assign a handler element (some kind of jQuery collection) to trigger.close()
-			                if (typeof handler === 'object'){
-			                    handler.bind(eventType || 'click', function(){
-			                        lb.close();
-			                    });
-			                }
-			                else if (this.container) {
-				                this.overlay.remove();
-				                this.container
-				                    .empty()
-				                    .remove();
-				                $(this).triggerHandler('close');
-				            }
-				            return this;
-			            },
-			            
-			            unload: function(){
-				            this.close();
-				            delete this.container;
-				            $(this).triggerHandler('unload');
-				            return this;
-			            }
-		            }
-	            }
+                        };
+        
+                    $.extend(
+                        this,
+                        {
+                            overlay: $.extend(
+                                new Nitelite.Overlay(), // or $.nitelite.overlay()
+                                {lightbox:this}
+                            )
+                        }
+                    );
+        
+                    // Add handler to close the lightbox when the overlay is clicked
+                    // We bind one('click') to every overlay.add(). We can't bind click() on overlay.create(), because jQuery automatically removes the click handler when the node is removed from the DOM and so, it wouldn't remain the next time the overlay is added back to the DOM
+                    $(this.overlay)
+                        .bind('add', function(){
+                            this.node
+                                .one('click', function(){
+                                    lb.close();
+                                });
+                        });
+                        
+                    $(this)
+                        .bind('open', function(){
+                            $(win).resize(centerHandler);
+                            
+                            // 'Esc' key trapping
+                            $(document).keydown(escKeyHandler);
+                            win.setTimeout(function(){
+                                $('iframe').each(
+                                    function(){
+                                        try {
+                                            $(this.contentWindow.document)
+                                                .keydown(escKeyHandler);
+                                        }
+                                        catch(e){}
+                                    }
+                                );
+                            }, 260); // leave enough time for iframes in container to initialise
+                        })
+                        .bind('close', function(){
+                            $(win).unbind('resize', centerHandler);
+                            
+                            // Unbind 'Esc' key trapping
+                            $(document).unbind('keydown', escKeyHandler);
+                            $('iframe').each(
+                                function(){
+                                    try {
+                                        $(this.contentWindow.document)
+                                            .unbind('keydown', escKeyHandler);
+                                    }
+                                    catch(e){}
+                                }
+                            );
+                        });
+                },
+                {
+                    prototype: {
+                        type: 'lightbox',
+                        
+                        center: function(){
+                            var
+                                container = this.container,
+                                lbLeft, lbTop;
+                                
+                            if (container){
+                                lbLeft = Math.floor(($(win).width() - container.width()) / 2) + $(document).scrollLeft();
+                                    lbTop = Math.floor(($(win).height() - container.height()) / 2) + $(document).scrollTop();
+                                    if (lbLeft < 0){
+                                        lbLeft = 0;
+                                    }
+                                    if (lbTop < 0){
+                                        lbTop = 0;
+                                    }
+                                    container  
+                                        .css({
+                                            left: lbLeft + 'px',
+                                            top: lbTop + 'px'
+                                        });
+                            }
+                            return this;
+                        },
+                        
+                        open: function(contents){
+                            var lb = this;
+                            hideFlash();
+                            
+                            this.overlay.add();
+                            if (!lb.container){
+                                lb.container = $('<div></div>')
+                                    .hide()
+                                    .addClass(ns() + ' ' + ns([lb.type, 'container']))
+                                    .css({ // TODO: Should this be moved to a <style> element in the <head>, along with other CSS?
+                                        position:'absolute',
+                                        margin:0,
+                                        padding:0,
+                                        'z-index':99999
+                                        //,position:'fixed' // TODO: only do this if the contents fits within the window viewport, and what about scrolling the background contents? and IE6?
+                                    });
+                                $(win).unload(function(){
+                                    lb.unload();
+                                });
+                            }
+                            lb.container
+                                .append(contents)
+                                .appendTo('body');
+                            lb
+                                .center() // TODO: Is this necessary?
+                                .container.show();
+                            lb.overlay.fillScreen();
+                            
+                            // track click of 'Esc' key
+                            $(document).bind('keydown', function bindEsc(ev){
+                                if (ev.which === 27){ // ESC key
+                                    $(this).unbind('keydown', bindEsc);
+                                    lb.close();
+                                }
+                            });
+                            
+                            $(lb).triggerHandler('open'); // TODO: The 'open' and 'close' events will fire before the overlay has finished fading in. Is that OK? Should triggerHandler() be called before overlay.add(); Is it better to have an 'openstart' and 'open' event, plus 'closestart' and 'close'?
+                            lb.center();
+                            return this;
+                        },
+                        
+                        close: function(handler, eventType){
+                            var lb = this;
+                            showFlash();
+                            
+                            // Assign a handler element (some kind of jQuery collection) to trigger.close()
+                            if (typeof handler === 'object'){
+                                handler.bind(eventType || 'click', function(){
+                                    lb.close();
+                                });
+                            }
+                            else {
+                                this.overlay.remove();
+                                this.container
+                                    .empty()
+                                    .remove();
+                                $(this).triggerHandler('close');
+                            }
+                            return this;
+                        },
+                        
+                        unload: function(){
+                            this.close();
+                            delete this.container;
+                            // try/catch added due to bug in jQuery 1.4.2
+                            try {
+                                $(this).triggerHandler('unload');
+                            }
+                            catch(e){}
+                            return this;
+                        }
+                    }
+                }
             )
         },
         
@@ -1635,307 +1899,531 @@ var Sqwidget;
                 var lb = new Nitelite.Lightbox();
                 // Notify global window of internal events
                 // This 'firehose' of Sqwidget events would allow innovation and loosely coupled plugins
-                return notifyGlobalWindow(lb, ['create', 'add', 'remove', 'unload']);
+                return notifyGlobalWindow(lb, ['open', 'close', 'remove', 'unload']);
             },
             {
                 nitelite: version,
             
                 overlay: function(){
                    var ov = new Nitelite.Overlay();
-                   return notifyGlobalWindow(ov, ['open', 'close', 'remove', 'unload']);
+                   return notifyGlobalWindow(ov, ['create', 'add', 'remove', 'unload']);
                 }
             }
         );
     
-    // Assign jQuery.lightbox
-    $.lightbox = api;
+    // Assign jQuery.nitelite
+    $.nitelite = api;
+    
 }(jQuery));
 
 // **
 
-		// NEW JQUERY ELEMENT METHODS
-		
-		$.extend(
-			$.fn,
-			{
-				// TODO: Lazy load CleanslateCSS, or allow it to be preloaded
+        // NEW JQUERY ELEMENT METHODS
+        
+        $.extend(
+            $.fn,
+            {
+                // TODO: Lazy load CleanslateCSS, or allow it to be preloaded
 
-				// TODO: Integrate with .css(), allowing third argument to be !important boolean; allow option for method to be cssImportant() or the third arg in css()
-				cssImportant: function(key, value){
-					var prop, $el;
-					$el = this;
-					
-					// If just getting value, then use default CSS method
-					if (typeof key !== 'object' && typeof value === 'undefined'){
-						return cachedFuncs.css.apply(this, arguments);
-					}
-					
-					// Create object, if arg is a string
-					if (typeof key === 'string'){
-						prop = key;
-						key = {};
-						key[prop] = value;
-					}
-					
-					$.each(key, function(key, value){ // if value === null, then remove from style attr        
-						var style, rule;
-						style = $el.attr('style') || '';
-							
-						rule = (value !== null) ? key + ':' + value + ' !important;' : '';
-						if (style.toLowerCase().indexOf(key.toLowerCase()) !== -1){
-							style = style.replace(new RegExp(key + '\\s*:\\s*[^;]*(;|$)', 'i'), rule);
-						}
-						else {
-							style = $.trim(style);
-							if (style !== ''){
-								if (style.slice(-1) !== ';'){
-									style += ';';
-								}
-								style += ' ';
-							}
-							style += rule;
-						}          
-						$el.attr('style', style);
-					});
-					return $el;
-				},
-				
-				css: function(){
-					var args, doImportant;
-					args = arguments;
-					doImportant = (typeof args[0] === 'string' && args.length > 2) || (typeof args[1] === 'string' && args.length > 2) &&  args.length > 1 && arguments[arguments.length-1] === true;
-					return (doImportant ? this.cssImportant : cachedFuncs.css).apply(this, arguments);
-				}
-			}
-		);
-		
-		// ****
-		
-		// EXTEND SQWIDGET WITH JQUERY-DEPENDENT PROPS
-		Sqwidget = $.extend(
-			// Constructor
-			function(data, callback){
-				Sqwidget.widgets.push(this);
-				
-				if (typeof data === 'object'){
-					$.extend(this, data, {uid:Sqwidget.uid()});
-				}
-				if (typeof callback === 'function'){
-					callback.call(this, $);
-				}
-			},
-			// Original Sqwidget object
-			Sqwidget,
-			{
-				// Static Methods & Properties
-				// TODO: Confirm that the methods on Sqwidget and those on Sqwidget.prototype are in their correct place. What should be the guideline about whether a method is a static method, or an instance method? Some methods (e.g. uid()) are called by static objects (e.g. Lightbox), so they need to remain static methods - or both be moved to the prototype.
-				// do as: Lightbox.uid = Sqwidget.prototype.uid
-				
-				widgets: [],
+                // TODO: Integrate with .css(), allowing third argument to be !important boolean; allow option for method to be cssImportant() or the third arg in css()
+                cssImportant: function(key, value){
+                    var prop, $el;
+                    $el = this;
+                    
+                    // If just getting value, then use default CSS method
+                    if (typeof key !== 'object' && typeof value === 'undefined'){
+                        return cachedFuncs.css.apply(this, arguments);
+                    }
+                    
+                    // Create object, if arg is a string
+                    if (typeof key === 'string'){
+                        prop = key;
+                        key = {};
+                        key[prop] = value;
+                    }
+                    
+                    $.each(key, function(key, value){ // if value === null, then remove from style attr        
+                        var style, rule;
+                        style = $el.attr('style') || '';
+                            
+                        rule = (value !== null) ? key + ':' + value + ' !important;' : '';
+                        if (style.toLowerCase().indexOf(key.toLowerCase()) !== -1){
+                            style = style.replace(new RegExp(key + '\\s*:\\s*[^;]*(;|$)', 'i'), rule);
+                        }
+                        else {
+                            style = $.trim(style);
+                            if (style !== ''){
+                                if (style.slice(-1) !== ';'){
+                                    style += ';';
+                                }
+                                style += ' ';
+                            }
+                            style += rule;
+                        }          
+                        $el.attr('style', style);
+                    });
+                    return $el;
+                },
+                
+                css: function(){
+                    var args, doImportant;
+                    args = arguments;
+                    doImportant = (typeof args[0] === 'string' && args.length > 2) || (typeof args[1] === 'string' && args.length > 2) &&  args.length > 1 && arguments[arguments.length-1] === true;
+                    return (doImportant ? this.cssImportant : cachedFuncs.css).apply(this, arguments);
+                }
+            }
+        );
+        
+        // ****
+        
+        // EXTEND SQWIDGET WITH JQUERY-DEPENDENT PROPS
+        this.Sqwidget = Sqwidget = $.extend(
+            // Constructor
+            function(data, callback){
+                Sqwidget.widgets.push(this);
+                
+                if (typeof data === 'object'){
+                    $.extend(this, data, {uid:Sqwidget.uid()});
+                }
+                if (typeof callback === 'function'){
+                    callback.call(this, $);
+                }
+            },
+            // Original Sqwidget object
+            Sqwidget,
+            {
+                // Static Methods & Properties
+                // TODO: Confirm that the methods on Sqwidget and those on Sqwidget.prototype are in their correct place. What should be the guideline about whether a method is a static method, or an instance method? Some methods (e.g. uid()) are called by static objects (e.g. Lightbox), so they need to remain static methods - or both be moved to the prototype.
+                //TODO separate widget template functions from sqwidget page management
+                // do as: Lightbox.uid = Sqwidget.prototype.uid
+                
+                widgets: [],
 
-				isElement: function(obj){
-					return obj && obj.nodeType === 1;
-				},
+                isElement: function(obj){
+                    return obj && obj.nodeType === 1;
+                },
 
-				isJQuery: function(obj){
-					return obj && !!obj.jquery;
-				},
+                isJQuery: function(obj){
+                    return obj && !!obj.jquery;
+                },
 
-				// Test whether the str is *probably* a url. It does not attempt to validate the url.
-				isUrl: function(str){
-					return (/^https?:\/\/[\-\w]+\.\w[\-\w]+\S*$/).test(str);
-				},
+                // Test whether the str is *probably* a url. It does not attempt to validate the url.
+                isUrl: function(str){
+                    return (/^https?:\/\/[\-\w]+\.\w[\-\w]+\S*$/).test(str);
+                },
 
-				uid: function(significantFigures){
-					var M = Math;
-					return M.round(M.pow(M.pow(10, significantFigures || 8), M.random()));
-				},
-				
-				cssPresets: {        
-					contentonly: {
-						margin:0,
-						padding:0,
-						borderWidth:0
-					}
-				},
-				
-				// Notify the global window object about desired internal events of a Sqwidget object
-					// E.g. bind listener to window:
-					//   $(window).bind('sqwidget', function(jQueryEventObject, sqwidgetEvent){
-					//     if (sqwidgetEvent.type === 'overlay.add'){
-					//       doStuff(sqwidgetEvent.origin);
-					//     }
-					//   });
-				notifyGlobalWindow: function(origin, eventTypes, namespace){ // origin is originating object (e.g. Overlay instance), eventTypes is array (e.g. ['add', 'remove']), namespace is optional - if not provided, the origin must have a 'type' property (e.g. 'overlay')
-					
-					$.each(eventTypes, function(i, type){
-						try {
-						    $(origin)
-							    .bind(type, function(){
-								    $(window).trigger(ns(), {type: (namespace || origin.type) + '.' + type, origin:this});
-							    });
-					    }
-					    catch(e){
-					        _('catch', $);
-					    }
-					});
-				},
-				
-				
-				// E.g.
-				// var ns = new Sqwidget.Namespace('blah');
-				// ns([ns(['hi','there','you'], '.'),ns(['all','is','full','of','love'])], ' -//- ');
-				//  Result:
-				//  "blah -//- blah.hi.there.you -//- blah-all-is-full-of-love"
-				/*
-				Namespace: function(namespace, defaultDelimiter){
-					return function(props, delimiter){
-						delimiter = delimiter || defaultDelimiter || '-';
-						if (!props){
-							return namespace;
-						}
-						else if (typeof props === 'string'){
-								return namespace + delimiter + props;
-						}
-						else {
-							return [namespace].concat(props).join(delimiter);
-						}
-					};
-				},
-				*/
+                uid: function(significantFigures){
+                    var M = Math;
+                    return M.round(M.pow(M.pow(10, significantFigures || 8), M.random()));
+                },
+                
+                cssPresets: {        
+                    contentonly: {
+                        margin:0,
+                        padding:0,
+                        borderWidth:0
+                    }
+                },
+                
+                // Notify the global window object about desired internal events of a Sqwidget object
+                    // E.g. bind listener to window:
+                    //   $(window).bind('sqwidget', function(jQueryEventObject, sqwidgetEvent){
+                    //     if (sqwidgetEvent.type === 'overlay.add'){
+                    //       doStuff(sqwidgetEvent.origin);
+                    //     }
+                    //   });
+                notifyGlobalWindow: function(origin, eventTypes, namespace){ // origin is originating object (e.g. Overlay instance), eventTypes is array (e.g. ['add', 'remove']), namespace is optional - if not provided, the origin must have a 'type' property (e.g. 'overlay')
+                    
+                    $.each(eventTypes, function(i, type){
+                        try {
+                            $(origin)
+                                .bind(type, function(){
+                                    $(window).trigger(ns(), {type: (namespace || origin.type) + '.' + type, origin:this});
+                                });
+                        }
+                        catch(e){
+                            _('catch', $);
+                        }
+                    });
+                },
+                
+                
+                // E.g.
+                // var ns = new Sqwidget.Namespace('blah');
+                // ns([ns(['hi','there','you'], '.'),ns(['all','is','full','of','love'])], ' -//- ');
+                //  Result:
+                //  "blah -//- blah.hi.there.you -//- blah-all-is-full-of-love"
+                /*
+                Namespace: function(namespace, defaultDelimiter){
+                    return function(props, delimiter){
+                        delimiter = delimiter || defaultDelimiter || '-';
+                        if (!props){
+                            return namespace;
+                        }
+                        else if (typeof props === 'string'){
+                                return namespace + delimiter + props;
+                        }
+                        else {
+                            return [namespace].concat(props).join(delimiter);
+                        }
+                    };
+                },
+                */
 
-				// ================
+                // ================
 
-				// Instance methods
-				prototype: $.extend( // TODO: Decide if a number of these prototype methods should be moved to static functions on the Sqwidget object
-					function(){},
-					{
+                // Instance methods
+                prototype: $.extend( // TODO: Decide if a number of these prototype methods should be moved to static functions on the Sqwidget object
+                    function(){},
+                    {
 
-						// Insert widget HTML, DOM node or jQuery object into the DOM, afer the <script> element that originally created the widget instance. This position is cached, for later retrieval.
-						// Optional args: insertPosition to override last in body; verb to use for adding content - default 'after' (could use 'before', 'append', 'prepend', etc)
-						// TODO: clarify how this is connected with method to replace DOM contents (e.g. as .html(newContents))
-						// TODO: Does this really need to store the insertPosition? In fact, is this method even required?
-						insert: function(contents, insertPosition, verb){
-							var $context = this.insertPosition = $(insertPosition || this.insertPosition || this.thisDomScript());
-							if (!$context){
-								return false;
-							}
-							// If no arguments, return the current context
-							if (!contents){
-								return $context;
-							}
-							$context[verb || 'after'](contents);
-							return $(contents);
-						},
-						
-						// Truncate a str to a specific number of words; optional arg: trailer string - default '…'
-						truncate: function(str, numWords, trailer){
-							var newStr = String(str).replace(new RegExp('^((\\W*\\w*\\b){0,' + numWords + '}\\.?).*$', 'm'), '$1');
-							return newStr + (newStr.length < str.length ? (trailer || '\u2026') : '');
-						},
-					
-						// Repeat a string num times 
-						repeat: function(str, repeats){
-							return repeats > 0 ? new Array(repeats + 1).join(str) : '';
-						},
-						
-						// Return a number with leading zeroes, up to total length of number string
-						leadingZeroes: function(num, totalLength) {
-							return this.repeat('0', (totalLength || 2) - String(num).length) + num;
-						},
+                        // Insert widget HTML, DOM node or jQuery object into the DOM, afer the <script> element that originally created the widget instance. This position is cached, for later retri  .
+                        // Optional args: insertPosition to override last in body; verb to use for adding content - default 'after' (could use 'before', 'append', 'prepend', etc)
+                        // TODO: clarify how this is connected with method to replace DOM contents (e.g. as .html(newContents))
+                        // TODO: Does this really need to store the insertPosition? In fact, is this method even required?
+                        insert: function(contents, insertPosition, verb){
+                            var $context = this.insertPosition = $(insertPosition || this.insertPosition || this.thisDomScript());
+                            if (!$context){
+                                return false;
+                            }
+                            // If no arguments, return the current context
+                            if (!contents){
+                                return $context;
+                            }
+                            $context[verb || 'after'](contents);
+                            return $(contents);
+                        },
+                        
+                        // Truncate a str to a specific number of words; optional arg: trailer string - default '…'
+                        truncate: function(str, numWords, trailer){
+                            var newStr = String(str).replace(new RegExp('^((\\W*\\w*\\b){0,' + numWords + '}\\.?).*$', 'm'), '$1');
+                            return newStr + (newStr.length < str.length ? (trailer || '\u2026') : '');
+                        },
+                    
+                        // Repeat a string num times 
+                        repeat: function(str, repeats){
+                            return repeats > 0 ? new Array(repeats + 1).join(str) : '';
+                        },
+                        
+                        // Return a number with leading zeroes, up to total length of number string
+                        leadingZeroes: function(num, totalLength) {
+                            return this.repeat('0', (totalLength || 2) - String(num).length) + num;
+                        },
  
-						// Parse an atom date string and return as a JS Date object. E.g. '2007-10-29T23:39:38+06:00'
-						// TODO: Detect if arg is Date obj, and return as Atom date string
-						atomDate: function(atomDateStr){
-							var d, n, plusminus;
-							
-							// Convert 'Z' UTC to '+00:00' and split to array
-							atomDateStr = atomDateStr.replace(/z$/i, '+00:00');
-							d = atomDateStr.split(/[\-T:+]/);  // TODO: Confirm this is fine in IE6
-							n = Number;
-								
-							if (d.length !== 8){
-								return false;
-							}              
-							// Timezone + / -
-							plusminus = atomDateStr.substr(19,1);
-							
-								return new Date(
-								Date.UTC(
-									n(d[0]),            // year
-									n(d[1] - 1),        // month
-									n(d[2]),            // day
-									n(d[3] - n(plusminus + d[6])),  // hour
-									n(d[4] - n(plusminus + d[7])),  // mins
-									n(d[5])              // secs
-								)
-							);
-						},
-						
-						// Setter: Add a query string parameter to a url. E.g. addUrlParam('http://example.com?v=1', 'this', 'that');
-						// TODO: Getter: if no value supplied, then get param value
-						urlParam: function(url, param, value){
-							return url + (!/\?/.test(url) ? '?' : '&') + param + '=' + value;
-						},
-						
-						// Return a fixed number (which may be considered arbitrary) when passed an interval of time (in days; may be decimal part of day, e.g. 1/24 for 1 hour)
-						// Useful for breaking server caching of resources after a specified interval of time. E.g. "http://example.com/data.js?cache=" + timeChunk(30);
-						timeChunk: function(intervalDays){
-							var decimalPlaces, baseline, msInADay, interval, now, chunk;
-							decimalPlaces = 4; // Allows accuracy to nearest minute
-							baseline = new Date(2009, 0, 1).getTime(); // Used simply to keep the number of chars down
-							msInADay = 24 * 60 * 60 * 1000;
-							interval = intervalDays * msInADay;
-							now = new Date().getTime();
-							chunk = now - (now % Math.round(interval)); // Math.round used to avoid JavaScript float point error
-							return Number(((chunk - baseline) / msInADay).toFixed(decimalPlaces)) || 0;
-						},
-						
-						cacheUrl: function(url, intervalDays){
-							return this.urlParam(url, 'cache', this.timeChunk(intervalDays));
-						},
-					
-						loadCss: function(css, cacheTime){
-							cacheTime = cacheTime || this.settings.cssCacheTime;
-							
-							// Simple check to tell difference between css text and a url - this does not attempt to validate CSS
-							// Check for '@' or "{" - e.g. with @import or div{color:red};
-							function isCss(str){
-								return (/@|\{/m).test(str);
-							}
-							$('head')
-								.append(isCss(css) ? 
-									'<style type="text/css">' + css + '</style>' :
-									'<link type="text/css" rel="stylesheet" href="' + (cacheTime ? this.cacheUrl(css, cacheTime) : css) + '" />'
-								);
-						},
-	
-						// Modified from John Resig's http://ejohn.org/blog/javascript-micro-templating
-						tmpl: function tmpl(str, data){
-							var fn = new Function("obj",
-								"var p=[],print=function(){p.push.apply(p,arguments);};" +
-								// Introduce the data as local variables using with(){}
-								"with(obj){p.push('" +
-								// Convert the template into pure JavaScript
-								str
-									.replace(/[\r\t\n]/g, " ")
-									.split("<%").join("\t")
-									.replace(/((^|%>)[^\t]*)'/g, "$1\r")
-									.replace(/\t=(.*?)%>/g, "',$1,'")
-									.split("\t").join("');")
-									.split("%>").join("p.push('")
-									.split("\r").join("\\'") +
-								"');}return p.join('');");
-							
-							// Apply function to data, with this widget accessible via 'this' or 'that' variables
-							return fn.call(this, $.extend(true, {$:$, sqwidget:this}, data));
-						}
-					}
-				)
-			}
-		);
-	});
+                        // Parse an atom date string and return as a JS Date object. E.g. '2007-10-29T23:39:38+06:00'
+                        // TODO: Detect if arg is Date obj, and return as Atom date string
+                        atomDate: function(atomDateStr){
+                            var d, n, plusminus;
+                            
+                            // Convert 'Z' UTC to '+00:00' and split to array
+                            atomDateStr = atomDateStr.replace(/z$/i, '+00:00');
+                            d = atomDateStr.split(/[\-T:+]/);  // TODO: Confirm this is fine in IE6
+                            n = Number;
+                                
+                            if (d.length !== 8){
+                                return false;
+                            }              
+                            // Timezone + / -
+                            plusminus = atomDateStr.substr(19,1);
+                            
+                                return new Date(
+                                Date.UTC(
+                                    n(d[0]),            // year
+                                    n(d[1] - 1),        // month
+                                    n(d[2]),            // day
+                                    n(d[3] - n(plusminus + d[6])),  // hour
+                                    n(d[4] - n(plusminus + d[7])),  // mins
+                                    n(d[5])              // secs
+                                )
+                            );
+                        },
+                        
+                        // Setter: Add a query string parameter to a url. E.g. addUrlParam('http://example.com?v=1', 'this', 'that');
+                        // TODO: Getter: if no value supplied, then get param value
+                        urlParam: function(url, param, value){
+                            return url + (!/\?/.test(url) ? '?' : '&') + param + '=' + value;
+                        },
+                        
+                        // Return a fixed number (which may be considered arbitrary) when passed an interval of time (in days; may be decimal part of day, e.g. 1/24 for 1 hour)
+                        // Useful for breaking server caching of resources after a specified interval of time. E.g. "http://example.com/data.js?cache=" + timeChunk(30);
+                        timeChunk: function(intervalDays){
+                            var decimalPlaces, baseline, msInADay, interval, now, chunk;
+                            decimalPlaces = 4; // Allows accuracy to nearest minute
+                            baseline = new Date(2009, 0, 1).getTime(); // Used simply to keep the number of chars down
+                            msInADay = 24 * 60 * 60 * 1000;
+                            interval = intervalDays * msInADay;
+                            now = new Date().getTime();
+                            chunk = now - (now % Math.round(interval)); // Math.round used to avoid JavaScript float point error
+                            return Number(((chunk - baseline) / msInADay).toFixed(decimalPlaces)) || 0;
+                        },
+                        
+                        cacheUrl: function(url, intervalDays){
+                            return this.urlParam(url, 'cache', this.timeChunk(intervalDays));
+                        },
+                    
+                        loadCss: function(css, cacheTime){
+                            cacheTime = cacheTime || this.settings.cssCacheTime;
+                            
+                            // Simple check to tell difference between css text and a url - this does not attempt to validate CSS
+                            // Check for '@' or "{" - e.g. with @import or div{color:red};
+                            function isCss(str){
+                                return (/@|\{/m).test(str);
+                            }
+                            $('head')
+                                .append(isCss(css) ? 
+                                    '<style type="text/css">' + css + '</style>' :
+                                    '<link type="text/css" rel="stylesheet" href="' + (cacheTime ? this.cacheUrl(css, cacheTime) : css) + '" />'
+                                );
+                        },
+    
+                        // Modified from John Resig's http://ejohn.org/blog/javascript-micro-templating
+                        // TODO make this pluggable
+                        tmpl: function tmpl(str, data){
+                            var fn = new Function("obj",
+                                "var p=[],print=function(){p.push.apply(p,arguments);};" +
+                                // Introduce the data as local variables using with(){}
+                                "with(obj){p.push('" +
+                                // Convert the template into pure JavaScript
+                                str
+                                    .replace(/[\r\t\n]/g, " ")
+                                    .split("<%").join("\t")
+                                    .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+                                    .replace(/\t=(.*?)%>/g, "',$1,'")
+                                    .split("\t").join("');")
+                                    .split("%>").join("p.push('")
+                                    .split("\r").join("\\'") +
+                                "');}return p.join('');");
+                            
+                            // Apply function to data, with this widget accessible via 'this' or 'that' variables
+                            return fn.call(this, $.extend(true, {$:$, sqwidget:this}, data));
+                        }
+                    }
+                )
+            }
+        );
+    });
+    
+    
+    /**
+     * Sqwidget template object.  One per template file (which can have >1 template defined in it)
+     * @param sqwidget ref to global Sqwidget object
+     * @param url the url to load the template from (this comes from data-sqwidget settings for template:)
+     * @return a SqwigetTemplate object
+     * //TODO make sure is trimmed
+     */
+    
+    function SqwidgetTemplate(sqwidget, templateName) {  
+        var sqwidget = sqwidget;
+        var templateName = templateName;
+        /** set of widgets (instances on the page) for this template */
+        var widgets = [];
+        var templates = {};
+        var scripts = [];
+        var templateText = '';
+        var loaded = false;
+
+
+        function loadTemplate() {
+            _('template name is ' + templateName);
+            jQuery.get(templateName, function(data, textStatus, request) {
+                // on template loaded
+                _('template data: ' + data);
+                _('template loaded');
+                //TODO error detection here?
+                templateText = data;
+                parseTemplateFile(templateText);
+                
+                // TODO put somewhere generically useful
+                 function props(a) {
+                     var r = [];
+                     for (key in a) {
+                         r.push(key + ': "' + a[key] + '"');
+                     }
+                     return '{' + r.join(' ') + '}';
+                 }
+                _('templates: ' + props(templates));
+                loaded = true;
+                setDefaultTemplates();
+            });
+        }       
+        
+        function parseTemplateFile(template) {
+            _('parsing template file for ' + templateName);
+            // TODO document type detection (doctype tells us it is )
+            // assume html for now
+            
+            // default body html stored -- and activated immediately
+            var containsHead, templateSplit, head, templateStr, head=null, body=null;
+
+            containsHead = template.match(/^((?!<script)[\w\W])*<head>/);
+            if (containsHead){
+                templateSplit = template.match(/^((?!<script)[\w\W])*?<head>([\w\W]*)<\/head>([\w\W]*?)$/);
+                head = jQuery.trim(templateSplit[2]);
+                _(' Head is ' + head);
+                templateStr = head;
+            }
+            else {
+                templateStr = template;
+            }
+            // flush out body
+            bodystr = template.match(/<body>([\w\W]*)<\/body>([\w\W]*?)$/);
+            body = bodystr[1];
+            _(' Body is ' + body);
+            if (body !== null) {
+                templates['default'] = body;
+            }
+            // grab script templates - from the HEAD only for templates other than the default
+            var j = jQuery(templateStr);
+            j.filter('script[type=text/template][id]')
+             .each(function(i, t){
+                t = jQuery(t);
+                templates[t.attr('id')] = jQuery.trim(t.html());
+            });
+            
+            //
+            // grab javascripts from head an execute in order
+            //
+            j.filter('script[type!=text/template]')
+             .each(function(i, t){
+                t = jQuery(t);
+                templates[t.attr('id')] = jQuery.trim(t.html());
+            });
+            
+            
+            
+        }
+        
+        function setDefaultTemplates() {
+            for (w in widgets) {
+                widgets[w].render(templates['default']);
+            }
+        }
+        
+        
+        // PUBLIC methods   
+        /**
+         * Register this widget with this template
+         *
+         */
+          this.register = function(widget) {
+            widgets.push(widget);
+        }
+
+        // Load the template now
+        loadTemplate();
+    };
+    
+    /**
+     * SqwidgetWidget is the actual widget, which has an element to 
+     * be displayed in and has private settings and is linked to a template
+     * @param sqwidgetTemplate ref to the template for this wiget
+     * @param div ref to DOM element (TODO what object is passed in here)
+     * TODO make Widget and Template
+     */
+    function SqwidgetWidget(sqwidget, type, div, dataSqwidget, dataSqwidgetSettings) {
+        var
+            sqwidget = sqwidget,
+            widgetType = type,
+            container = div
+            dataSqwidget = dataSqwidget,
+            settings = dataSqwidgetSettings;
+        
+        
+        /**
+         * Get this widget up and running
+         */
+        this.init = function() {
+            //attach ourselves to template
+            var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
+            sqTemplate.register(this);
+            
+            
+            // run scripts on template in context of this widget
+
+        };
+        
+        
+        
+        // TODO put somewhere generically useful
+        function props(a) {
+            var r = [];
+            for (key in a) {
+                r.push(key + ': "' + a[key] + '"');
+            }
+            return '{' + r.join(' ') + '}';
+        }
+        
+        // PUBLIC METHODS
+        
+        /**
+         * Render html into this widget
+         * @param {String} inner html to be rendered into the div for this widget
+         * TODO: cache, keep existing content to pop out etc
+         */ 
+        this.render = function(html) {
+            //TODO pass through template rendering pipeline
+            jQuery(container).html(html);
+        };
+        
+        /**
+         * eval script in the context of this object
+         * TODO parse things a little bit here, and provide some eval context (with...)
+         * TODO execute in own context by making a separate scope here off global
+         * @param {String} string of script to eval. Should be text/javascript
+         * @return {undefined}
+         */
+        this.evalScript = function(evalScript) {
+            eval(evalScript.toString());
+        }
+        
+        
+        /**
+         * toString to expose widget params
+         * @return {String}
+         */
+         
+        this.toString = function( ) {
+            return 'type: ' + widgetType + ' container id: ' + div.id + ' dataSqwidget: ' + props(dataSqwidget) + ' dataSqwidgetSettings: ' + props(settings);
+        };
+        
+        
+    };
+    
+    // TEMP global exposure to play with classes
+
+    window.SqwidgetTemplate = SqwidgetTemplate;
+    window.SqwidgetWidget = SqwidgetWidget;
+
+        
+
+    
 }());
+
+
+// on DOM ready loading to be done
+// TODO proper metaphors for calling this
+// a default function here, but can be overridden if called by the doc?
+
+Sqwidget.ready(function() {
+    _('starting sqwidget.ready');
+    
+    // get widgets in the page as SqwidgetWidget objects
+    var widgets = Sqwidget.widgetsInDom();
+    
+    _('found ' + widgets.length.toString() +' widget divs:');
+    
+    for (w in widgets) {
+        _(' ' + widgets[w].toString());
+    }
+    
+    
+    // load templates as needed
+    for (w in widgets) {
+        widgets[w].init();
+    }
+    
+});
+
  
  
 /*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
