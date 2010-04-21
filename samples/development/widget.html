@@ -1,0 +1,72 @@
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Cache-Control" content="NO-CACHE" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+    <title>Sqwidget Development Sample widgets</title>
+	<script src="../../console.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../sqwidget.js" type="text/javascript" charset="utf-8"></script>
+	<style type="text/css">
+	body {
+		margin:0;
+		padding:1em;
+	}
+	h1 {
+		margin:0;
+		padding:0 0 0.38em;
+		font-size:1.62em;
+	}
+	#packages {
+		margin-bottom:1.38em;
+	}
+	#packages ul, #packages li {
+		display:inline;
+		padding:0 0.5em;
+		margin:0;
+	}
+	#packages li.current {
+		font-weight:bold;
+	}
+	#packages a {
+		text-decoration:none;
+	}
+	#packages a:hover {
+		text-decoration:underline;
+	}
+	#packages li.current a {
+		text-decoration:underline;
+	}
+	#widget {
+		/* width:185px; */
+	}
+	</style>
+</head>
+<body>
+<h1>Sqwidget development samples</h1>
+
+<div id="sqwidget-test">
+    <div id="bbcwidget"
+        data-sqwidget="template:template1.html"
+        data-sqwidget-settings="package:dev-ltr"
+        style="padding:0; margin:0; border:none;"
+    >Initial widget content before sqwidget load</div>
+    <div id="bbcwidget2"
+        data-sqwidget="template:template1.html"
+        data-sqwidget-settings="package:en"
+        style="padding:0; margin:0; border:none;"
+    >Initial widget2 content before sqwidget load</div>
+    <div id="bbcwidget3"
+        data-sqwidget="template:template2.html"
+        data-sqwidget-settings="package:dev-ltr"
+        style="padding:0; margin:0; border:none;"
+    >Initial widget3 content before sqwidget load</div>
+    <div id="bbcwidget34"
+        data-sqwidget="template:template2.html"
+        data-sqwidget-settings="package:en"
+        style="padding:0; margin:0; border:none;"
+    >	</div>
+</div>
+</body>
+</html>
