@@ -191,10 +191,10 @@ var ready = (function(){
             },
             /** Sqwidget's own dependencies */
             dependencies: {
-                //TODO add juery eventually as a bootstrapping
+                //TODO add jquery eventually to this and bootstrap own dependencies
             },
             
-            /** Sqwidget widget templates (classes) keyed by widget name */
+            /** Sqwidget widget templates (classes) keyed by template name */
             widgetTemplates: {},
             
             /**
@@ -450,7 +450,7 @@ var ready = (function(){
                         widgetType = type(dataSqwidget.template || 'generic');
                         
                         widgets.push(
-                            new Widget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
+                            Widget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
                     }
                 }
                 return widgets;
@@ -467,7 +467,7 @@ var ready = (function(){
                 var name = jQuery.trim(templateName);
                 var t = this.widgetTemplates[name];
                 if (!t) {
-                    t = new Template(this, name);
+                    t = Template(this, name);
                     this.widgetTemplates[name] = t;
                 }
                 return t;
@@ -2237,7 +2237,8 @@ var ready = (function(){
      * @return a SqwigetTemplate object
         */
     
-    function Template(sqwidget, templateName) {  
+    var Template = function(sqwidget, templateName) {
+        var instance = {}; //neoclassical
         var sqwidget = sqwidget;
         var templateName = templateName;
         /** set of widgets (instances on the page) for this template */
@@ -2247,15 +2248,27 @@ var ready = (function(){
         var scripts = [];
         var templateText = '';
         var loaded = false;
+        /** errors noted on template load */
+        var errors = [];
+        /** template config. default values here */
+        var templateConfig = {
+            "name": "sqwidget_template",
+             "version": "1",
+             "title": "Generic sqwidget widget",
+             "desc": "-",
+             "url": "http://github.com/sqwidget", 
+             "dependencies": {
+             },
+        };
 
-
-        function loadTemplate() {
+        // PRIVATE methods
+        var loadTemplate = function() {
             _('template name is ' + templateName);
             jQuery.get(templateName, function(data, textStatus, request) {
                 // on template loaded
                 _('template data: ' + data);
                 _('template loaded');
-                //TODO template loading error (ideally, a nice display)
+                //TODO handle template loading error (ideally, a nice display)
                 templateText = data;
                 parseTemplateFile(templateText);
                 
@@ -2269,14 +2282,16 @@ var ready = (function(){
                  }
                 _('templates: ' + props(templates));
                 loaded = true;
+                // set default body
                 setDefaultTemplates();
+                // run controller
+                runController();
             });
-        }       
+        };      
         
-        function parseTemplateFile(template) {
+        var parseTemplateFile = function(template) {
             _('parsing template file for ' + templateName);
             // TODO document type detection (doctype tells us it is HTML or similar)
-            // TODO execute scripts in context of the widget (when the time is right)
             // For now: default body html stored -- and activated immediately
             var containsHead, templateSplit, head, templateStr, head=null, body=null;
 
@@ -2311,31 +2326,49 @@ var ready = (function(){
             j.filter('script[type!=text/template]')
              .each(function(i, t){
                 t = jQuery(t);
-                templates[t.attr('id')] = jQuery.trim(t.html());
-            });
-            
-            
-            
-        }
+                scripts.push(t.text());
+            }); 
+        };
         
-        function setDefaultTemplates() {
+        var setDefaultTemplates = function() {
             for (w in widgets) {
                 widgets[w].render(templates['default']);
             }
-        }
+        };
         
-        
+        var runController = function() {
+            for (w in widgets) {
+                _('running controller for ' + widgets[w].toString());
+                widgets[w].runController(scripts);
+            }            
+        };
         // PUBLIC methods   
         /**
          * Register this widget with this template
          *
          */
-          this.register = function(widget) {
+        instance.register = function(widget) {
             widgets.push(widget);
-        }
+        };
 
+        instance.config = function(dict) {
+            if (dict) {
+                for(key in dict) {
+                    if (key in templateConfig) {
+                        templateConfig[key] = dict[key];
+                    }
+                }
+            }
+            return templateConfig;
+        };
+
+        instance.getScripts = function() {
+            return scripts;
+        };
         // Load the template now
         loadTemplate();
+        
+        return instance;
     };
     
     /**
@@ -2345,38 +2378,51 @@ var ready = (function(){
      * @param div ref to DOM element (TODO what object is passed in here)
      * TODO make Widget and Template
      */
-    function Widget(sqwidget, type, div, dataSqwidget, dataSqwidgetSettings) {
-        var
-            sqwidget = sqwidget,
-            widgetType = type,
-            container = div
-            dataSqwidget = dataSqwidget,
-            settings = dataSqwidgetSettings;
+    var Widget = function (sqwidget, type, div, dataSqwidget, dataSqwidgetSettings) {
+        var instance = {};
         
+        var sqwidget = sqwidget;
+        var widgetType = type;
+        var container = div;
+        var dataSqwidget = dataSqwidget;
+        var settings = dataSqwidgetSettings;
+        var template = null;
+      
+      
+        /**
+         * eval script in the context of this object
+         * TODO parse things a little bit here, and provide some eval context (with...)
+         * TODO execute in own context by making a separate scope here off global
+         * @param {String} string of script to eval. Should be text/javascript
+         * @return {undefined}
+         */
+        var evalScript = function(evalScript) {
+            _('script is ' + evalScript);
+            eval(evalScript.toString());
+        };
         
         /**
          * Get this widget up and running
          */
-        this.init = function() {
+        instance.init = function() {
             //attach ourselves to template
             var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
-            sqTemplate.register(this);
-            
-            
+            sqTemplate.register(instance);
+            template = sqTemplate;
             // run scripts on template in context of this widget
-
+            
         };
         
         
         
         // TODO put somewhere generically useful
-        function props(a) {
+        var props = function(a) {
             var r = [];
             for (key in a) {
                 r.push(key + ': "' + a[key] + '"');
             }
             return '{' + r.join(' ') + '}';
-        }
+        };
         
         // PUBLIC METHODS
         
@@ -2385,33 +2431,32 @@ var ready = (function(){
          * @param {String} inner html to be rendered into the div for this widget
          * TODO: cache, keep existing content to pop out etc
          */ 
-        this.render = function(html) {
+        instance.render = function(html) {
             //TODO pass through template rendering pipeline
             jQuery(container).html(html);
         };
         
-        /**
-         * eval script in the context of this object
-         * TODO parse things a little bit here, and provide some eval context (with...)
-         * TODO execute in own context by making a separate scope here off global
-         * @param {String} string of script to eval. Should be text/javascript
-         * @return {undefined}
-         */
-        this.evalScript = function(evalScript) {
-            eval(evalScript.toString());
-        }
+
         
+        /**
+         * Run the script controller
+         */
+        instance.runController = function(scripts) {
+            for (s in scripts) {
+                evalScript(scripts[s]);
+            }
+        };
         
         /**
          * toString to expose widget params
          * @return {String}
          */
          
-        this.toString = function( ) {
+        instance.toString = function( ) {
             return 'type: ' + widgetType + ' container id: ' + div.id + ' dataSqwidget: ' + props(dataSqwidget) + ' dataSqwidgetSettings: ' + props(settings);
         };
         
-        
+        return instance;
     };
     
     // TEMP global exposure to play with classes
@@ -2425,7 +2470,7 @@ var ready = (function(){
 }());
 
 
-// on DOM ready loading to be done
+// On DOM ready loading to be done
 // TODO proper metaphors for calling this
 // a default function here, but can be overridden if called by the doc?
 
@@ -2440,13 +2485,10 @@ Sqwidget.ready(function() {
     for (w in widgets) {
         _(' ' + widgets[w].toString());
     }
-    
-    
     // load templates as needed
     for (w in widgets) {
         widgets[w].init();
     }
-    
 });
 
  
