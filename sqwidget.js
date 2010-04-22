@@ -170,6 +170,7 @@ var ready = (function(){
         // TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
         this.Sqwidget = Sqwidget = {
             version: '0.2bbc', //TODO require version management here?
+            //TODO tidy up settings later
             settings: { // TODO: Some props (e.g. 'lightbox') would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
                 jQuery: {
                     minVersion: '1.4', // minimum version of jQuery to allow, if already in DOM
@@ -182,11 +183,35 @@ var ready = (function(){
                     }
                 }
             },
+            /** These can be set from the Sqwidget.globalConfig All global settings need to be given an initial
+             * default value here so they can be set from the globalConfig method */
+            config: {
+                development: false,
+                experimental: false
+            },
             /** Sqwidget's own dependencies */
-            dependencies: {},
+            dependencies: {
+                //TODO add juery eventually as a bootstrapping
+            },
             
             /** Sqwidget widget templates (classes) keyed by widget name */
             widgetTemplates: {},
+            
+            /**
+             * Set global configuration (config)
+             * @param {Object} dictionary of global config options [optional]
+             * return {Object} dictionary of the global config
+             */
+            globalConfig: function(dict) {
+                if (dict) {
+                    for(key in dict) {
+                        if (key in this.config) {
+                            this.config[key] = dict[key];
+                        }
+                    }
+                }
+                return this.config;
+            },
             
             
             thisDomScript: function(){
@@ -2218,6 +2243,7 @@ var ready = (function(){
         /** set of widgets (instances on the page) for this template */
         var widgets = [];
         var templates = {};
+        /** javascript blocks to be executed in context of widget */
         var scripts = [];
         var templateText = '';
         var loaded = false;
@@ -2229,12 +2255,12 @@ var ready = (function(){
                 // on template loaded
                 _('template data: ' + data);
                 _('template loaded');
-                //TODO error detection here?
+                //TODO template loading error (ideally, a nice display)
                 templateText = data;
                 parseTemplateFile(templateText);
                 
                 // TODO put somewhere generically useful
-                 function props(a) {
+                function props(a) {
                      var r = [];
                      for (key in a) {
                          r.push(key + ': "' + a[key] + '"');
@@ -2249,10 +2275,9 @@ var ready = (function(){
         
         function parseTemplateFile(template) {
             _('parsing template file for ' + templateName);
-            // TODO document type detection (doctype tells us it is )
-            // assume html for now
-            
-            // default body html stored -- and activated immediately
+            // TODO document type detection (doctype tells us it is HTML or similar)
+            // TODO execute scripts in context of the widget (when the time is right)
+            // For now: default body html stored -- and activated immediately
             var containsHead, templateSplit, head, templateStr, head=null, body=null;
 
             containsHead = template.match(/^((?!<script)[\w\W])*<head>/);
