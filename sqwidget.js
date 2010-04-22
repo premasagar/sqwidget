@@ -425,7 +425,7 @@ var ready = (function(){
                         widgetType = type(dataSqwidget.template || 'generic');
                         
                         widgets.push(
-                            new SqwidgetWidget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
+                            new Widget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
                     }
                 }
                 return widgets;
@@ -439,10 +439,11 @@ var ready = (function(){
              */
             getTemplate: function(templateName) {
                 // check to see if already loaded, if so, return instance.
-                var t = this.widgetTemplates[templateName];
+                var name = jQuery.trim(templateName);
+                var t = this.widgetTemplates[name];
                 if (!t) {
-                    t = new SqwidgetTemplate(this, templateName);
-                    this.widgetTemplates[templateName] = t;
+                    t = new Template(this, name);
+                    this.widgetTemplates[name] = t;
                 }
                 return t;
             },
@@ -2209,10 +2210,9 @@ var ready = (function(){
      * @param sqwidget ref to global Sqwidget object
      * @param url the url to load the template from (this comes from data-sqwidget settings for template:)
      * @return a SqwigetTemplate object
-     * //TODO make sure is trimmed
-     */
+        */
     
-    function SqwidgetTemplate(sqwidget, templateName) {  
+    function Template(sqwidget, templateName) {  
         var sqwidget = sqwidget;
         var templateName = templateName;
         /** set of widgets (instances on the page) for this template */
@@ -2320,7 +2320,7 @@ var ready = (function(){
      * @param div ref to DOM element (TODO what object is passed in here)
      * TODO make Widget and Template
      */
-    function SqwidgetWidget(sqwidget, type, div, dataSqwidget, dataSqwidgetSettings) {
+    function Widget(sqwidget, type, div, dataSqwidget, dataSqwidgetSettings) {
         var
             sqwidget = sqwidget,
             widgetType = type,
@@ -2391,8 +2391,8 @@ var ready = (function(){
     
     // TEMP global exposure to play with classes
 
-    window.SqwidgetTemplate = SqwidgetTemplate;
-    window.SqwidgetWidget = SqwidgetWidget;
+    window.SqwidgetTemplate = Template;
+    window.SqwidgetWidget = Widget;
 
         
 
