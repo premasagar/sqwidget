@@ -187,7 +187,8 @@ var ready = (function(){
              * default value here so they can be set from the globalConfig method */
             config: {
                 development: false,
-                experimental: false
+                experimental: false,
+                automatic: true,
             },
             /** Sqwidget's own dependencies */
             dependencies: {
@@ -2282,10 +2283,12 @@ var ready = (function(){
                  }
                 _('templates: ' + props(templates));
                 loaded = true;
-                // set default body
+                // set default body into widgets
                 setDefaultTemplates();
-                // run controller
-                runController();
+                // run controllers to set up dependencies via template.config, and
+                // then resolve and load dependencies
+                runControllers();
+                loadDependencies();
             });
         };      
         
@@ -2336,7 +2339,7 @@ var ready = (function(){
             }
         };
         
-        var runController = function() {
+        var runControllers = function() {
             for (w in widgets) {
                 _('running controller for ' + widgets[w].toString());
                 widgets[w].runController(scripts);
@@ -2475,19 +2478,21 @@ var ready = (function(){
 // a default function here, but can be overridden if called by the doc?
 
 Sqwidget.ready(function() {
-    _('starting sqwidget.ready');
+    if (Sqwidget.config.automatic) {
+        _('sqwidget (on automatic) loading and starting widgets');
     
-    // get widgets in the page as SqwidgetWidget objects
-    var widgets = Sqwidget.widgetsInDom();
+        // get widgets in the page as SqwidgetWidget objects
+        var widgets = Sqwidget.widgetsInDom();
     
-    _('found ' + widgets.length.toString() +' widget divs:');
+        _('found ' + widgets.length.toString() +' widget divs:');
     
-    for (w in widgets) {
-        _(' ' + widgets[w].toString());
-    }
-    // load templates as needed
-    for (w in widgets) {
-        widgets[w].init();
+        for (w in widgets) {
+            _(' ' + widgets[w].toString());
+        }
+        // load templates as needed
+        for (w in widgets) {
+            widgets[w].init();
+        }
     }
 });
 
