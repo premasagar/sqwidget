@@ -191,17 +191,16 @@ var ready = (function(){
                 automatic: true,
                 charset: 'utf-8'
             },
-            /** Sqwidget's own dependencies */
+            /** Sqwidget's own dependencies. TODO not currenrly used:  Use it or lose it*/
             dependencies: {
             },
             
             /** 
              * global register of dependencies, keyed by name, containing objects
              * like:
-             * {name:'thename', version:'the version', loaded: false, ref:<reference to ...>}
+             * {name:'thename', version:'the version', loaded: false, ref:<reference to loaded module>}
              * */
             dependencyRegister: {
-                
             }, 
             
             /** Sqwidget widget templates (classes) keyed by template name */
@@ -490,11 +489,12 @@ var ready = (function(){
              /**
              * Load dependencies (check that versions are satisfied, and issue script loading instructions
              * as needed)
-             * dependency in the form ['name', 'version'] or simply 'name'
+             * @param {Object:Template} template object that wants this dependency
+             * @param {Object} dependency a dependency in the form ['name', 'version'] or simply 'name'
              *
              */
 
-            addDependency: function(template,dependency) {
+            addDependency: function(template,dependency) {  
                 var name = null;
                 var minVersion = null;
                 if (typeof(dependency) === 'string') {
@@ -2518,14 +2518,14 @@ var ready = (function(){
         
         /**
          * Get a setting from, here or template or global config
-         * @param {String} key 
+         * @param {String} key key to search for
          * @param {Object} default Default value to apply if none comes from config
          * @returns {Object} settings or config value
          * Hierarchy here is data-sqwidget-settings, template config, sqwidget global config 
          * TODO settings hierarchy is not clear yet...
          */
         instance.getSetting = function(key, defaultValue) {
-            return settings[key] || dataSqwidget[key] || template.getConfig(key) || sqwidget.getConfig(key) || defaultValue;
+            return settings[key] || template.getSettings(key) || defaultValue;
         };
         
         
@@ -2595,6 +2595,8 @@ Sqwidget.ready(function() {
         for (w in widgets) {
             widgets[w].init();
         }
+        
+        
     }
 });
 
