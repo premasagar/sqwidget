@@ -193,8 +193,16 @@ var ready = (function(){
             },
             /** Sqwidget's own dependencies */
             dependencies: {
-                //TODO add jquery eventually to this and bootstrap own dependencies
             },
+            
+            /** 
+             * global register of dependencies, keyed by name, containing objects
+             * like:
+             * {name:'thename', version:'the version', loaded: false, ref:<reference to ...>}
+             * */
+            dependencyRegister: {
+                
+            }, 
             
             /** Sqwidget widget templates (classes) keyed by template name */
             widgetTemplates: {},
@@ -482,13 +490,33 @@ var ready = (function(){
              /**
              * Load dependencies (check that versions are satisfied, and issue script loading instructions
              * as needed)
+             * dependency in the form ['name', 'version'] or simply 'name'
              *
              */
-            
-            loadDependencies: function(dependencies_block) {
-                
-        
+
+            addDependency: function(template,dependency) {
+                var name = null;
+                var minVersion = null;
+                if (typeof(dependency) === 'string') {
+                    name = dependency;
+                }
+                else {
+                    name = dependency[0];
+                    minVersion = dependency[1];
+                }
+                var existing = this.dependencyRegister[name];
+                if (existing) {
+                    //TODO version comparison
+                    this.dependencyRegister[name].clients.push(template);
+                }
+                else {
+                    this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, ref:null, clients:[template]};
+                }
             },
+            
+            getDependencyRegister: function() {
+                return this.dependencyRegister;
+            }
             
             
         };
@@ -2217,8 +2245,10 @@ var ready = (function(){
         var scripts = [];
         var templateText = '';
         var loaded = false;
+        var dependenciesLoaded = false;
         /** errors noted on template load */
         var errors = [];
+        var plugins = {};
         /** template config. default values here */
         var templateConfig = {
             "name": "sqwidget_template",
@@ -2346,9 +2376,14 @@ var ready = (function(){
         /**
          * Process and load dependencies for this template.
          * Adds to errors array if there are problems with loading templates
+         * Basically parse the dependencies block and pull out the entries, and pass them 
          */ 
         var loadDependencies = function() {
-            //errors.push('dependency loading failed (test)');
+            if (!dependenciesLoaded) {
+                for (i in templateConfig.dependencies) {
+                    sqwidget.addDependency(instance, templateConfig.dependencies[i]);
+                }
+            }
         };
         
         // PUBLIC methods   
@@ -2378,6 +2413,8 @@ var ready = (function(){
         instance.getScripts = function() {
             return scripts;
         };
+        
+        
         // Load the template now
         loadTemplate();
         
@@ -2408,7 +2445,7 @@ var ready = (function(){
          * @return {undefined}
          */
         var evalScript = function(evalScript) {
-                _('script is ' + evalScript);
+            _('eval script is ' + evalScript);
             var widget = instance;
             //TODO minimise context for controller functions
             eval(evalScript.toString());
@@ -2439,8 +2476,7 @@ var ready = (function(){
             //attach ourselves to template
             var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
             sqTemplate.register(instance);
-            template = sqTemplate;
-            
+            template = sqTemplate;            
         };
         
         //TODO fit this into the proper place
@@ -2547,7 +2583,7 @@ Sqwidget.ready(function() {
     if (Sqwidget.config.automatic) {
         _('sqwidget (on automatic) loading and starting widgets ');
     
-        // get widgets in the page as SqwidgetWidget objects
+        // get widgets in the page as Widget objects
         var widgets = Sqwidget.widgetsInDom();
     
         _('found ' + widgets.length.toString() +' widget divs:');

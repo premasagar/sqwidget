@@ -11,11 +11,10 @@
       "desc": "Lorem ipsum",
       "url": "http://example.com/widget", // get the widget, via your taskbar
 	  "ui" : "hostpage",
-      "dependencies": {
-        "nitelite": "1.3.1",
-        "appleofmyiframe": "0.3.3",
-        "cleanslate": "6.1.8"
-      },
+	   dependencies: [
+			'cleanslate',
+			['appleofmyiframe', '1.2.3'],
+		],
 	  "settings" : { //can we overridden by data-sqwidget-settings
 		'package' : "en"
 	  }
