@@ -30,7 +30,28 @@ Sqwidget.plugin('hello', function(){
 //
 
 // controller
+function hello(){
+
+}
+
+(function(){
+    // messy stuff
+}());
+
+exports.hello = hello;
+// or
+templateMethods = {
+    hello: hello
+};
+
 hello();
 
 // render markup template
 Sqwidget.render('<p>{{hello.greeting}}</p>', {hello:{greeting: 'hi there'}});
+Sqwidget.render('<p>{{hello.greeting}}</p>', {hello:hello, data:{hello:{greeting: 'hi there'}}, lang:lang.en});
+
+exports = {
+    hello:hello,
+    lang:lang.en
+}
+Sqwidget.render('<p>{{hello.greeting}}</p>', $.extend(true, data, exports));
