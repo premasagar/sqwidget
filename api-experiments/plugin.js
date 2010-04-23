@@ -3,10 +3,28 @@ Sqwidget.plugins.hello = function(){
 };
 
 // or
-
 Sqwidget.plugin('hello', function(){
     alert('Hello world');
 });
+
+// or
+Sqwidget.plugin('hello', function(){
+    alert('Hello world');
+}, '0.3.1');
+
+// or
+Sqwidget.plugin(
+    'hello',
+    
+    $.extend(
+        function(){
+            alert('Hello world');
+        },
+        {
+            v: '0.3.1'
+        }
+    )
+);
 
 // or
 
