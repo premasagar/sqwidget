@@ -33,7 +33,7 @@ h2. Features & Vision
 
 h2. Status of the project
 
-Sqwidget is under rapid development at the moment. An initial release is anticipated around Summer 2010. However, some of the plugins listed below are ready for production. Further documentation, examples and tutorials are on their way.
+Sqwidget is under rapid development at the moment. An initial release is anticipated around Summer 2010. However, some of the plugins listed below are ready for production. See "the wiki":http://wiki.github.com/premasagar/sqwidget/ for emerging documentation, examples and tutorials.
 
 
 h2. Plugins and complementary projects
