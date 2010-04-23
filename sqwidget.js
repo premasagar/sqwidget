@@ -189,6 +189,7 @@ var ready = (function(){
                 development: false,
                 experimental: false,
                 automatic: true,
+                charset: 'utf-8'
             },
             /** Sqwidget's own dependencies */
             dependencies: {
@@ -212,6 +213,10 @@ var ready = (function(){
                     }
                 }
                 return this.config;
+            },
+            
+            getConfig: function(key) {
+                return this.config[key];
             },
             
             
@@ -2221,8 +2226,12 @@ var ready = (function(){
              "title": "Generic sqwidget widget",
              "desc": "-",
              "url": "http://github.com/sqwidget", 
+             "ui" : "hostpage",
              "dependencies": {
              },
+             "settings": {
+                 
+             }
         };
 
         // PRIVATE methods
@@ -2253,11 +2262,15 @@ var ready = (function(){
                 }
                 if (errors.length ===0) {
                     // set default body into widgets
+                    // maybe don't do this here
                     setDefaultTemplates();
                     // run controllers to set up dependencies via template.config, and
                     // then resolve and load dependencies
                     runControllers();
-                    //loadDependencies();
+                    loadDependencies();
+                    if (errors.length !==0) {
+                        showErrorsInWidgets();
+                    }
                 }
                 else {
                     showErrorsInWidgets();
@@ -2282,7 +2295,7 @@ var ready = (function(){
                 templateStr = template;
             }
             // flush out body
-            bodystr = template.match(/<body>([\w\W]*)<\/body>([\w\W]*?)$/);
+            bodystr = template.match(/<body[^>]*>([\w\W]*)<\/body>([\w\W]*?)$/);
             body = bodystr[1];
             _(' Body is ' + body);
             if (body !== null) {
@@ -2297,9 +2310,9 @@ var ready = (function(){
             });
             
             //
-            // grab javascripts from head an execute in order
+            // grab javascripts from head and execute in order
             //
-            j.filter('script[type!=text/template]')
+            j.filter('script:not([type]), script[type=text/javascript]')
              .each(function(i, t){
                 t = jQuery(t);
                 scripts.push(t.text());
@@ -2308,7 +2321,10 @@ var ready = (function(){
         
         var setDefaultTemplates = function() {
             for (w in widgets) {
-                widgets[w].render(templates['default']);
+                // render default template if there is one
+                if (templates['default']) {
+                    widgets[w].render(templates['default']);
+                }
             }
         };
         
@@ -2322,9 +2338,17 @@ var ready = (function(){
         var showErrorsInWidgets = function() {
             if (sqwidget.config.development) {
                 for (w in widgets) {
-                    widgets[w].render('<div style="color: red;border:1px solid red;">Sqwidget Errors:<ul><li>' + errors.join('</li><li>') + '</li></ul></div>');
+                    widgets[w].render('<div style="color: red;border:1px dashed red;">Sqwidget Errors:<ul><li>' + errors.join('</li><li>') + '</li></ul></div>');
                 }
             }
+        };
+        
+        /**
+         * Process and load dependencies for this template.
+         * Adds to errors array if there are problems with loading templates
+         */ 
+        var loadDependencies = function() {
+            //errors.push('dependency loading failed (test)');
         };
         
         // PUBLIC methods   
@@ -2346,6 +2370,10 @@ var ready = (function(){
             }
             return templateConfig;
         };
+        
+        instance.getConfig = function(dict){
+            return templateConfig[key];
+        }
 
         instance.getScripts = function() {
             return scripts;
@@ -2376,16 +2404,34 @@ var ready = (function(){
       
         /**
          * eval script in the context of this object
-         * TODO parse things a little bit here, and provide some eval context (with...)
-         * TODO execute in own context by making a separate scope here off global
          * @param {String} string of script to eval. Should be text/javascript
          * @return {undefined}
          */
         var evalScript = function(evalScript) {
-            _('script is ' + evalScript);
+                _('script is ' + evalScript);
+            var widget = instance;
+            //TODO minimise context for controller functions
             eval(evalScript.toString());
         };
         
+        /**
+         * Render template
+         * TODO fit with UI rendering pipeline
+         * 
+         */
+        var renderTemplate = function(source) {
+            //TODO add template processing in here, based
+            // on settings (various)
+            return source;
+        }
+          
+        /**
+         * set template config dict
+         * This used to allow widget.config({..}); in intial embed
+         */
+        instance.config = function(dict) {
+            template.config(dict);
+        }      
         /**
          * Get this widget up and running
          */
@@ -2394,11 +2440,34 @@ var ready = (function(){
             var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
             sqTemplate.register(instance);
             template = sqTemplate;
-            // run scripts on template in context of this widget
             
         };
         
+        //TODO fit this into the proper place
+        ui = {
+            head: function(content) {
+                $('head').append(content)
+            },
+            body: function(content){
+               container.empty().append(content);
+            }
+        };
+        /*
+        // set the ui engine
+        instance.ui = template.config.ui || sqwidget.defaultConfig.ui;
         
+        // create the main ui for this widget instance
+        instance.main = instance.ui();
+        // add style to document head (using default ui engine)
+        instance.main.head('<style></style>');
+        instance.main.body('<p>blah</p>');
+        instance.main.body.template = template.templates['default'];
+        instance.main.body(mainTemplate, dataJson);
+        
+        instance.lightbox = instance.ui('appleofmyiframe');
+        instance.lightbox.template = templates.lightbox;
+        instance.lightbox.body('<p>blah</p>');
+        */
         
         // TODO put somewhere generically useful
         var props = function(a) {
@@ -2412,12 +2481,27 @@ var ready = (function(){
         // PUBLIC METHODS
         
         /**
+         * Get a setting from, here or template or global config
+         * @param {String} key 
+         * @param {Object} default Default value to apply if none comes from config
+         * @returns {Object} settings or config value
+         * Hierarchy here is data-sqwidget-settings, template config, sqwidget global config 
+         * TODO settings hierarchy is not clear yet...
+         */
+        instance.getSetting = function(key, defaultValue) {
+            return settings[key] || dataSqwidget[key] || template.getConfig(key) || sqwidget.getConfig(key) || defaultValue;
+        };
+        
+        
+        
+        
+        /**
          * Render html into this widget
          * @param {String} inner html to be rendered into the div for this widget
          * TODO: cache, keep existing content to pop out etc
          */ 
         instance.render = function(html) {
-            //TODO pass through template rendering pipeline
+            var s = renderTemplate(html);
             jQuery(container).html(html);
         };
         
