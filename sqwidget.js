@@ -483,20 +483,7 @@ var ready = (function(){
             loadDependencies: function(dependencies_block) {
                 
         
-            },
-            
-            /**
-             * Load and parse widget template
-             * @param url The url to load the template from.  This is typically given in a 
-             * data-sqwidget block in the div where a widget is to be inserted.
-             * TODO is this the correct structure for doing this?
-             * TODO where do errors get reported?  options for this?
-             */
-            loadWidgetTemplate: function(url) {
-                
-                
-            },
-            
+            },            
             
         };
         
