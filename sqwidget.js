@@ -474,32 +474,7 @@ var ready = (function(){
                 return t;
             },
             
-            
-            
-            
-            /**
-             * Register a widget
-             * This called from the head of an associated widget document.  
-             * This is where register a widget's properties and dependencies.
-             * Sqwidget grabs
-             * and keeps a copy of these, and then leads on to load dependencies.  So, this is called
-             * either as a part of parsing the widget html or json and evaling the head script element where
-             * it is defined.  Or it may be invoked if standalone-sqwidget.js (or however named) is provided
-             *
-             * @param properties Object containing properties defining this widget instance.
-             */
-            register: function(properties) {
-                _('Sqwidget,register() with props');
-                // parse and store properties
-                
-                
-                
-                // invoke dependencies and load anything that is needed
-                loadDependencies()
-                 
-            },
-            
-            /**
+             /**
              * Load dependencies (check that versions are satisfied, and issue script loading instructions
              * as needed)
              *
@@ -2479,7 +2454,7 @@ var ready = (function(){
 
 Sqwidget.ready(function() {
     if (Sqwidget.config.automatic) {
-        _('sqwidget (on automatic) loading and starting widgets');
+        _('sqwidget (on automatic) loading and starting widgets ');
     
         // get widgets in the page as SqwidgetWidget objects
         var widgets = Sqwidget.widgetsInDom();
