@@ -3,21 +3,36 @@
 <head>
     <title>BBC@ Sqwidget</title>
     <script type="text/javascript" charset="utf-8">
-    template.config({
-      "name": "mysqwidget2",
+    widget.config({
+      "name": "x",
       "version": "0.1.0",
-      "title": "BBC 2 Sqwidget",
+      "title": "My widget does stuff",
       "desc": "Lorem ipsum",
-      "url": "http://example.com/widget2",
+      "url": "http://example.com/widget", // get the widget, via your taskbar
+	  "ui" : "hostpage",
       "dependencies": {
         "nitelite": "1.3.1",
         "appleofmyiframe": "0.3.3",
         "cleanslate": "6.1.8"
-      }
+      },
+	  "settings" : { //can we overridden by data-sqwidget-settings
+		'package' : "en"
+	  }
     });
     </script>
+	<script charset="utf-8">
+		// two
+	</script>
+	<script charset="utf-8">
+		//three
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		//four
+		//controller
+	</script>
 
 	<script type="text/javascript" charset="utf-8">
+		//five
 		//controller
 	</script>
 

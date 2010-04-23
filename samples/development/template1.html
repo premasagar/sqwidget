@@ -1,22 +1,27 @@
 <!doctype html>
 <html>
 <head>
-    <title>BBC Sqwidget</title>
-    <script type="text/javascript" charset="utf-8">
-    template.config({
+	<meta charset="utf-8">
+    <title>My First Sqwidget</title>
+    <script>
+    widget.config({
       "name": "x",
       "version": "0.1.0",
       "title": "My widget does stuff",
       "desc": "Lorem ipsum",
       "url": "http://example.com/widget", // get the widget, via your taskbar
+	  "ui" : "hostpage",
       "dependencies": {
         "nitelite": "1.3.1",
         "appleofmyiframe": "0.3.3",
         "cleanslate": "6.1.8"
-      }
+      },
+	  "settings" : { //can we overridden by data-sqwidget-settings
+		'package' : "en"
+	  }
     });
 	</script>
-	<script type="text/javascript" charset="utf-8">
+	<script type="text/stupid" charset="utf-8">
 		//controller
 	</script>
 
