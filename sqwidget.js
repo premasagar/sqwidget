@@ -483,7 +483,8 @@ var ready = (function(){
             loadDependencies: function(dependencies_block) {
                 
         
-            },            
+            },
+            
             
         };
         
@@ -2230,27 +2231,37 @@ var ready = (function(){
             jQuery.get(templateName, function(data, textStatus, request) {
                 // on template loaded
                 _('template data: ' + data);
-                _('template loaded');
-                //TODO handle template loading error (ideally, a nice display)
-                templateText = data;
-                parseTemplateFile(templateText);
-                
-                // TODO put somewhere generically useful
-                function props(a) {
-                     var r = [];
-                     for (key in a) {
-                         r.push(key + ': "' + a[key] + '"');
+                _('template text status: ' + textStatus);
+                if (data.length === 0 || textStatus != 'success') {
+                    // template load failed
+                    errors.push('loading of template ' + templateName + ' failed.');
+                }
+                else {
+                    _('template loaded');                
+                    templateText = data;
+                    parseTemplateFile(templateText);
+                    // TODO put somewhere generically useful
+                    function props(a) {
+                         var r = [];
+                         for (key in a) {
+                             r.push(key + ': "' + a[key] + '"');
+                         }
+                         return '{' + r.join(' ') + '}';
                      }
-                     return '{' + r.join(' ') + '}';
-                 }
-                _('templates: ' + props(templates));
-                loaded = true;
-                // set default body into widgets
-                setDefaultTemplates();
-                // run controllers to set up dependencies via template.config, and
-                // then resolve and load dependencies
-                runControllers();
-                loadDependencies();
+                    _('templates: ' + props(templates));
+                    loaded = true;
+                }
+                if (errors.length ===0) {
+                    // set default body into widgets
+                    setDefaultTemplates();
+                    // run controllers to set up dependencies via template.config, and
+                    // then resolve and load dependencies
+                    runControllers();
+                    //loadDependencies();
+                }
+                else {
+                    showErrorsInWidgets();
+                }
             });
         };      
         
@@ -2307,6 +2318,15 @@ var ready = (function(){
                 widgets[w].runController(scripts);
             }            
         };
+        
+        var showErrorsInWidgets = function() {
+            if (sqwidget.config.development) {
+                for (w in widgets) {
+                    widgets[w].render('<div style="color: red;border:1px solid red;">Sqwidget Errors:<ul><li>' + errors.join('</li><li>') + '</li></ul></div>');
+                }
+            }
+        };
+        
         // PUBLIC methods   
         /**
          * Register this widget with this template
