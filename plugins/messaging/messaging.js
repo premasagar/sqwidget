@@ -28,7 +28,9 @@ Sqwidget.plugin('messaging', function (sqwidget, jQuery) {
     * @param {String} topic. The topic name for this message
     */
 
-    // set up to listen on specific topic
+    /**
+     * start listening to a specific topic
+     */
     my.listen = function (topic, callback) {
         broker.bind('messaging-' + topic, callback);
     };
@@ -39,7 +41,7 @@ Sqwidget.plugin('messaging', function (sqwidget, jQuery) {
     * @param {Object} content The message content (can we whatever is agreed for this topic)
     */
     my.send = function (topic, content) {
-        broker.trigger('messaging-' + topic, content);
+        broker.triggerHandler('messaging-' + topic, content);
     };
 
 
