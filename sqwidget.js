@@ -169,8 +169,12 @@ var ready = (function(){
         // SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
         // TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
         this.Sqwidget = Sqwidget = {
-            version: '0.2bbc', //TODO require version management here?
-            //TODO tidy up settings later
+            version: '0.21a',
+            /** 
+             * These can be set from the Sqwidget.globalConfig()
+             * All global settings need to be given an initial
+             * default value here so they can be set from the globalConfig method 
+             */
             settings: { // TODO: Some props (e.g. 'lightbox') would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
                 jQuery: {
                     minVersion: '1.4', // minimum version of jQuery to allow, if already in DOM
@@ -181,15 +185,13 @@ var ready = (function(){
                         $: false,
                         jQuery: false
                     }
-                }
-            },
-            /** These can be set from the Sqwidget.globalConfig All global settings need to be given an initial
-             * default value here so they can be set from the globalConfig method */
-            config: {
+                },
                 development: false,
                 experimental: false,
                 automatic: true,
-                charset: 'utf-8'
+                charset: 'utf-8',
+                basePath: '',
+                pluginPath: 'plugins',
             },
             /** Sqwidget's own dependencies. TODO not currenrly used:  Use it or lose it*/
             dependencies: {
@@ -214,16 +216,16 @@ var ready = (function(){
             globalConfig: function(dict) {
                 if (dict) {
                     for(key in dict) {
-                        if (key in this.config) {
-                            this.config[key] = dict[key];
+                        if (key in this.settings) {
+                            this.settings[key] = dict[key];
                         }
                     }
                 }
-                return this.config;
+                return this.settings;
             },
             
             getConfig: function(key) {
-                return this.config[key];
+                return this.settings[key];
             },
             
             
@@ -2366,7 +2368,7 @@ var ready = (function(){
         };
         
         var showErrorsInWidgets = function() {
-            if (sqwidget.config.development) {
+            if (sqwidget.settings.development) {
                 for (w in widgets) {
                     widgets[w].render('<div style="color: red;border:1px dashed red;">Sqwidget Errors:<ul><li>' + errors.join('</li><li>') + '</li></ul></div>');
                 }
@@ -2473,7 +2475,7 @@ var ready = (function(){
          * Get this widget up and running
          */
         instance.init = function() {
-            //attach ourselves to template
+            //attach ourselves to template -- this also loads the template if that hasn't happened before
             var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
             sqTemplate.register(instance);
             template = sqTemplate;            
@@ -2580,7 +2582,7 @@ var ready = (function(){
 // a default function here, but can be overridden if called by the doc?
 
 Sqwidget.ready(function() {
-    if (Sqwidget.config.automatic) {
+    if (Sqwidget.settings.automatic) {
         _('sqwidget (on automatic) loading and starting widgets ');
     
         // get widgets in the page as Widget objects
