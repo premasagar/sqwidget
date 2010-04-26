@@ -307,6 +307,44 @@ var ready = (function(){
             },
             
             /**
+             * Build a resource path, sqwidget style, with a base, another bit and
+             * a name of something to load.
+             * as in basePath + subPath (like pluginPath) + item where any of these can be base or absolute
+             * @param {String} base The base, usually going to be settings.basePath.  A '/' path separator will be added to the end of this if missing
+             * @param {String} sub The sub path element, like plugins or css or similar.
+             * @param {String} item The item name itself (with or without extension)
+             * @param {String} extension File extension to be added to item if it doesn't already have one on the end.  This is **without the dot**
+             */
+            
+            buildResourcePath: function(base, sub, item, extension) {
+                base = jQuery.trim(base);
+                sub = jQuery.trim(sub);
+                item = jQuery.trim(item);
+                extension = jQuery.trim(extension);
+                // check for absolutes
+                function isAbsolute(s) {
+                    return s.search(/^[a-z]+:\/\//)===0 || s.search(/^\//)===0;
+                }
+                // if item is absolute, then just return it.
+                if (isAbsolute(item)) { 
+                    return item; 
+                }
+                // check for item extension and add if needed
+                if (extension.length>0 && !item.match(new RegExp('\.' + extension  + '$'))) {
+                    item += '.js';
+                }
+                if (isAbsolute(sub)) {
+                    return sub + item;
+                }
+                if (!base.match(/\/$/)) {
+                    base += '/';
+                }
+                return base + sub + item;                
+            },
+            
+            
+            
+            /**
              * Compare a version string with another, e.g. '1.2.6' with '1.3.2'
              * @returns -1 (a<b), 0 (a==b) or 1 (b>a)
              * TODO: Treat '1.4.0' the same as '1.4'
