@@ -13,7 +13,7 @@
 /*jsLint */
 /*global Sqwidget */
  
-Sqwidget.plugin('messaging', function (sqwidget, jQuery) {
+Sqwidget.plugin('messaging', function (sqwidget, widget, jQuery) {
     var my = {},
         brokerName = "sqwidget-message-broker",
         brokerHtml = '<div id="' + brokerName + '" style="display: none;"></div>',

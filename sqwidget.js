@@ -336,7 +336,7 @@ var ready = (function(){
                 if (isAbsolute(sub)) {
                     return sub + item;
                 }
-                if (!base.match(/\/$/)) {
+                if (base.length>0 && !base.match(/\/$/)) {
                     base += '/';
                 }
                 return base + sub + item;                
@@ -534,7 +534,7 @@ var ready = (function(){
              *
              */
 
-            addDependency: function(template,dependency) {  
+            addDependency: function(widget,dependency) {  
                 var name = null;
                 var minVersion = null;
                 if (typeof(dependency) === 'string') {
@@ -547,17 +547,41 @@ var ready = (function(){
                 var existing = this.dependencyRegister[name];
                 if (existing) {
                     //TODO version comparison
-                    this.dependencyRegister[name].clients.push(template);
+                    existing.clients.push(widget);
+                    if (existing.loaded) {
+                        widget.setPlugin(existing.name, existing.module);
+                    }
                 }
                 else {
-                    this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, ref:null, clients:[template]};
+                    this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget]};
+                    // initiate load
+                    var loadPath = this.buildResourcePath(this.settings.basePath, this.settings.pluginPath, name, 'js');
+                    this.getScript(loadPath, function(){});
+                    
                 }
             },
             
             getDependencyRegister: function() {
                 return this.dependencyRegister;
-            }
+            },
             
+            /**
+             * Called by plugins to register themselves
+             * @param {String} name the namespace name for this thing
+             * @param {Object} module the module constructor. Call to create an object of this type
+             * @param {String} version the version of this plugin 
+             *
+             */
+             
+            plugin: function(name, module, version) {
+                var dep = this.dependencyRegister[name];
+                dep.module = module;
+                dep.loaded = true;
+                dep.version = version;
+                for (client in dep.clients) {
+                    dep.clients[client].setPlugin(name, module);
+                }
+            }
             
         };
         
@@ -909,7 +933,6 @@ var ready = (function(){
         var dependenciesLoaded = false;
         /** errors noted on template load */
         var errors = [];
-        var plugins = {};
         /** template config. default values here */
         var templateConfig = {
             "name": "sqwidget_template",
@@ -957,8 +980,8 @@ var ready = (function(){
                     setDefaultTemplates();
                     // run controllers to set up dependencies via template.config, and
                     // then resolve and load dependencies
-                    runControllers();
-                    loadDependencies();
+                    initWidgets();
+                    //runControllers();
                     if (errors.length !==0) {
                         showErrorsInWidgets();
                     }
@@ -1019,10 +1042,10 @@ var ready = (function(){
             }
         };
         
-        var runControllers = function() {
+        var initWidgets = function() {
             for (w in widgets) {
                 _('running controller for ' + widgets[w].toString());
-                widgets[w].runController(scripts);
+                widgets[w].onTemplateLoaded();
             }            
         };
         
@@ -1034,18 +1057,6 @@ var ready = (function(){
             }
         };
         
-        /**
-         * Process and load dependencies for this template.
-         * Adds to errors array if there are problems with loading templates
-         * Basically parse the dependencies block and pull out the entries, and pass them 
-         */ 
-        var loadDependencies = function() {
-            if (!dependenciesLoaded) {
-                for (i in templateConfig.dependencies) {
-                    sqwidget.addDependency(instance, templateConfig.dependencies[i]);
-                }
-            }
-        };
         
         // PUBLIC methods   
         /**
@@ -1054,6 +1065,7 @@ var ready = (function(){
          */
         instance.register = function(widget) {
             widgets.push(widget);
+
         };
 
         instance.config = function(dict) {
@@ -1070,12 +1082,20 @@ var ready = (function(){
         instance.getConfig = function(dict){
             return templateConfig[key];
         }
+        
+        instance.loadDependencies = function(widget) {
+            for (i in templateConfig.dependencies) {
+                sqwidget.addDependency(widget, templateConfig.dependencies[i]);
+            }
+        }
 
         instance.getScripts = function() {
             return scripts;
         };
         
-        
+        instance.setPlugin = function(name, module) {
+            plugins[name] = module;
+        }
         // Load the template now
         loadTemplate();
         
@@ -1098,7 +1118,7 @@ var ready = (function(){
         var dataSqwidget = dataSqwidget;
         var settings = dataSqwidgetSettings;
         var template = null;
-      
+        var plugins={};
       
         /**
          * eval script in the context of this object
@@ -1122,7 +1142,8 @@ var ready = (function(){
             // on settings (various)
             return source;
         }
-          
+         
+         
         /**
          * set template config dict
          * This used to allow widget.config({..}); in intial embed
@@ -1136,9 +1157,18 @@ var ready = (function(){
         instance.init = function() {
             //attach ourselves to template -- this also loads the template if that hasn't happened before
             var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
+            template = sqTemplate;
             sqTemplate.register(instance);
-            template = sqTemplate;            
         };
+        
+        instance.onTemplateLoaded= function() {
+            instance.runController(template.getScripts());    
+            template.loadDependencies(instance);  
+        }
+        
+        instance.setPlugin = function(name, module) {
+            plugins[name] = module(sqwidget, instance, jQuery);
+        }
         
         //TODO fit this into the proper place
         ui = {
