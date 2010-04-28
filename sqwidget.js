@@ -1119,6 +1119,7 @@ var ready = (function(){
         var settings = dataSqwidgetSettings;
         var template = null;
         var plugins={};
+        var controller = null;
       
         /**
          * eval script in the context of this object
@@ -1141,8 +1142,14 @@ var ready = (function(){
             //TODO add template processing in here, based
             // on settings (various)
             return source;
-        }
-         
+        };
+        /**
+         * TODO
+         * Check we have all plugins namespaced, er how do we know
+         */
+        var checkPluginsSatisfied = function() {
+            
+        };
          
         /**
          * set template config dict
@@ -1168,6 +1175,7 @@ var ready = (function(){
         
         instance.setPlugin = function(name, module) {
             plugins[name] = module(sqwidget, instance, jQuery);
+            //TODO check all plugins loaded
         }
         
         //TODO fit this into the proper place
@@ -1179,6 +1187,15 @@ var ready = (function(){
                container.empty().append(content);
             }
         };
+        
+        /**
+         * Register controller function to be executed when all plugins loaded
+         *
+         */
+        instance.controller = function(controller_fn) {
+            controller = controller_fn;
+        };
+        
         /*
         // set the ui engine
         instance.ui = template.config.ui || sqwidget.defaultConfig.ui;
@@ -1212,8 +1229,7 @@ var ready = (function(){
          * @param {String} key key to search for
          * @param {Object} default Default value to apply if none comes from config
          * @returns {Object} settings or config value
-         * Hierarchy here is data-sqwidget-settings, template config, sqwidget global config 
-         * TODO settings hierarchy is not clear yet...
+         * Hierarchy here is data-sqwidget-settings, template config settings
          */
         instance.getSetting = function(key, defaultValue) {
             return settings[key] || template.getSettings(key) || defaultValue;
