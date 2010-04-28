@@ -200,7 +200,7 @@ var ready = (function(){
             /** 
              * global register of dependencies, keyed by name, containing objects
              * like:
-             * {name:'thename', version:'the version', loaded: false, ref:<reference to loaded module>}
+             * {name:'thename', version:'the version', loaded: false, ref:<reference to loaded module>, clients: [] array of client widgets}
              * */
             dependencyRegister: {
             }, 
@@ -566,6 +566,22 @@ var ready = (function(){
             },
             
             /**
+             * Review all dependencies
+             * @return {Boolean} true if all dependencies satisfied
+             */
+            checkDependencies: function(widgetClient) {
+                complete = true;
+                for (d in this.dependencyRegister) {
+                    if (widgetClient in this.dependencyRegister[d].clients) {
+                        if (!this.dependencyRegister[d].loaded) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            },
+            
+            /**
              * Called by plugins to register themselves
              * @param {String} name the namespace name for this thing
              * @param {Object} module the module constructor. Call to create an object of this type
@@ -581,7 +597,7 @@ var ready = (function(){
                 for (client in dep.clients) {
                     dep.clients[client].setPlugin(name, module);
                 }
-            }
+            },
             
         };
         
@@ -920,7 +936,7 @@ var ready = (function(){
         */
     
     var Template = function(sqwidget, templateName) {
-        var instance = {}; //neoclassical
+        var self = {}; //neoclassical
         var sqwidget = sqwidget;
         var templateName = templateName;
         /** set of widgets (instances on the page) for this template */
@@ -1063,12 +1079,12 @@ var ready = (function(){
          * Register this widget with this template
          *
          */
-        instance.register = function(widget) {
+        self.register = function(widget) {
             widgets.push(widget);
 
         };
 
-        instance.config = function(dict) {
+        self.config = function(dict) {
             if (dict) {
                 for(key in dict) {
                     if (key in templateConfig) {
@@ -1079,27 +1095,27 @@ var ready = (function(){
             return templateConfig;
         };
         
-        instance.getConfig = function(dict){
+        self.getConfig = function(dict){
             return templateConfig[key];
         }
         
-        instance.loadDependencies = function(widget) {
+        self.loadDependencies = function(widget) {
             for (i in templateConfig.dependencies) {
                 sqwidget.addDependency(widget, templateConfig.dependencies[i]);
             }
         }
 
-        instance.getScripts = function() {
+        self.getScripts = function() {
             return scripts;
         };
         
-        instance.setPlugin = function(name, module) {
+        self.setPlugin = function(name, module) {
             plugins[name] = module;
         }
         // Load the template now
         loadTemplate();
         
-        return instance;
+        return self;
     };
     
     /**
@@ -1110,17 +1126,18 @@ var ready = (function(){
      * TODO make Widget and Template
      */
     var Widget = function (sqwidget, type, div, dataSqwidget, dataSqwidgetSettings) {
-        var instance = {};
-        
-        var sqwidget = sqwidget;
-        var widgetType = type;
-        var container = div;
-        var dataSqwidget = dataSqwidget;
-        var settings = dataSqwidgetSettings;
-        var template = null;
-        var plugins={};
-        var controller = null;
-      
+        var 
+            self = {},
+            sqwidget = sqwidget,
+            widgetType = type,
+            container = div,
+            dataSqwidget = dataSqwidget,
+            settings = dataSqwidgetSettings,
+            template = null,
+            plugins={},
+            readyFn = null,
+            errorFn = null,
+            loadingFn = null;
         /**
          * eval script in the context of this object
          * @param {String} string of script to eval. Should be text/javascript
@@ -1128,7 +1145,7 @@ var ready = (function(){
          */
         var evalScript = function(evalScript) {
             _('eval script is ' + evalScript);
-            var widget = instance;
+            var widget = self;
             //TODO minimise context for controller functions
             eval(evalScript.toString());
         };
@@ -1147,35 +1164,42 @@ var ready = (function(){
          * TODO
          * Check we have all plugins namespaced, er how do we know
          */
-        var checkPluginsSatisfied = function() {
-            
+        var allPluginsLoaded = function() {
+            return sqwidget.checkDependencies(self);
         };
          
         /**
          * set template config dict
          * This used to allow widget.config({..}); in intial embed
          */
-        instance.config = function(dict) {
+        self.config = function(dict) {
             template.config(dict);
         }      
         /**
          * Get this widget up and running
          */
-        instance.init = function() {
+        self.init = function() {
             //attach ourselves to template -- this also loads the template if that hasn't happened before
             var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
             template = sqTemplate;
-            sqTemplate.register(instance);
+            sqTemplate.register(self);
         };
         
-        instance.onTemplateLoaded= function() {
-            instance.runController(template.getScripts());    
-            template.loadDependencies(instance);  
+        self.onTemplateLoaded= function() {
+            self.runController(template.getScripts());    
+            template.loadDependencies(self);  
         }
         
-        instance.setPlugin = function(name, module) {
-            plugins[name] = module(sqwidget, instance, jQuery);
+        self.setPlugin = function(name, module) {
+            plugins[name] = module(sqwidget, self, jQuery);
             //TODO check all plugins loaded
+            if (allPluginsLoaded()) {
+                if (readyFn) {
+                    var widget=self;
+                    _('running ready() for widget ' + container.id);
+                    readyFn.call(self);
+                }
+            }
         }
         
         //TODO fit this into the proper place
@@ -1189,12 +1213,21 @@ var ready = (function(){
         };
         
         /**
-         * Register controller function to be executed when all plugins loaded
+         * Register controller function(s) to be executed when all plugins loaded
          *
          */
-        instance.controller = function(controller_fn) {
-            controller = controller_fn;
+         
+        self.ready = function(fn) {
+            readyFn = fn;
         };
+        
+        self.loading = function(fn) {
+            loadingFn = fn;
+        }
+        
+        self.error = function(fn) {
+            errorFn = fn;
+        }
         
         /*
         // set the ui engine
@@ -1231,7 +1264,7 @@ var ready = (function(){
          * @returns {Object} settings or config value
          * Hierarchy here is data-sqwidget-settings, template config settings
          */
-        instance.getSetting = function(key, defaultValue) {
+        self.getSetting = function(key, defaultValue) {
             return settings[key] || template.getSettings(key) || defaultValue;
         };
         
@@ -1243,7 +1276,7 @@ var ready = (function(){
          * @param {String} inner html to be rendered into the div for this widget
          * TODO: cache, keep existing content to pop out etc
          */ 
-        instance.render = function(html) {
+        self.render = function(html) {
             var s = renderTemplate(html);
             jQuery(container).html(html);
         };
@@ -1253,7 +1286,7 @@ var ready = (function(){
         /**
          * Run the script controller
          */
-        instance.runController = function(scripts) {
+        self.runController = function(scripts) {
             for (s in scripts) {
                 evalScript(scripts[s]);
             }
@@ -1264,11 +1297,11 @@ var ready = (function(){
          * @return {String}
          */
          
-        instance.toString = function( ) {
+        self.toString = function( ) {
             return 'type: ' + widgetType + ' container id: ' + div.id + ' dataSqwidget: ' + props(dataSqwidget) + ' dataSqwidgetSettings: ' + props(settings);
         };
         
-        return instance;
+        return self;
     };
     
     // TEMP global exposure to play with classes
