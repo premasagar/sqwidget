@@ -11,17 +11,21 @@
  * plugin.
  */
 /*jsLint */
-/*global Sqwidget */
+/*global Sqwidget */    
  
 Sqwidget.plugin('messaging', function (sqwidget, widget, jQuery) {
-    var my = {},
+    var self = {},
         brokerName = "sqwidget-message-broker",
-        brokerHtml = '<div id="' + brokerName + '" style="display: none;"></div>',
+        brokerHtml = '<div id="' + brokerName + '" style="display: none;"></div>';
 
         // create element to hang messaging events onto, the 
         // so-called broker element
         // TODO body here to be abstracted by UI plugins? does it matter here?
-        broker = jQuery('body').append(brokerHtml);
+    var broker = jQuery('#'+brokerName);
+    if (broker.length==0) { 
+        jQuery('body').append(brokerHtml);
+        broker = jQuery('#'+brokerName);
+    }
 
     /**
     * Listen for a message
@@ -31,7 +35,7 @@ Sqwidget.plugin('messaging', function (sqwidget, widget, jQuery) {
     /**
      * start listening to a specific topic
      */
-    my.listen = function (topic, callback) {
+    self.listen = function (topic, callback) {
         broker.bind('messaging-' + topic, callback);
     };
 
@@ -40,11 +44,11 @@ Sqwidget.plugin('messaging', function (sqwidget, widget, jQuery) {
     * @param {String} topic The topic name to send to
     * @param {Object} content The message content (can we whatever is agreed for this topic)
     */
-    my.send = function (topic, content) {
+    self.send = function (topic, content) {
         broker.triggerHandler('messaging-' + topic, content);
     };
 
 
 
-    return my;
-}, '0.1.0');
+    return self;
+}, '0.1.0',['jquery']);
