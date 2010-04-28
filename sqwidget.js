@@ -1156,9 +1156,9 @@ var ready = (function(){
          * TODO fit with UI rendering pipeline
          * 
          */
-        var renderTemplate = function(source) {
-            //TODO add template processing in here, based
-            // on settings (various)
+        var renderTemplate = function(source, contents) {
+            // assemble contents and them tmpl them 
+            // and return the result
             return source;
         };
         /**
@@ -1274,16 +1274,19 @@ var ready = (function(){
         
         /**
          * Render html into this widget
-         * @param {String} inner html to be rendered into the div for this widget
-         * TODO: cache, keep existing content to pop out etc
+         * @param {String} html Inner html to be rendered into the div for this widget
+         * @param {jQuery} place The place to render into [optional]. Otherwise, 
+         * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
          */ 
-        self.render = function(html, place) {
-            var s = renderTemplate(html);
+        self.render = function(html, place, contents) {
+            var s = renderTemplate(html, contents);
             var p = place || container;
             jQuery(p).html(s);
         };
        
-       
+       /**
+        * Show the loading template
+        */
        self.showLoading = function() {
            if (loadingFn) {
                var widget=self;
@@ -1296,11 +1299,16 @@ var ready = (function(){
                }
            }
        };
-       
-       self.setTemplate = function(name, place) {
+       /**
+        * Render html into this widget
+        * @param {String} html Inner html to be rendered into the div for this widget
+        * @param {jQuery} place The place to render into [optional]. Otherwise, 
+        * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
+        */        
+       self.setTemplate = function(name, place, contents) {
            var d = template.getTemplate(name);
            if (d) {
-               self.render(d, place);
+               self.render(d, place, contents);
            }
        };
 
