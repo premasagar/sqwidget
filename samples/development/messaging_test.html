@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Messaging Test</title>
+    <script>
+    widget.config({
+      "name": "Messaging Test",
+      "version": "1.0.0",
+      "title": "Test messaging plugin",
+      "desc": "Sends and receives messages using the messaging plugin",
+      "url": "http://github.com/premasagar/swidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	   dependencies: [
+			'messaging'
+		],
+	  "settings" : { //can we overridden by data-sqwidget-settings
+		'package' : "en"
+	  }
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+		    // set name of list
+		    jQuery('p',container).html('Messages received by ' + container.id);
+		    // append messages received
+		    plugins.messaging.listen('test_broker', function(event,stuff) {
+		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
+		    });
+		    // send a message to topic
+            plugins.messaging.send('test_broker', {text:'hello', from:container.id});
+		});
+	</script>
+</head>
+
+<body>
+    <p>Messages received:</p>
+    <ul class="message_list">        
+    </ul>
+</body>
+</html>
