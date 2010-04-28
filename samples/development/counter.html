@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"> <!-- this is optional, because Sqwidget anyway sets utf-8 as the default -->
+    <title>Counter Test</title>
+    <script>
+    widget.config({
+      "name":    "counter_test",
+      "version": "0.1.0",
+      "title":   "Demonstrates messaging",
+      "desc":    "Demonstrates messaging",
+      "url":     "http://github.com/premasagar/sqwidget", // get the widget, via your taskbar
+      "ui" :     "hostpage",
+      "dependencies": [
+        ["messaging",'0.1.0']
+      ],
+      "settings" : { //can we overridden by data-sqwidget-settings
+        'package' : "en"
+      }
+    });
+    </script>
+    <script charset="utf-8">
+        widget.ready(function() {
+         // this to be executed once loaded and all plugins satisfied
+        // run in the widget namespace
+        
+        
+        
+        });
+        // and loading script.. has jQuery but not dependencies
+        widget.loading(function() {
+            
+        });
+        // dependencies failed loading or template parse or load failed
+        // this may default to giving an error message if nothing given here
+        widget.error(function() {
+            
+        });
+        
+    </script>
+    <script charset="utf-8">
+        //three
+    </script>
+    <script>
+        //four
+        //controller
+    </script>
+
+
+    <script>
+        //five
+        //controller
+    </script>
+
+    <script type="text/template" id="lightbox">
+        <p>Look closer</p>
+    </script>
+    <script type="text/template" id="loading">
+        <p>Loading...</p>
+    </script>
+    <script type="text/template" id="error">
+        <p>It broke!</p>
+        <p>{{error_list}}</p>
+    </script>
+
+    <script type="text/template" id="docked">
+        <img src="{{data.logoSrc}}" alt="{{data.title}}">
+    </script>
+</head>
+
+<body>
+    <p>Hello world (2)</p>
+</body>
+</html>

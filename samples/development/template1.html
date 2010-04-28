@@ -19,8 +19,14 @@
 	  }
     });
 	</script>
-	<script type="text/stupid" charset="utf-8">
-		//controller
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+		    plugins.messaging.listen('things', function(e,stuff) {
+		        _(container.id + ' got msg ' + stuff.text + ' from ' + stuff.from);
+		        return true;
+		    });
+            plugins.messaging.send('things', {text:'hello', from:container.id});
+		});
 	</script>
 
     <script type="text/template" id="lightbox">
