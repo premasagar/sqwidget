@@ -993,7 +993,7 @@ var ready = (function(){
                 if (errors.length ===0) {
                     // set default body into widgets
                     // maybe don't do this here
-                    setDefaultTemplates();
+                    setLoading();
                     // run controllers to set up dependencies via template.config, and
                     // then resolve and load dependencies
                     initWidgets();
@@ -1049,12 +1049,10 @@ var ready = (function(){
             }); 
         };
         
-        var setDefaultTemplates = function() {
+        var setLoading = function() {
             for (w in widgets) {
                 // render default template if there is one
-                if (templates['default']) {
-                    widgets[w].render(templates['default']);
-                }
+                widgets[w].showLoading();
             }
         };
         
@@ -1081,7 +1079,6 @@ var ready = (function(){
          */
         self.register = function(widget) {
             widgets.push(widget);
-
         };
 
         self.config = function(dict) {
@@ -1097,21 +1094,25 @@ var ready = (function(){
         
         self.getConfig = function(dict){
             return templateConfig[key];
-        }
+        };
         
         self.loadDependencies = function(widget) {
             for (i in templateConfig.dependencies) {
                 sqwidget.addDependency(widget, templateConfig.dependencies[i]);
             }
-        }
+        };
 
         self.getScripts = function() {
             return scripts;
         };
         
+        self.getTemplate = function(name) {
+            return templates[name];
+        }
+        
         self.setPlugin = function(name, module) {
             plugins[name] = module;
-        }
+        };
         // Load the template now
         loadTemplate();
         
@@ -1276,11 +1277,32 @@ var ready = (function(){
          * @param {String} inner html to be rendered into the div for this widget
          * TODO: cache, keep existing content to pop out etc
          */ 
-        self.render = function(html) {
+        self.render = function(html, place) {
             var s = renderTemplate(html);
-            jQuery(container).html(html);
+            var p = place || container;
+            jQuery(p).html(s);
         };
-        
+       
+       
+       self.showLoading = function() {
+           if (loadingFn) {
+               var widget=self;
+               loadingFn.call(self);
+           }
+           else {
+               var t = template.getTemplate('loading');
+               if (t) {
+                   self.render(t);
+               }
+           }
+       };
+       
+       self.setTemplate = function(name, place) {
+           var d = template.getTemplate(name);
+           if (d) {
+               self.render(d, place);
+           }
+       };
 
         
         /**

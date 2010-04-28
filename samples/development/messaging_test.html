@@ -21,6 +21,7 @@
 	</script>
 	<script type="text/javascript" charset="utf-8">
 		widget.ready(function() {
+		    widget.setTemplate('default');
 		    // set name of list
 		    jQuery('p',container).html('Messages received by ' + container.id);
 		    // append messages received
@@ -30,6 +31,9 @@
 		    // send a message to topic
             plugins.messaging.send('test_broker', {text:'hello', from:container.id});
 		});
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
 	</script>
 </head>
 

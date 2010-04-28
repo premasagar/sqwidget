@@ -62,13 +62,23 @@
         <p><em>Expected result: msg1 receives 2 messages, msg2 receives one.</em></p>
     <div id="msg1"
         data-sqwidget="template:messaging_test.html"
-        style="padding:0; margin:0; border:none;"
-    >Messaging Test 1</div>
+        style="padding:0; margin:0; border:1px dashed black;"
+    ></div>
     <div id="msg2"
         data-sqwidget="template:messaging_test.html"
-        style="padding:0; margin:0; border:none;"
-    >Messaging Test 2</div>
+        style="padding:0; margin:0; border:1px dashed black;"
+    ></div>
     </div>
+    <hr>
+    <div>
+        <h2>Loading test</h2>
+            <p><em>Expected result: Widget displays Loading...</em></p>
+        <div id="loading1"
+            data-sqwidget="template:loading_test.html"
+            style="padding:0; margin:0; border:1px dashed black;"
+        ></div>
+    </div>
+    <hr>
     <div id="bbcwidget"
         data-sqwidget="template:template1.html"
         data-sqwidget-settings="package:dev-ltr"
