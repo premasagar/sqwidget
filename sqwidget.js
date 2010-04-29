@@ -1152,16 +1152,6 @@ var ready = (function(){
         };
         
         /**
-         * Render template
-         * TODO fit with UI rendering pipeline
-         * 
-         */
-        var renderTemplate = function(source, contents) {
-            // assemble contents and them tmpl them 
-            // and return the result
-            return source;
-        };
-        /**
          * TODO
          * Check we have all plugins namespaced, er how do we know
          */
@@ -1279,7 +1269,7 @@ var ready = (function(){
          * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
          */ 
         self.render = function(html, place, contents) {
-            var s = renderTemplate(html, contents);
+            var s = self.renderTemplate(html, contents);
             var p = place || container;
             jQuery(p).html(s);
         };
@@ -1311,6 +1301,27 @@ var ready = (function(){
                self.render(d, place, contents);
            }
        };
+
+       // Modified from John Resig's http://ejohn.org/blog/javascript-micro-templating
+       self.renderTemplate =  function (str, data){
+           var fn = new Function("obj",
+               "var p=[],print=function(){p.push.apply(p,arguments);};" +
+               // Introduce the data as local variables using with(){}
+               "with(obj){p.push('" +
+               // Convert the template into pure JavaScript
+               str
+                   .replace(/[\r\t\n]/g, " ")
+                   .split("<%").join("\t")
+                   .replace(/((^|%>)[^\t]*)'/g, "$1\r")
+                   .replace(/\t=(.*?)%>/g, "',$1,'")
+                   .split("\t").join("');")
+                   .split("%>").join("p.push('")
+                   .split("\r").join("\\'") +
+               "');}return p.join('');");
+            
+            return fn.call(this, jQuery.extend(true, {jQuery:jQuery, sqwidget:sqwidget, widget:self}, data));
+        };
+
 
         
         /**
