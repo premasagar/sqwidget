@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Style Test</title>
+    <script>
+    widget.config({
+      "name": "Style Test",
+      "version": "1.0.0",
+      "title": "Test style tags...",
+      "desc": "Tests style tags",
+      "url": "http://github.com/premasagar/swidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	  "settings" : { //can we overridden by data-sqwidget-settings
+	  },
+	  dependencies : [
+	    'messaging',
+	  ],
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+            widget.setTemplate('style', container, {style:template.getStyles()[0]});
+        });
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+    <script type='text/template' id='style'>
+    <ul>
+        <li>media is: <%= style.media %></li>
+        <li>type is: <%= style.type %></li>
+        <li>title is: <%= style.title %></li>
+        <li>contents is:
+        <pre><code><%= style.text %></code></pre>
+        </li>
+    </ul>
+    </script>
+    <style type="text/css" media="screen" title="style title">
+        p { font-style:sans-serif;}
+    </style>
+</head>
+
+<body>
+    <p>This is never seen</p>
+</body>
+</html>
