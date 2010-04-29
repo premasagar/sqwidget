@@ -944,6 +944,7 @@ var ready = (function(){
         var templates = {};
         /** javascript blocks to be executed in context of widget */
         var scripts = [];
+        var styles = [];
         var templateText = '';
         var loaded = false;
         var dependenciesLoaded = false;
@@ -1047,6 +1048,18 @@ var ready = (function(){
                 t = jQuery(t);
                 scripts.push(t.text());
             }); 
+            
+            // capture css
+            // and move
+            // TODO -- capture media attributes as well
+            j.filter('style')
+             .each(function(i, t) {
+                 t = jQuery(t);
+                 styles.push({text:t.text(),media:t.attr('media'), type:t.attr('type'), title:t.attr('title')} );
+             });
+            //TODO hook for style injection -- not done for now
+            // modes -- simple injection with container div added
+            
         };
         
         var setLoading = function() {
@@ -1092,7 +1105,7 @@ var ready = (function(){
             return templateConfig;
         };
         
-        self.getConfig = function(dict){
+        self.getConfig = function(key){
             return templateConfig[key];
         };
         
@@ -1115,6 +1128,10 @@ var ready = (function(){
         };
         // Load the template now
         loadTemplate();
+        
+        self.getStyles = function() {
+            return styles;
+        }
         
         return self;
     };
@@ -1258,8 +1275,17 @@ var ready = (function(){
         self.getSetting = function(key, defaultValue) {
             return settings[key] || template.getSettings(key) || defaultValue;
         };
-        
-        
+
+        /**
+         * Get a config item from widget here or template or global config
+         * @param {String} key key to search for
+         * @param {Object} default Default value to apply if none comes from config
+         * @returns {Object} settings or config value
+         * Hierarchy here is data-sqwidget, template config
+         */        
+        self.getConfig = function(key, defaultValue) {
+            return dataSqwidget[key] || template.getConfig(key) || sqwidget.getConfig(key) || defaultValue;
+        }
         
         
         /**
