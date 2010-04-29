@@ -1207,6 +1207,10 @@ var ready = (function(){
                     _('running ready() for widget ' + container.id);
                     readyFn.call(self);
                 }
+                else {
+                    //TODO decide what extra contents will be displayed here
+                    self.setTemplate('default', null, {});
+                }
             }
         }
         
