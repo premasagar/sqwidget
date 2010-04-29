@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Messaging Test</title>
+    <script>
+    widget.config({
+      "name": "Loading Test",
+      "version": "1.0.0",
+      "title": "Test loading...",
+      "desc": "Tests loading",
+      "url": "http://github.com/premasagar/swidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	  'dependencies' : [
+	  'messaging'
+	  ],
+	  "settings" : { //can we overridden by data-sqwidget-settings
+	  }
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+            widget.setTemplate('default', null, {one:'one', two:'two', three:'buckle', four:'my', five:'shoe'});
+        });
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+</head>
+
+<body>
+    <p><%= one %> <%= two %> <%= three %> <%= four %> <%= five %> </p>
+</body>
+</html>
