@@ -5,7 +5,7 @@
   "title": "My widget does stuff",
   "desc": "Lorem ipsum",
   "url": "http://example.com/widget", // get the widget, via your taskbar
-
+  //TODO local or known by sqwidget or uri
   "dependencies": {
     "nitelite": "1.3.0",
     "appleofmyiframe": "0.3.3",
