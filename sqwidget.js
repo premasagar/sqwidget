@@ -1302,7 +1302,11 @@ var ready = (function(){
            }
        };
 
-       // Modified from John Resig's http://ejohn.org/blog/javascript-micro-templating
+       /**
+        * Modified from John Resig's http://ejohn.org/blog/javascript-micro-templating
+        * @param {String} str data to have template tag matching performed on
+        * @param {Object} data Data to render into template as keyed values
+        */
        self.renderTemplate =  function (str, data){
            var fn = new Function("obj",
                "var p=[],print=function(){p.push.apply(p,arguments);};" +
