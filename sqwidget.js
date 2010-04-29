@@ -1059,7 +1059,10 @@ var ready = (function(){
              });
             //TODO hook for style injection -- not done for now
             // modes -- simple injection with container div added
-            
+            for (s in styles) {
+                var ss = jQuery('<style></style>').attr({title:styles[s].title, type:styles[s].type, media:styles[s].media}).text(styles[s].text);
+                jQuery('head').append(ss);
+            }
         };
         
         var setLoading = function() {
@@ -1126,12 +1129,13 @@ var ready = (function(){
         self.setPlugin = function(name, module) {
             plugins[name] = module;
         };
-        // Load the template now
-        loadTemplate();
         
         self.getStyles = function() {
             return styles;
         }
+
+        // Load the template now
+        loadTemplate();
         
         return self;
     };
@@ -1182,21 +1186,12 @@ var ready = (function(){
          */
         self.config = function(dict) {
             template.config(dict);
-        }      
-        /**
-         * Get this widget up and running
-         */
-        self.init = function() {
-            //attach ourselves to template -- this also loads the template if that hasn't happened before
-            var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
-            template = sqTemplate;
-            sqTemplate.register(self);
         };
         
         self.onTemplateLoaded= function() {
             self.runController(template.getScripts());    
             template.loadDependencies(self);  
-        }
+        };
         
         self.setPlugin = function(name, module) {
             plugins[name] = module(sqwidget, self, jQuery);
@@ -1212,7 +1207,7 @@ var ready = (function(){
                     self.setTemplate('default', null, {});
                 }
             }
-        }
+        };
         
         //TODO fit this into the proper place
         ui = {
@@ -1235,7 +1230,7 @@ var ready = (function(){
         
         self.loading = function(fn) {
             loadingFn = fn;
-        }
+        };
         
         self.error = function(fn) {
             errorFn = fn;
@@ -1270,6 +1265,16 @@ var ready = (function(){
         // PUBLIC METHODS
         
         /**
+         * Get this widget up and running
+         */
+        self.init = function() {
+            //attach ourselves to template -- this also loads the template if that hasn't happened before
+            var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
+            template = sqTemplate;
+            sqTemplate.register(self);
+        };
+                
+        /**
          * Get a setting from, here or template or global config
          * @param {String} key key to search for
          * @param {Object} default Default value to apply if none comes from config
@@ -1289,7 +1294,7 @@ var ready = (function(){
          */        
         self.getConfig = function(key, defaultValue) {
             return dataSqwidget[key] || template.getConfig(key) || sqwidget.getConfig(key) || defaultValue;
-        }
+        };
         
         
         /**
@@ -1345,18 +1350,16 @@ var ready = (function(){
                // Convert the template into pure JavaScript
                str
                    .replace(/[\r\t\n]/g, " ")
-                   .split("<%").join("\t")
-                   .replace(/((^|%>)[^\t]*)'/g, "$1\r")
-                   .replace(/\t=(.*?)%>/g, "',$1,'")
+                   .split("{{").join("\t")
+                   .replace(/((^|}})[^\t]*)'/g, "$1\r")
+                   .replace(/\t(.*?)\}\}/g, "',$1,'")
                    .split("\t").join("');")
-                   .split("%>").join("p.push('")
+                   .split("}}").join("p.push('")
                    .split("\r").join("\\'") +
                "');}return p.join('');");
             
             return fn.call(this, jQuery.extend(true, {jQuery:jQuery, sqwidget:sqwidget, widget:self}, data));
         };
-
-
         
         /**
          * Run the script controller
@@ -1406,8 +1409,10 @@ Sqwidget.ready(function() {
         for (w in widgets) {
             _(' ' + widgets[w].toString());
         }
+        _('initing widgets...');
         // load templates as needed
         for (w in widgets) {
+            _('init for w: ' + widgets[w].toString());
             widgets[w].init();
         }
         
