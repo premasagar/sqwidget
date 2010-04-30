@@ -444,12 +444,16 @@ var ready = (function(){
             // Sqwidget ready
             // TODO this requires DOM ready and jqyery and dependencies ready
             ready: function(callback){
-                _('Sqwidget.ready');
-                return this.onjQueryReady(callback);
+                this.onjQueryReady(function() {
+                    Sqwidget.domReady(callback);
+                });
             },
+
             
             // Document DOM ready
-            domReady: ready,
+            domReady: function(callback){
+                jQuery().ready(callback);
+            },
             /**
              * @returns {Array} of the full set of widgets in the DOM, returning them as 
              * as an array of SqwidgetWidget objects:
@@ -518,10 +522,11 @@ var ready = (function(){
             getTemplate: function(templateName) {
                 // check to see if already loaded, if so, return instance.
                 var name = jQuery.trim(templateName);
-                var t = this.widgetTemplates[name];
+                var fullName = this.buildResourcePath(this.settings.basePath, '', templateName, 'html');
+                var t = this.widgetTemplates[fullName];
                 if (!t) {
-                    t = Template(this, name);
-                    this.widgetTemplates[name] = t;
+                    t = Template(this, fullName);
+                    this.widgetTemplates[fullName] = t;
                 }
                 return t;
             },
@@ -968,6 +973,7 @@ var ready = (function(){
         // PRIVATE methods
         var loadTemplate = function() {
             _('template name is ' + templateName);
+            //path to the base 
             jQuery.get(templateName, function(data, textStatus, request) {
                 // on template loaded
                 _('template data: ' + data);
@@ -1159,7 +1165,8 @@ var ready = (function(){
             plugins={},
             readyFn = null,
             errorFn = null,
-            loadingFn = null;
+            loadingFn = null,
+            readyRun=false;
         /**
          * eval script in the context of this object
          * @param {String} string of script to eval. Should be text/javascript
@@ -1197,10 +1204,11 @@ var ready = (function(){
             plugins[name] = module(sqwidget, self, jQuery);
             //TODO check all plugins loaded
             if (allPluginsLoaded()) {
-                if (readyFn) {
+                if (readyFn && !readyRun) {
                     var widget=self;
                     _('running ready() for widget ' + container.id);
                     readyFn.call(self);
+                    readyRun = true;
                 }
                 else {
                     //TODO decide what extra contents will be displayed here
@@ -1323,6 +1331,16 @@ var ready = (function(){
                    self.render(t);
                }
            }
+       };
+       
+       /**
+        * Render contents with named template
+        * TODO complete docs here 
+        */
+       self.renderWithTemplate = function (name, contents) {
+           var d = template.getTemplate(name);
+           return self.renderTemplate(d,contents);
+           
        };
        /**
         * Render html into this widget
