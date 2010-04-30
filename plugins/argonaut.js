@@ -1,37 +1,43 @@
 /**
  * Argonaut - A sqwidget plugin
- * For JSON transport and local storage
+ * Why named this? http://en.wikipedia.org/wiki/Argonauts
+ * For JSON transport witho optional local storage
  * Can use offline storage with jStorage (but that is loaded otherwise), if provided,
  * works with it as a cache (ie it should exist in the jQuery provided)
  * @author Graeme Sutherland
  */
  
-/*jsLint */
-/*global Sqwidget */    
+/*jslint nomen: false*/
+/*global Sqwidget,window */    
  
 Sqwidget.plugin('argonaut', function (sqwidget, widget, jQuery) {
-    var self = {};
-
-
-    /**
-    * Listen for a message
-    * @param {String} topic. The topic name for this message
-    */
+    var 
+        self = {},
+        //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
+        _ = sqwidget._ || window._ || function () {};
 
     /**
-     * options -- native jasonp (ie use jQuery pattern &callback=?)
-     * or provide a global function object that will receive the call and get it into here ?? plan for this?
-     * requestless jsonp.
-     * timeout error handling?
-     * provide a callback function in the global namespace to retrieve results
-     * load a JSON object by url, call callback with it when we know what has happened.  Success or failure
+     * Get JSON from remote url and call callback with decoded object
+     * @param {String} url URL to load. Note, you'll end up with nothing for a cross-site request
+     * @param {object} data to include with request
+     * @param {Function} callback Callback function on success (or any condition, so it seems)
+     * @param {object} options map of options, currently not used
+     * TODO:  or provide a global function object that will receive the call and get it into here ?? plan for this?
+     * TODO: timeout error handling?
      */
-    self.getObject = function (url, callback, options) {
-        //TODO
+    self.getJSON = function (url, data, callback, options) {
+        //TODO cache/offline stuff
+        //For now, simply get it and return wieh
+        _('argonaut: get request: ', url);
+        jQuery.get(url, data, function (d, textStatus) {
+            //TODO improve error handling here, trap exception and use a widget error handler
+            var dj=jQuery.parseJSON(d);
+            callback(dj, textStatus);
+        });
     };
 
-
-    self.emptyCache = function () {
+    //TODO by URL??
+    self.emptyCache = function (url) {
         
     };
 
