@@ -562,25 +562,36 @@ var ready = (function(){
              */
 
             addDependency: function(widget,dependency) {  
-                var name = null;
-                var minVersion = null;
+                var 
+                    name = null,
+                    minVersion = null,
+                    depConfig = {};
+                    
                 if (typeof(dependency) === 'string') {
                     name = dependency;
                 }
                 else {
                     name = dependency[0];
-                    minVersion = dependency[1];
+                    if (typeof(dependency[1]) === 'object') {
+                        depConfig = dependency[1];
+                    }
+                    else {
+                        minVersion = dependency[1];
+                    }
+                    if (typeof(dependency[2]) === 'object') {
+                        depConfig = dependency[2];
+                    }
                 }
                 var existing = this.dependencyRegister[name];
                 if (existing) {
                     //TODO version comparison
                     existing.clients.push(widget);
                     if (existing.loaded) {
-                        widget.setPlugin(existing.name, existing.module);
+                        widget.setPlugin(existing.name, existing.module, depConfig);
                     }
                 }
                 else {
-                    this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget]};
+                    this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
                     // initiate load
                     var loadPath = this.buildResourcePath(this.settings.basePath, this.settings.pluginPath, name, 'js');
                     this.getScript(loadPath, function(){});
@@ -622,7 +633,7 @@ var ready = (function(){
                 dep.loaded = true;
                 dep.version = version;
                 for (client in dep.clients) {
-                    dep.clients[client].setPlugin(name, module);
+                    dep.clients[client].setPlugin(name, module, dep.config);
                 }
             },
             
@@ -1230,8 +1241,8 @@ var ready = (function(){
             template.loadDependencies(self);  
         };
         
-        self.setPlugin = function(name, module) {
-            plugins[name] = module(sqwidget, self, jQuery);
+        self.setPlugin = function(name, module, config) {
+            plugins[name] = module(sqwidget, self, jQuery, config);
             //TODO check all plugins loaded
             if (allPluginsLoaded()) {
                 if (readyFn && !readyRun) {
