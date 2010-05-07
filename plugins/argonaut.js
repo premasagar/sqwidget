@@ -34,7 +34,7 @@
                     /** default cache time in seconds. 0=don't cache */
                     defaultTime : 0,
                     /** limit of number of items in memory cache (otherwise bump oldest?) */
-                    memoryCacheItemLimit : 100
+                    memoryCacheItemLimit : 100,
                 }
             };
         
