@@ -193,7 +193,7 @@ var ready = (function(){
                 basePath: '',
                 pluginPath: 'plugins/',
             },
-            /** Sqwidget's own dependencies. TODO not currenrly used:  Use it or lose it*/
+            /** Sqwidget's own dependencies. TODO not currently used:  Use it or lose it*/
             dependencies: {
             },
             
@@ -210,7 +210,7 @@ var ready = (function(){
             
             /** 
              * Sqwidget widget templates by self-declared names
-             * TODO name this better
+             * TODO still needed
              */
             widgetTemplatesByName: {},
             
@@ -748,7 +748,7 @@ var ready = (function(){
         // EXTEND SQWIDGET WITH JQUERY-DEPENDENT PROPS
         this.Sqwidget = Sqwidget = $.extend(
             // Constructor
-            function(data, callback){
+        /*    function(data, callback){
                 Sqwidget.widgets.push(this);
                 
                 if (typeof data === 'object'){
@@ -757,7 +757,7 @@ var ready = (function(){
                 if (typeof callback === 'function'){
                     callback.call(this, $);
                 }
-            },
+            }, */
             // Original Sqwidget object
             Sqwidget,
             {
@@ -814,6 +814,29 @@ var ready = (function(){
                             _('catch', $);
                         }
                     });
+                },
+                
+                // Setter: Add a query string parameter to a url. E.g. addUrlParam('http://example.com?v=1', 'this', 'that');
+                // TODO: Getter: if no value supplied, then get param value
+                urlParam: function(url, param, value){
+                    return url + (!/\?/.test(url) ? '?' : '&') + param + '=' + value;
+                },
+                
+                // Return a fixed number (which may be considered arbitrary) when passed an interval of time (in days; may be decimal part of day, e.g. 1/24 for 1 hour)
+                // Useful for breaking server caching of resources after a specified interval of time. E.g. "http://example.com/data.js?cache=" + timeChunk(30);
+                timeChunk: function(intervalDays){
+                    var decimalPlaces, baseline, msInADay, interval, now, chunk;
+                    decimalPlaces = 6; // Allows accuracy to nearest minute
+                    baseline = new Date(2009, 0, 1).getTime(); // Used simply to keep the number of chars down
+                    msInADay = 24 * 60 * 60 * 1000;
+                    interval = intervalDays * msInADay;
+                    now = new Date().getTime();
+                    chunk = now - (now % Math.round(interval)); // Math.round used to avoid JavaScript float point error
+                    return Number(((chunk - baseline) / msInADay).toFixed(decimalPlaces)) || 0;
+                },
+                
+                cacheUrl: function(url, intervalDays){
+                    return this.urlParam(url, 'cache', this.timeChunk(intervalDays));
                 },
                 
                 
@@ -907,28 +930,6 @@ var ready = (function(){
                             );
                         },
                         
-                        // Setter: Add a query string parameter to a url. E.g. addUrlParam('http://example.com?v=1', 'this', 'that');
-                        // TODO: Getter: if no value supplied, then get param value
-                        urlParam: function(url, param, value){
-                            return url + (!/\?/.test(url) ? '?' : '&') + param + '=' + value;
-                        },
-                        
-                        // Return a fixed number (which may be considered arbitrary) when passed an interval of time (in days; may be decimal part of day, e.g. 1/24 for 1 hour)
-                        // Useful for breaking server caching of resources after a specified interval of time. E.g. "http://example.com/data.js?cache=" + timeChunk(30);
-                        timeChunk: function(intervalDays){
-                            var decimalPlaces, baseline, msInADay, interval, now, chunk;
-                            decimalPlaces = 4; // Allows accuracy to nearest minute
-                            baseline = new Date(2009, 0, 1).getTime(); // Used simply to keep the number of chars down
-                            msInADay = 24 * 60 * 60 * 1000;
-                            interval = intervalDays * msInADay;
-                            now = new Date().getTime();
-                            chunk = now - (now % Math.round(interval)); // Math.round used to avoid JavaScript float point error
-                            return Number(((chunk - baseline) / msInADay).toFixed(decimalPlaces)) || 0;
-                        },
-                        
-                        cacheUrl: function(url, intervalDays){
-                            return this.urlParam(url, 'cache', this.timeChunk(intervalDays));
-                        },
                     
                         loadCss: function(css, cacheTime){
                             cacheTime = cacheTime || this.settings.cssCacheTime;
