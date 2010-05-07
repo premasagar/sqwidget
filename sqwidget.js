@@ -292,11 +292,15 @@ var ready = (function(){
              * 4) callback function when all scripts loaded
              */
             getScript: function(src, callback){
-                var head, script, loaded;
+                var head, script, loaded, computedSrc;
                 head = document.getElementsByTagName('head')[0];
                 callback = callback || function(){};
                 script = document.createElement('script');
-                script.src = src;
+                computedSrc = src;
+                if (this.getConfig('development')) {
+                    computedSrc = this.cacheUrl(src, 1/(60*60*24));
+                }
+                script.src = computedSrc;
                 script.onload = script.onreadystatechange = function(){
                     var state = this.readyState;
                     if (!loaded && (!state || state === 'complete' || state === 'loaded')){
