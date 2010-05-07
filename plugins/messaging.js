@@ -13,11 +13,14 @@
 /*jsLint */
 /*global Sqwidget */    
  
-Sqwidget.plugin('messaging', function (sqwidget, widget, jQuery) {
+Sqwidget.plugin('messaging', function (sqwidget, widget, jQuery, newConfig) {
     var self = {},
         brokerName = "sqwidget-message-broker",
-        brokerHtml = '<div id="' + brokerName + '" style="display: none;"></div>';
+        brokerHtml = '<div id="' + brokerName + '" style="display: none;"></div>',
+        config = {};
 
+        jQuery.extend(true,config,newConfig);
+        
         // create element to hang messaging events onto, the 
         // so-called broker element
         // TODO body here to be abstracted by UI plugins? does it matter here?

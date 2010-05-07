@@ -13,31 +13,52 @@
 (function () {
 
     var 
+        /** storage of keys for looking up 'owner' of jsonp results */
         keystore = {},
+        /** simple in-memory cache */
         cache = {};
         
-    //TODO TEMP for testing
+    //expose in Sqwidget namespace for debugging
     Sqwidget.keystore = keystore;
 
-    Sqwidget.plugin('argonaut', function (sqwidget, widget, jQuery) {
+    Sqwidget.plugin('argonaut', function (sqwidget, widget, jQuery, newConfig) {
         var 
             self = {},
             //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
             _ = sqwidget._ || window._ || function () {},
-            endpointName = 'jsonp';
+            endpointName = 'jsonp',
+            config = {
+                cache: {
+                    /** valid settings are 'memory', 'offline_store', 'none' */
+                    mode : 'none',
+                    /** default cache time in seconds. 0=don't cache */
+                    defaultTime : 0,
+                    /** limit of number of items in memory cache (otherwise bump oldest?) */
+                    memoryCacheItemLimit : 100
+                }
+            };
+        
+        
+        /* init config from supplied*/
+        jQuery.extend(true,config,newConfig);
+
         /**
-         * Set up jsonp endpoint -- globally for Sqwidget, to redirect to appropriate widget
+         * Set up jsonp endpoint -- globally for Sqwidget, to redirect to appropriate argonaut instance
+         * and widget based on the static jsonp
          */
     
         if (!Sqwidget[endpointName]) {
             Sqwidget[endpointName] = function (jsonpValue) {
-                var templateName = jsonpValue.type;
-                var fullKey = templateName + '-' + jsonpValue.key;
+                var 
+                    templateName = jsonpValue.type,
+                    fullKey = templateName + '-' + jsonpValue.key,
+                    arr = null;
                 _('got data for ' + templateName + ' full key ' + fullKey);
                 // call callbacks and remove when called
                 if (keystore[fullKey]) {
                     while (keystore[fullKey].length > 0) {
-                        var arr = keystore[fullKey].shift();
+                        // pull out key and remove it
+                        arr = keystore[fullKey].shift();
                         arr[0].jsonpHandler(arr[1], jsonpValue);
                     }
                 }
@@ -64,7 +85,6 @@
         };
     
     
-    
         self.getStaticJSONP = function (url, key, callback) {
             _('argonaut static json request for ' + url + ' with key ' + key);
             // keep the key
@@ -79,7 +99,9 @@
             jQuery.getScript(url);
         };
 
-    
+        /**
+         * Handle a response by script element
+         */
         self.jsonpHandler = function (callback, jsonpValue) {
             callback(jsonpValue.data);
         };
