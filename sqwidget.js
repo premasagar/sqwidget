@@ -205,8 +205,14 @@ var ready = (function(){
             dependencyRegister: {
             }, 
             
-            /** Sqwidget widget templates (classes) keyed by template name */
+            /** Sqwidget widget templates (classes) keyed by template path */
             widgetTemplates: {},
+            
+            /** 
+             * Sqwidget widget templates by self-declared names
+             * TODO name this better
+             */
+            widgetTemplatesByName: {},
             
             /**
              * Set global configuration (config)
@@ -515,20 +521,36 @@ var ready = (function(){
             
             /**
              * Return SqwidgetTemplate for the given template name, creating it if not available
-             * @param templateName - The template filename (including extension), like templatename.html or 
+             * @param templateFilename - The template filename (including extension), like templatename.html or 
              * similar.
              * @return {SqwidgetTemplate} the template
              */
-            getTemplate: function(templateName) {
+            getTemplate: function(templateFilename) {
                 // check to see if already loaded, if so, return instance.
-                var name = jQuery.trim(templateName);
-                var fullName = this.buildResourcePath(this.settings.basePath, '', templateName, 'html');
+                var name = jQuery.trim(templateFilename);
+                var fullName = this.buildResourcePath(this.settings.basePath, '', templateFilename, 'html');
                 var t = this.widgetTemplates[fullName];
                 if (!t) {
                     t = Template(this, fullName);
                     this.widgetTemplates[fullName] = t;
                 }
                 return t;
+            },
+            
+            /**
+             * Retrieve widget template by name (to do something like call a listener/callback
+             * with JSONP data for example)
+             */
+            getTemplateByName: function(templateName) {
+                return this.widgetTemplatesByName[templateName];
+            },
+            
+            /**
+             *  Set name for the given template.
+             *  Note, if a widget is reconfigured, it will get registered against a second name
+             */
+            setTemplateName: function(template, name) {
+                this.widgetTemplatesByName[name] = template;
             },
             
              /**
@@ -603,6 +625,13 @@ var ready = (function(){
                     dep.clients[client].setPlugin(name, module);
                 }
             },
+            
+
+            
+            
+            
+            
+            
             
         };
         
@@ -1110,6 +1139,7 @@ var ready = (function(){
                         templateConfig[key] = dict[key];
                     }
                 }
+                sqwidget.setTemplateName(self, templateConfig.name);
             }
             return templateConfig;
         };
