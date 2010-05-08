@@ -12,12 +12,14 @@
       "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
 	  "ui" : "hostpage",
 	   dependencies: [
-			'messaging'
+		['messaging'],
+		['twitter_stream'],
 		],
     });
 	</script>
 	<script type="text/javascript" charset="utf-8">
 		widget.ready(function() {
+		    _('twitter processor ready');
 		    widget.setTemplate('default');
 		    var search_stream = widget.getSetting('search_stream');
 		    // set name of list
@@ -30,7 +32,8 @@
             plugins.messaging.send(search_stream, {text:'#whatever', from:container.id});
             jQuery('form#searchform', container).submit(function() {
                 var searchRes = jQuery('#search_field').val();
-                plugins.messaging.send(search_stream, {text:searchRes, from:container.id});   
+                plugins.messaging.send(search_stream, {text:searchRes, from:container.id});  
+                jQuery('#search_field').val('');
                 return false;             
             })
 		});
