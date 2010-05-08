@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
     <title>Twitter Processor</title>
     <script>
     widget.config({
@@ -10,26 +10,27 @@
       "title": "Twitter incoming feed processor",
       "desc": "Gets twitter stuff in and sends out summaries on a number of messaging streams",
       "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
-	  "ui" : "hostpage",
-	   dependencies: ['messaging', 'twitterlib', 'twitter_stream'],
+      "ui" : "hostpage",
+       dependencies: ['messaging', 'twitterlib', 'twitter_stream'],
     });
-	</script>
-	<script>
-		widget.ready(function() {
-		    _('twitter processor ready');
-		    widget.setTemplate('default');
-		    var setSearchStream = widget.getSetting('set_search_stream');
-		    var currentSearchStream = widget.getSetting('current_search_stream');
-		    
-		    plugins.twitter_stream.setMessageCallback(plugins.twitter_processor.message);
-		    
-		    // set name of list
-		    jQuery('p.info',container).html('Twitter processor ' + container.id + ' listening to search stream ' + setSearchStream);
-		    // append messages received
-		    plugins.messaging.listen(setSearchStream, function(event,stuff) {
-		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
-		    });
-		    // send a message to topic
+    </script>
+    <script>
+        widget.ready(function() {
+            _('twitter processor ready');
+            widget.setTemplate('default');
+            var setSearchStream = widget.getSetting('set_search_stream');
+            var currentSearchStream = widget.getSetting('current_search_stream');
+            
+            plugins.twitter_stream.setMessageCallback(plugins.twitter_processor.message);
+            
+            // set name of list
+            jQuery('p.info',container).html('Twitter processor ' + container.id + ' listening to search stream ' + setSearchStream);
+            // append messages received
+            plugins.messaging.listen(
+                setSearchStream, function(event,stuff){
+                    jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
+            });
+            // send a message to topic
             jQuery('form#searchform', container).submit(function() {
                 var searchRes = jQuery('#search_field').val();
                 plugins.twitter_stream.search(searchRes, function(tweets){
@@ -39,19 +40,22 @@
                 jQuery('#search_field').val('');
                 return false;             
             })
-		});
-	</script>
-	<script type="text/template" id="loading">
-	    <p>Loading...<p>
-	</script>
+        });
+    </script>
+    <script type="text/template" id="loading">
+        <p>Loading...<p>
+    </script>
 </head>
 
 <body>
-    <form id="searchform"><div><input type="text" name="search" value="" id="search_field" size="35"><input type="submit" name="submit" value="Search" id="submit"></div></form><div class="use_note">enter a twitter search term</div>
-    
-<!--    <p class="info"></p>
-    <p>Messages received</p>
-    <ul class="message_list">        
-    </ul> -->
+    <form id="searchform">
+        <div>
+            <input type="text" name="search" value="" id="search_field" size="35">
+            <input type="submit" name="submit" value="Search" id="submit">
+        </div>
+    </form>
+    <div class="use_note">
+        <p>enter a twitter search term</p>
+    </div>
 </body>
 </html>
