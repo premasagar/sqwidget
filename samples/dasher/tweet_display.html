@@ -22,17 +22,26 @@
 		    var stream = widget.getSetting('stream');
 		    // set name of list
 		    jQuery('p',container).html('Messages received by ' + container.id + ' listening to stream ' + stream);
-		    // append messages received
-		    plugins.messaging.listen(stream, function(event,stuff) {
+		    // replace with set of messages
+		    plugins.messaging.listen(stream, function(event,tweets) {
+		        var feedUl = jQuery('.tweet_list', container),
+		            articleHtml;
 		        alert('got tweets');
-		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
+		        // fill in a basic template
+		        jQuery.each(tweets, function(t, tweet) {
+		            articleHtml = widget.renderWithTemplate('tweet', tweet);
+                    // inject into template
+                    feedUl.append(articleHtml);
+		        });
 		    });
-		    // send a message to topic
 		});
 	</script>
 	<script type="text/template" id="loading">
-	    <p>Loading...<p>
+	    <p>Loading...</p>
 	</script>
+	<script type="text/template" id="tweet">
+	    <li>{{tweet.text}}</li>
+``	</script>
 </head>
 
 <body>
