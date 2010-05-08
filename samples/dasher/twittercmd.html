@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Twitter #cmd</title>
+    <script>
+    widget.config({
+      "name": "twittercmd",
+      "version": "1.0.0",
+      "title": "Twitter #cmd",
+      "desc": "Twitter socket connector widget, listening to #cmd",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+      "ui" : "hostpage",
+       dependencies: ['swfobject', 'twstreamer']
+    });
+    </script>
+    
+    <script>
+        widget.ready(function() {
+            var
+                _ = sqwidget._ || window._ || function () {},
+                plugins = widget.plugins,
+                twstreamer = plugins.twstreamer;
+                
+            twstreamer.credentials('twidgetsqwidget', 'YADAyadaYADA');
+        });
+    </script>
+    <script type="text/template" id="loading">
+        <p>Loading...<p>
+    </script>
+</head>
+
+<body>
+    
+</body>
+</html>
