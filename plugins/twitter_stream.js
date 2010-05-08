@@ -13,36 +13,26 @@
             self = {},
             //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
             _ = sqwidget._ || window._ || function () {},
-            config = {},
-            messageCallback = function () {},
-            searchTerm = '';
+            config = {
+                limit: 3
+            },
+            searchTerm = '',
+            twitterlib = widget.plugins.twitterlib;
         
         _('twitter_stream called');
         /* init config from supplied*/
         jQuery.extend(true, config, newConfig);
 
         /**
-         * Set the search expression for this feed
+         * Search the Twitter API
          */
-         
         self.search = function(q, callback, limit) {
             var
                 count = 0,
-                limit = limit || 1,
-                html = '',
-                twitterlib = widget.plugins.twitterlib;
+                limit = limit || config.limit;
             
             searchTerm = (q ? encodeURIComponent(q) : searchTerm);
-            twitterlib.search(searchTerm, { limit: limit }, function(tweets){
-                $.each(tweets, function(i, tweet){
-                    html += twitterlib.ify.clean(tweet.text);
-                });
-                callback(html);
-            });
-        };
-
-        self.setMessageCallback = function (fn) {
-            messageCallback = fn;
+            twitterlib.search(searchTerm, { limit: limit }, callback);
         };
 
         return self;
