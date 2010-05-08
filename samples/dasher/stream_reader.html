@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Stream reader</title>
+    <script>
+    widget.config({
+      "name": "showmsg",
+      "version": "1.0.0",
+      "title": "Test messaging plugin",
+      "desc": "Receives messages using the messaging plugin",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	   dependencies: [
+			'messaging'
+		],
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+		    widget.setTemplate('default');
+		    var stream = widget.getSetting('stream');
+		    // set name of list
+		    jQuery('p',container).html('Messages received by ' + container.id + ' listening to stream ' + stream);
+		    // append messages received
+		    plugins.messaging.listen(stream, function(event,stuff) {
+		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
+		    });
+		    // send a message to topic
+            plugins.messaging.send(stream, {text:'hello', from:container.id});
+            plugins.messaging.send(stream, {text:'hello2', from:container.id});
+		});
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+</head>
+
+<body>
+    <p>Messages received:</p>
+    <ul class="message_list">        
+    </ul>
+</body>
+</html>
