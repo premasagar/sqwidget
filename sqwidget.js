@@ -1235,6 +1235,9 @@ var ready = (function(){
             return sqwidget.checkDependencies(self);
         };
          
+        
+        self.plugins = plugins;
+         
         /**
          * set template config dict
          * This used to allow widget.config({..}); in intial embed
