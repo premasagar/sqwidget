@@ -16,12 +16,11 @@
     </script>
     <script>
         widget.ready(function() {
+            var _ = sqwidget._ || window._ || function () {};
             _('twitter processor ready');
             widget.setTemplate('default');
             var setSearchStream = widget.getSetting('set_search_stream');
             var currentSearchStream = widget.getSetting('current_search_stream');
-            
-            plugins.twitter_stream.setMessageCallback(plugins.twitter_processor.message);
             
             // set name of list
             jQuery('p.info',container).html('Twitter processor ' + container.id + ' listening to search stream ' + setSearchStream);
@@ -31,15 +30,16 @@
                     jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
             });
             // send a message to topic
-            jQuery('form#searchform', container).submit(function() {
+            jQuery('form#searchform', container).submit(function(){
                 var searchRes = jQuery('#search_field').val();
-                plugins.twitter_stream.search(searchRes, function(tweets){
-                    console.log(tweets);
-                    plugins.messaging.send(currentSearchStream, {text:searchRes, from:container.id});
-                });
+                plugins.twitter_stream.search(
+                    searchRes,
+                    plugins.twitter_processor.message
+                );
+                plugins.messaging.send(currentSearchStream, {text:searchRes, from:container.id});
                 jQuery('#search_field').val('');
                 return false;             
-            })
+            });
         });
     </script>
     <script type="text/template" id="loading">

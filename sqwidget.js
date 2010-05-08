@@ -1479,12 +1479,12 @@ Sqwidget.ready(function() {
         _('found ' + widgets.length.toString() +' widget divs:');
     
         for (w in widgets) {
-            _(' ' + widgets[w].toString());
+            //_(' ' + widgets[w].toString());
         }
         _('initing widgets...');
         // load templates as needed
         for (w in widgets) {
-            _('init for w: ' + widgets[w].toString());
+            //_('init for w: ' + widgets[w].toString());
             widgets[w].init();
         }
         

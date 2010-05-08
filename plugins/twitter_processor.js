@@ -41,14 +41,14 @@
         };
         
         /** handle a completed message coming in from the twitter api */
-        self.message = function (object) {
+        self.message = function (results) {
             var
                 i,r,
                 text;
                 
-            if (object.results) {
-                for (i=0; i<object.results.length; i+=1 ){
-                    r = object.results[i];
+            if (results) {
+                for (i=0; i<results.length; i+=1 ){
+                    r = results[i];
                     //
                     // process results, it looks like
                     //  profile_image_url
