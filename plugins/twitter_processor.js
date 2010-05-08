@@ -20,9 +20,9 @@
             _ = sqwidget._ || window._ || function () {},
             config = {},
             tweetsById = {},
-            tweets=[];
-            popular=[];
-            notPopular=[];
+            tweets=[],
+            popular=[],
+            notPopular=[],
             resources=[];
         /* init config from supplied*/
         jQuery.extend(true, config, newConfig);
@@ -30,9 +30,6 @@
         /*
          * init structures
          */
-        
-        
-
 
 
         /**
@@ -51,7 +48,7 @@
                 
             if (object.results) {
                 for (i=0; i<object.results.length; i+=1 ){
-                    var r = object.results[i];
+                    r = object.results[i];
                     //
                     // process results, it looks like
                     //  profile_image_url
@@ -90,9 +87,9 @@
                 
                 // push output to streams
                 // TODO slicing
-                widget.plugins.messaging.send('tweets', {tweets});
-                widget.plugins.messaging.send('popular', {popular});
-                widget.plugins.messaging.send('not_popular', {notPopular});
+                widget.plugins.messaging.send('tweets', tweets);
+                widget.plugins.messaging.send('popular', popular);
+                widget.plugins.messaging.send('not_popular', notPopular);
                 widget.plugins.messaging.send('resources', resources);
             }
             else {
