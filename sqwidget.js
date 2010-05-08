@@ -586,6 +586,7 @@ var ready = (function(){
                         depConfig = dependency[2];
                     }
                 }
+                _('adding dependency ' + name);
                 var existing = this.dependencyRegister[name];
                 if (existing) {
                     //TODO version comparison
@@ -612,11 +613,12 @@ var ready = (function(){
              * @return {Boolean} true if all dependencies satisfied
              */
             checkDependencies: function(widgetClient) {
-                complete = true;
                 for (d in this.dependencyRegister) {
-                    if (widgetClient in this.dependencyRegister[d].clients) {
-                        if (!this.dependencyRegister[d].loaded) {
-                            return false;
+                    if (this.dependencyRegister.hasOwnProperty(d)) {
+                        if (widgetClient in this.dependencyRegister[d].clients) {
+                            if (!(this.dependencyRegister[d].loaded)) {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -1250,15 +1252,17 @@ var ready = (function(){
             plugins[name] = module(sqwidget, self, jQuery, config);
             //TODO check all plugins loaded
             if (allPluginsLoaded()) {
-                if (readyFn && !readyRun) {
-                    var widget=self;
-                    _('running ready() for widget ' + container.id);
-                    readyFn.call(self);
-                    readyRun = true;
-                }
-                else {
-                    //TODO decide what extra contents will be displayed here
-                    self.setTemplate('default', null, {});
+                if (!readyRun) {
+                    readyRun=true;
+                    if (readyFn) {
+                        var widget=self;
+                        _('running ready() for widget ' + container.id);
+                        readyFn.call(self);
+                    }
+                    else {
+                        //TODO decide what extra contents will be displayed here
+                        self.setTemplate('default', null, {});
+                    }
                 }
             }
         };
