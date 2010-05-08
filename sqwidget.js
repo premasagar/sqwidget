@@ -636,17 +636,21 @@ var ready = (function(){
              
             plugin: function(name, module, version) {
                 var dep = this.dependencyRegister[name],
-                    i;
+                    i, clients;
                 dep.module = module;
                 dep.loaded = true;
                 dep.version = version;
-                for (i=0; i< this.dependencyRegister[name].clients.length; i++) {
-                    dep.clients[i].setPlugin(name, module, dep.config);
-                }
+                jQuery.each(dep.clients, function(i,client) {
+                    client.setPlugin(name, module, dep.config);
+                });
             },
             
 
-            
+            runAll: function() {
+                jQuery.each(this.widgetTemplates, function(wt, template) {
+                    template.runAll();
+                });
+            },
             
             
             
@@ -1182,7 +1186,7 @@ var ready = (function(){
         
         self.getTemplate = function(name) {
             return templates[name];
-        }
+        };
         
         self.setPlugin = function(name, module) {
             plugins[name] = module;
@@ -1190,7 +1194,14 @@ var ready = (function(){
         
         self.getStyles = function() {
             return styles;
-        }
+        };
+        
+        self.runAll =  function() {
+            jQuery.each(this.widgets, function(wt, template) {
+                template.checkRun();
+            });
+        };
+        
 
         // Load the template now
         loadTemplate();
@@ -1278,6 +1289,7 @@ var ready = (function(){
                     }
                 }
             }
+            sqwidget.runAll();
         };
         
         self.checkRun = function() {
@@ -1525,7 +1537,5 @@ Sqwidget.ready(function() {
 //        });     
     }
 });
-
- 
  
 /*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
