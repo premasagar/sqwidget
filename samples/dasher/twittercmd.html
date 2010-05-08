@@ -22,7 +22,9 @@
                 plugins = widget.plugins,
                 twstreamer = plugins.twstreamer;
                 
-            twstreamer.credentials('twidgetsqwidget', 'YADAyadaYADA');
+            twstreamer
+                .credentials('twidgetsqwidget', 'YADAyadaYADA')
+                .connect();
         });
     </script>
     <script type="text/template" id="loading">
