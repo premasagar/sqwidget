@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-    <title>Stream reader</title>
+    <title>Current Search</title>
     <script>
     widget.config({
       "name": "current_search",
@@ -11,12 +11,10 @@
       "desc": "Show current search",
       "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
 	  "ui" : "hostpage",
-	   dependencies: [
-			'messaging'
-		],
+	   dependencies: ['messaging']
     });
 	</script>
-	<script type="text/javascript" charset="utf-8">
+	<script>
 		widget.ready(function() {
 		    widget.setTemplate('default');
 		    var stream = widget.getSetting('stream');
