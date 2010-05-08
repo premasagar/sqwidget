@@ -613,11 +613,14 @@ var ready = (function(){
              * @return {Boolean} true if all dependencies satisfied
              */
             checkDependencies: function(widgetClient) {
+                var c;
                 for (d in this.dependencyRegister) {
                     if (this.dependencyRegister.hasOwnProperty(d)) {
-                        if (widgetClient in this.dependencyRegister[d].clients) {
-                            if (!(this.dependencyRegister[d].loaded)) {
-                                return false;
+                        for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
+                            if (widgetClient in this.dependencyRegister[d].clients) {
+                                if (!(this.dependencyRegister[d].loaded)) {
+                                    return false;
+                                }
                             }
                         }
                     }
