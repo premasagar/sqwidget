@@ -16,7 +16,7 @@
             config = {
                 limit: 3
             },
-            searchTerm = '',
+            searchTerm = '';
             twitterlib = widget.plugins.twitterlib;
         
         _('twitter_stream called');
@@ -26,10 +26,10 @@
         /**
          * Search the Twitter API
          */
-        self.search = function(q, callback, limit) {
+        self.search = function(q, callback, l) {
             var
                 count = 0,
-                limit = limit || config.limit;
+                limit = l || config.limit;
             
             searchTerm = (q ? encodeURIComponent(q) : searchTerm);
             twitterlib.search(searchTerm, { limit: limit }, callback);

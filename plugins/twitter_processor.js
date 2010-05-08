@@ -45,7 +45,7 @@
             var
                 i,r,
                 text;
-                
+            _('got twitter message', results);
             if (results) {
                 for (i=0; i<results.length; i+=1 ){
                     r = results[i];

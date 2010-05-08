@@ -1252,6 +1252,10 @@ var ready = (function(){
             template.config(dict);
         };
         
+        self.getContainer = function(dict) {
+            return container;
+        };
+        
         self.onTemplateLoaded= function() {
             self.runController(template.getScripts());    
             template.loadDependencies(self);  
@@ -1260,6 +1264,23 @@ var ready = (function(){
         self.setPlugin = function(name, module, config) {
             plugins[name] = module(sqwidget, self, jQuery, config);
             //TODO check all plugins loaded
+            if (allPluginsLoaded()) {
+                if (!readyRun) {
+                    readyRun = true;
+                    if (readyFn) {
+                        var widget=self;
+                        _('running ready() for widget ' + container.id);
+                        readyFn.call(self);
+                    }
+                    else {
+                        //TODO decide what extra contents will be displayed here
+                        self.setTemplate('default', null, {});
+                    }
+                }
+            }
+        };
+        
+        self.checkRun = function() {
             if (allPluginsLoaded()) {
                 if (!readyRun) {
                     readyRun=true;
@@ -1273,7 +1294,7 @@ var ready = (function(){
                         self.setTemplate('default', null, {});
                     }
                 }
-            }
+            }            
         };
         
         //TODO fit this into the proper place
@@ -1301,7 +1322,15 @@ var ready = (function(){
         
         self.error = function(fn) {
             errorFn = fn;
-        }
+        };
+        
+        self.getReadyFn = function() {
+            return readyFn;
+        };
+        
+        self.callReady = function() {
+            return readyFn.call(self);
+        };
         
         /*
         // set the ui engine
@@ -1488,9 +1517,12 @@ Sqwidget.ready(function() {
         jQuery.each(widgets, function(w,widget) {
             //_('init for w: ' + widgets[w].toString());
             widget.init();
-        });
-        
-        
+        }); 
+            
+  //      jQuery.each(widgets, function(w,widget) {
+    //        //_('init for w: ' + widgets[w].toString());
+      //      widget.checkRun();
+//        });     
     }
 });
 
