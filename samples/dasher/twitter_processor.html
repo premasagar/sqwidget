@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Twitter Processor</title>
+    <script>
+    widget.config({
+      "name": "twitter_processor",
+      "version": "1.0.0",
+      "title": "Twitter incoming feed processor",
+      "desc": "Gets twitter stuff in and sends out summaries on a number of messaging streams",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	   dependencies: [
+			'messaging'
+		],
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+		    widget.setTemplate('default');
+		    var search_stream = widget.getSetting('search_stream');
+		    // set name of list
+		    jQuery('p.info',container).html('Twitter processor ' + container.id + ' listening to search stream ' + search_stream);
+		    // append messages received
+		    plugins.messaging.listen(search_stream, function(event,stuff) {
+		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
+		    });
+		    // send a message to topic
+            plugins.messaging.send(search_stream, {text:'#whatever', from:container.id});
+            jQuery('form#searchform', container).submit(function() {
+                var searchRes = jQuery('#search_field').val();
+                plugins.messaging.send(search_stream, {text:searchRes, from:container.id});   
+                return false;             
+            })
+		});
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+</head>
+
+<body>
+    <h2>Twitter processor</h2>
+    <form id="searchform"><p><input type="text" name="search" value="" id="search_field"><input type="submit" name="submit" value="Search" id="submit"></p></form>
+    <p class="info"></p>
+    <p>Messages received</p>
+    <ul class="message_list">        
+    </ul>
+
+</body>
+</html>
