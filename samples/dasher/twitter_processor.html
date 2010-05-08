@@ -21,19 +21,19 @@
 		widget.ready(function() {
 		    _('twitter processor ready');
 		    widget.setTemplate('default');
-		    var search_stream = widget.getSetting('search_stream');
+		    var setSearchStream = widget.getSetting('set_search_stream');
+		    var currentSearchStream = widget.getSetting('current_search_stream');
 		    // set name of list
-		    jQuery('p.info',container).html('Twitter processor ' + container.id + ' listening to search stream ' + search_stream);
+		    jQuery('p.info',container).html('Twitter processor ' + container.id + ' listening to search stream ' + setSearchStream);
 		    // append messages received
-		    plugins.messaging.listen(search_stream, function(event,stuff) {
+		    plugins.messaging.listen(setSearchStream, function(event,stuff) {
 		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
 		    });
 		    // send a message to topic
-            plugins.messaging.send(search_stream, {text:'#whatever', from:container.id});
             jQuery('form#searchform', container).submit(function() {
                 var searchRes = jQuery('#search_field').val();
                 plugins.twitter_stream.setSearchExpression(searchRes);
-                plugins.messaging.send(search_stream, {text:searchRes, from:container.id});  
+                plugins.messaging.send(currentSearchStream, {text:searchRes, from:container.id});  
                 jQuery('#search_field').val('');
                 return false;             
             })
