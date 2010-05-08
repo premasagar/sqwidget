@@ -32,6 +32,7 @@
             plugins.messaging.send(search_stream, {text:'#whatever', from:container.id});
             jQuery('form#searchform', container).submit(function() {
                 var searchRes = jQuery('#search_field').val();
+                plugins.twitter_stream.setSearchExpression(searchRes);
                 plugins.messaging.send(search_stream, {text:searchRes, from:container.id});  
                 jQuery('#search_field').val('');
                 return false;             
