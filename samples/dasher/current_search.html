@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Stream reader</title>
+    <script>
+    widget.config({
+      "name": "current_search",
+      "version": "1.0.0",
+      "title": "Current Search",
+      "desc": "Show current search",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	   dependencies: [
+			'messaging'
+		],
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+		    widget.setTemplate('default');
+		    var stream = widget.getSetting('stream');
+		    
+		    // append messages received
+		    plugins.messaging.listen(stream, function(event,stuff) {
+		        jQuery(".current_search_name", container).html( stuff.text );
+		    });
+		    // send a message to topic
+		});
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+</head>
+
+<body>
+    <div class="curr_search_txt">Current search:</div><div class="current_search_name"></div>
+</body>
+</html>

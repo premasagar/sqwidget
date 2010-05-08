@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Stream reader</title>
+    <script>
+    widget.config({
+      "name": "tweet_display",
+      "version": "1.0.0",
+      "title": "Display a number of tweets",
+      "desc": "Receives a bunch of tweets and displays them",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	   dependencies: [
+			'messaging'
+		],
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+		    widget.setTemplate('default');
+		    var stream = widget.getSetting('stream');
+		    // set name of list
+		    jQuery('p',container).html('Messages received by ' + container.id + ' listening to stream ' + stream);
+		    // append messages received
+		    plugins.messaging.listen(stream, function(event,stuff) {
+		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
+		    });
+		    // send a message to topic
+		});
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+</head>
+
+<body>
+    <p>Messages received:</p>
+    <ul class="message_list">        
+    </ul>
+</body>
+</html>

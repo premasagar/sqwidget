@@ -14,6 +14,7 @@
 	   dependencies: [
 		['messaging'],
 		['twitter_stream'],
+		['twitter_processor'],
 		],
     });
 	</script>
@@ -23,6 +24,9 @@
 		    widget.setTemplate('default');
 		    var setSearchStream = widget.getSetting('set_search_stream');
 		    var currentSearchStream = widget.getSetting('current_search_stream');
+		    
+		    plugins.twitter_stream.setMessageCallback(plugins.twitter_processor.message);
+		    
 		    // set name of list
 		    jQuery('p.info',container).html('Twitter processor ' + container.id + ' listening to search stream ' + setSearchStream);
 		    // append messages received
@@ -45,12 +49,11 @@
 </head>
 
 <body>
-    <h2>Twitter processor</h2>
-    <form id="searchform"><p><input type="text" name="search" value="" id="search_field"><input type="submit" name="submit" value="Search" id="submit"></p></form>
-    <p class="info"></p>
+    <form id="searchform"><div><input type="text" name="search" value="" id="search_field" size="35"><input type="submit" name="submit" value="Search" id="submit"></div></form><div class="use_note">enter a twitter search term</div>
+    
+<!--    <p class="info"></p>
     <p>Messages received</p>
     <ul class="message_list">        
-    </ul>
-
+    </ul> -->
 </body>
 </html>

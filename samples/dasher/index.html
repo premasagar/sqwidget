@@ -5,6 +5,7 @@
 	<meta http-equiv="Cache-Control" content="NO-CACHE" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="-1" />
+	<link rel="stylesheet" href="css/main.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <title>Dasher page</title>
 	<script src="../../plugins/console.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../../sqwidget.js" type="text/javascript" charset="utf-8"></script>
@@ -59,16 +60,19 @@
 
 <div id="sqwidget-test">
     <div>
+        <div id="current_search"
+            data-sqwidget="template:current_search.html"
+            data-sqwidget-settings="stream:current_search"
+        ></div>
 
     <div id="twitter_processor_1"
         data-sqwidget="template:twitter_processor.html"
         data-sqwidget-settings="set_search_stream:set_search,current_search_stream:current_search"
-        style="padding:0; margin:0; border:1px dashed black;"
     ></div>
+    
     <div id="showmsg1"
         data-sqwidget="template:stream_reader.html"
         data-sqwidget-settings="stream:current_search"
-        style="padding:0; margin:0; border:1px dashed black;"
     ></div>
 </div>
 </body>
