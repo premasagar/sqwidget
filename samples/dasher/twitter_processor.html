@@ -11,14 +11,10 @@
       "desc": "Gets twitter stuff in and sends out summaries on a number of messaging streams",
       "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
 	  "ui" : "hostpage",
-	   dependencies: [
-		['messaging'],
-		['twitter_stream'],
-		['twitter_processor'],
-		],
+	   dependencies: ['messaging', 'twitterlib', 'twitter_stream'],
     });
 	</script>
-	<script type="text/javascript" charset="utf-8">
+	<script>
 		widget.ready(function() {
 		    _('twitter processor ready');
 		    widget.setTemplate('default');
@@ -36,8 +32,10 @@
 		    // send a message to topic
             jQuery('form#searchform', container).submit(function() {
                 var searchRes = jQuery('#search_field').val();
-                plugins.twitter_stream.setSearchExpression(searchRes);
-                plugins.messaging.send(currentSearchStream, {text:searchRes, from:container.id});  
+                plugins.twitter_stream.search(searchRes, function(tweets){
+                    console.log(tweets);
+                    plugins.messaging.send(currentSearchStream, {text:searchRes, from:container.id});
+                });
                 jQuery('#search_field').val('');
                 return false;             
             })
