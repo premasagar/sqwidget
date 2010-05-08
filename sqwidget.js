@@ -635,12 +635,13 @@ var ready = (function(){
              */
              
             plugin: function(name, module, version) {
-                var dep = this.dependencyRegister[name];
+                var dep = this.dependencyRegister[name],
+                    i;
                 dep.module = module;
                 dep.loaded = true;
                 dep.version = version;
-                for (client in dep.clients) {
-                    dep.clients[client].setPlugin(name, module, dep.config);
+                for (i=0; i< this.dependencyRegister[name].clients.length; i++) {
+                    dep.clients[i].setPlugin(name, module, dep.config);
                 }
             },
             
@@ -1113,31 +1114,30 @@ var ready = (function(){
              });
             //TODO hook for style injection -- not done for now
             // modes -- simple injection with container div added
-            for (s in styles) {
-                var ss = jQuery('<style></style>').attr({title:styles[s].title, type:styles[s].type, media:styles[s].media}).text(styles[s].text);
+            jQuery.each(styles, function(s,style) {
+                var ss = jQuery('<style></style>').attr({title:style.title, type:style.type, media:style.media}).text(style.text);
                 jQuery('head').append(ss);
-            }
+            });
         };
         
         var setLoading = function() {
-            for (w in widgets) {
-                // render default template if there is one
-                widgets[w].showLoading();
-            }
+            jQuery.each(widgets, function(w, widget){
+                widget.showLoading();
+            });
         };
         
         var initWidgets = function() {
-            for (w in widgets) {
-                _('running controller for ' + widgets[w].toString());
-                widgets[w].onTemplateLoaded();
-            }            
+            jQuery.each(widgets, function(w, widget) {
+                _('running controller for ' + widget.toString());
+                widget.onTemplateLoaded();
+            });
         };
         
         var showErrorsInWidgets = function() {
             if (sqwidget.settings.development) {
-                for (w in widgets) {
-                    widgets[w].render('<div style="color: red;border:1px dashed red;">Sqwidget Errors:<ul><li>' + errors.join('</li><li>') + '</li></ul></div>');
-                }
+                jQuery.each(widgets, function(w, widget) {
+                    widget.render('<div style="color: red;border:1px dashed red;">Sqwidget Errors:<ul><li>' + errors.join('</li><li>') + '</li></ul></div>');
+                });
             }
         };
         
@@ -1147,6 +1147,9 @@ var ready = (function(){
          * Register this widget with this template
          *
          */
+         
+        self.widgets = widgets;
+        
         self.register = function(widget) {
             widgets.push(widget);
         };
@@ -1168,9 +1171,9 @@ var ready = (function(){
         };
         
         self.loadDependencies = function(widget) {
-            for (i in templateConfig.dependencies) {
-                sqwidget.addDependency(widget, templateConfig.dependencies[i]);
-            }
+            jQuery.each(templateConfig.dependencies, function(i, dep) {
+                sqwidget.addDependency(widget, dep);
+            });
         };
 
         self.getScripts = function() {
@@ -1236,9 +1239,11 @@ var ready = (function(){
             return sqwidget.checkDependencies(self);
         };
          
-        
+        self.readyFn = readyFn;
+            self.readyRun = readyRun;
         self.plugins = plugins;
-         
+        self.allPluginsLoaded = allPluginsLoaded;
+        
         /**
          * set template config dict
          * This used to allow widget.config({..}); in intial embed
@@ -1437,9 +1442,9 @@ var ready = (function(){
          * Run the script controller
          */
         self.runController = function(scripts) {
-            for (s in scripts) {
+            jQuery.each(scripts, function(s, script) {
                 evalScript(scripts[s]);
-            }
+            });
         };
         
         /**
@@ -1478,15 +1483,12 @@ Sqwidget.ready(function() {
     
         _('found ' + widgets.length.toString() +' widget divs:');
     
-        for (w in widgets) {
-            //_(' ' + widgets[w].toString());
-        }
         _('initing widgets...');
         // load templates as needed
-        for (w in widgets) {
+        jQuery.each(widgets, function(w,widget) {
             //_('init for w: ' + widgets[w].toString());
-            widgets[w].init();
-        }
+            widget.init();
+        });
         
         
     }
