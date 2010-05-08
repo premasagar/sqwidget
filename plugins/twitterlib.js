@@ -517,6 +517,6 @@
 
 Sqwidget.plugin('twitterlib', function(){
     return twitterlib;
-}, '0.1.0');
+}, '0.1.0', ['jquery']);
 
 }());

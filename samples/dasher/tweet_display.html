@@ -24,6 +24,7 @@
 		    jQuery('p',container).html('Messages received by ' + container.id + ' listening to stream ' + stream);
 		    // append messages received
 		    plugins.messaging.listen(stream, function(event,stuff) {
+		        alert('got tweets');
 		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
 		    });
 		    // send a message to topic
@@ -35,8 +36,8 @@
 </head>
 
 <body>
-    <p>Messages received:</p>
-    <ul class="message_list">        
+    <p></p>
+    <ul class="tweet_list">        
     </ul>
 </body>
 </html>
