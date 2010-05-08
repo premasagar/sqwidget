@@ -34,6 +34,10 @@
             // TODO restart the search stream
         };
         
+        /**
+         * Set the current search expression and restart
+         * 
+         */ 
         self.setSearchExpression = function (expr) {
             searchExpression = expr;
             self.restartSearch();
