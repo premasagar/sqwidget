@@ -21,21 +21,33 @@
                 _ = sqwidget._ || window._ || function(){},
                 plugins = widget.plugins,
                 twstreamer = plugins.twstreamer,
-                $ = jQuery;
+                $ = jQuery,
+                channel = '#cmd',
+                cmdRe = RegExp(channel + '\\s*(\\w+)\\s*(\\S*)');
             
             function parseTweet(tweet){
+                function parseCmd(cmd){
+                    _('log', cmd);
+                    return cmd.match(cmdRe);
+                }
+            
                 var
-                    txt = tweet.text,
-                    key = '#cmd',
-                    cmd = $.trim(
-                        txt.slice(txt.indexOf(key) + key.length)
-                    ),
-                    val;
-                
-                // Route command
-                if (cmd.indexOf('search ') === 0){
-                    val = cmd.slice('search '.length);
+                    txt = $.trim(tweet.text),
+                    cmd = parseCmd(txt),
+                    sub, val;
                     
+                _('cmd: ' + cmd, txt);
+                
+                if (!cmd){
+                    return;
+                }
+                sub = cmd[1];
+                val = cmd[2];
+                
+                $('h2.cmd').text(txt);
+                
+                // Route command                
+                if (sub === 'q'){
                     // send to "search tweets"
                     plugins.messaging.send(
                         'set_search',
