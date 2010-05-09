@@ -24,7 +24,7 @@
                 lb = plugins.libox,
                 $ = jQuery,
                 channel = '#cmd',
-                cmdRe = RegExp(channel + '\\s*(\\w+)\\s*(\\S*)'),
+                cmdRe = RegExp(channel + '\\s*(\\w+)\\s*(.*)$'),
                 user, pass;
                 
             function getCredentials(){
@@ -91,17 +91,17 @@
                     break;
                     
                     case 'g':
-                        lb.showUrl('http://www.google.com/search?q=' + val);
+                        lb.showUrl('http://www.google.com/search?q=' + encodeURIComponent(val));
                     break;
                     
                     case 'wiki':
-                        lb.showUrl('http://en.wikipedia.org/wiki/Special:Search?fulltext=Search&search=' + val);
+                        lb.showUrl('http://en.wikipedia.org/wiki/Special:Search?fulltext=Search&search=' + encodeURIComponent(val));
                     break;
                     
                     case 'gu':
                         plugins.messaging.send(
                             'command',
-                            {text:'gu ' + val}
+                            {text:'gu ' + encodeURIComponent(val)}
                         );
                     break;
                 }
