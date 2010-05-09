@@ -17,7 +17,22 @@
     });
     </script>
     <script type="text/javascript" charset="utf-8">
+
+    
         widget.ready(function() {
+            
+            function linkify(inputText) {
+                //URLs starting with http://, https://, or ftp://
+                var replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+                var replacedText = inputText.replace(replacePattern1, '<a class="lb_link" href="$1" target="_blank">$1</a>');
+
+                //URLs starting with www. (without // before it, or it'd re-link the ones done above)
+                var replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+                var replacedText = replacedText.replace(replacePattern2, '$1<a class="lb_link" href="http://$2" target="_blank">$2</a>');
+
+                return replacedText;
+            }
+            
             widget.setTemplate('default');
             var stream = widget.getSetting('stream'),
                 currentSearchStream = widget.getSetting('current_search_stream');
@@ -26,10 +41,15 @@
             plugins.messaging.listen(stream, function(event, tweets) {
                 var feedUl = jQuery('.tweet_list', container),
                     articleHtml, i;
-                
                 // fill in a basic template
                 for (i=tweets.tweets.length-1; i >= 0; i -= 1) {
+                    tweets.tweets[i].text = linkify(tweets.tweets[i].text);
                     articleHtml = widget.renderWithTemplate('tweet', {tweet:tweets.tweets[i]});
+                    articleHtml = jQuery(articleHtml);
+                    jQuery('.lb_link', articleHtml).click( function (e) {
+                        plugins.libox.showUrl(jQuery(this).attr('href'));
+                        return false;
+                    });
                     feedUl.prepend(articleHtml);
                 }
             });

@@ -1448,7 +1448,15 @@
         $.extend(true, config, newConfig);
 
         self.showUrl = function (url) {
-            lb.open(jQuery.iframe(url));
+            lb.open(jQuery.iframe(url, { 
+                    attr: {
+                        scrolling: 'yes'
+                    },
+                    css: {
+                        width: '800px', 
+                        height: '600px' 
+                        },
+                }));
         };
         
         self.hide = function () {
