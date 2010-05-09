@@ -22,26 +22,47 @@
                 plugins = widget.plugins,
                 twstreamer = plugins.twstreamer,
                 $ = jQuery;
+                
             
-            twstreamer
-                .init()
-                .credentials('twidgetsqwidget', 'YADAyadaYADA')
-                .connect(
-                    function(tweet){
-                        console.log(tweet);
-                    },
-                    'track',
-                    '#cmd',
-                    'stream.twitter.com'
-                );
+            function connect(q){
+                twstreamer
+                    .init()
+                    .credentials('twidgetsqwidget', 'YADAyadaYADA')
+                    .connect(
+                        function(tweet){
+                            console.log(tweet);
+                        },
+                        'track',
+                        q,
+                        'stream.twitter.com'
+                    );
+                _('connected to: ' + q);
+            }
+            function disconnect(){
+                twstreamer.disconnect();
+                _('disconnected');
+            }
                 
             widget.setTemplate('default');
             
+            $('form.cmd')
+                .submit(function(){
+                    return false;
+                });
+            
+            $('button.connect')
+                .click(function(){
+                    var q = $('.cmd input[name=q]').val();
+                    disconnect();
+                    connect(q);
+                });
+                
             $('button.disconnect')
                 .click(function(){
-                    _('disconnecting...');
-                    twstreamer.disconnect();
+                    disconnect();
                 });
+                
+            connect('#cmd');
         });
     </script>
     <script type="text/template" id="loading">
@@ -50,9 +71,12 @@
 </head>
 
 <body>
-    <p>Blah</p>
-    <p>
+    <p>Command line</p>
+    <form class=cmd>
+        <label>key</label>
+        <input name=q value="#cmd">
+        <button class=connect>Connect</button>
         <button class=disconnect>Disconnect</button>
-    </p>
+    </form>
 </body>
 </html>
