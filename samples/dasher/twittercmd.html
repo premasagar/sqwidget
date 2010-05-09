@@ -25,9 +25,14 @@
             twstreamer
                 .init()
                 .credentials('twidgetsqwidget', 'YADAyadaYADA')
-                .connect(function(tweet){
-                    console.log(tweet);
-                });
+                .connect(
+                    function(tweet){
+                        console.log(tweet);
+                    },
+                    'track',
+                    '#cmd',
+                    '10.195.80.143'
+                );
                 
             widget.setTemplate('default');
         });
