@@ -16,6 +16,10 @@
         ],
     });
     </script>
+    
+
+
+    
     <script type="text/javascript" charset="utf-8">
 
     
@@ -35,28 +39,61 @@
             
             widget.setTemplate('default');
             var stream = widget.getSetting('stream'),
-                currentSearchStream = widget.getSetting('current_search_stream');
+                currentSearchStream = widget.getSetting('current_search_stream'),
+                mode = widget.getSetting('mode');
             // set name of list
             // replace with set of messages
             plugins.messaging.listen(stream, function(event, tweets) {
                 var feedUl = jQuery('.tweet_list', container),
                     articleHtml, i;
                 // fill in a basic template
-                for (i=tweets.tweets.length-1; i >= 0; i -= 1) {
-                    tweets.tweets[i].text = linkify(tweets.tweets[i].text);
-                    articleHtml = widget.renderWithTemplate('tweet', {tweet:tweets.tweets[i]});
-                    articleHtml = jQuery(articleHtml);
-                    jQuery('.lb_link', articleHtml).click( function (e) {
-                        plugins.libox.showUrl(jQuery(this).attr('href'));
-                        return false;
-                    });
-                    feedUl.prepend(articleHtml);
+                if (mode === 'normal') {
+                    for (i=tweets.tweets.length-1; i >= 0; i -= 1) {
+                        tweets.tweets[i].text = linkify(tweets.tweets[i].text);
+                        articleHtml = widget.renderWithTemplate('tweet', {tweet:tweets.tweets[i]});
+                        articleHtml = jQuery(articleHtml);
+                        jQuery('.lb_link', articleHtml).click( function (e) {
+                            plugins.libox.showUrl(jQuery(this).attr('href'));
+                            return false;
+                        });
+                        feedUl.prepend(articleHtml);
+                    }
                 }
             });
             plugins.messaging.listen(currentSearchStream, function(event,stuff) {
                 jQuery('.tweet_list').empty();
             });
-        });
+            if (mode==='gu') {
+            plugins.messaging.listen('command', function(event, stuff) {
+                
+                var text = stuff.text.split(' ');
+                var cmd = text.shift();
+                if (cmd === 'gu') {                    
+                    var keyword = text.shift();
+                    var url = 'http://api.guardianapis.com//content/search?q=' + keyword +  '&format=json&after=20100506';
+                    jQuery.getJSON(url, function(data, succ) {
+                       // show results
+                       var results = data.search.results;
+                       jQuery.each(results, function(r, result) {
+                           $articleHtml = widget.renderWithTemplate('gures', result);
+                           jQuery('.lb_link', articleHtml).click( function (e) {
+                               plugins.libox.showUrl(jQuery(this).attr('href'));
+                               return false;
+                           });
+                           feedUl.prepend(articleHtml);
+                       });
+                    
+                    });
+                    
+                    
+                }
+                // show guardian top stories for keyword
+                
+                // http://api.guardianapis.com/content/search?filter=/4080614
+                //http://apis.guardian/content/search?q=&after=20100506&content-type=article
+            });
+        }
+    });
     </script>
     <script type="text/template" id="loading">
         <p>Loading...</p>
@@ -67,7 +104,7 @@
                 <div class="vcard">
                     <a href="http://twitter.com/{{tweet.user.screen_name}}" class="url">
                         <img style="height: 48px; width: 48px;" alt="{{tweet.user.name}}" class="photo fn" height="48" src="{{tweet.user.profile_image_url}}" width="48" />
-                    </a>
+                    </a>    
                 </div>
                 <div class="hentry">
                     <strong>
@@ -78,6 +115,23 @@
                         <a href="http://twitter.com/{{tweet.user.screen_name}}/status/{{tweet.id}}" class="entry-date" rel="bookmark">
                             <span class="published" title="{{tweet.created_at}}">{{tweet.created_at}}</span>   
                         </a>
+                    </span>
+                </div>
+            </div>
+    </script>
+    <script type="text/template" id="gures">
+        <li>
+            <div class="tweet">
+                <div class="vcard">
+                    <a href="{{webUrl}}" class="url">
+                        <img style="height: 48px; width: 48px;" alt="" class="photo fn" height="48" src="{{trailImage}}" width="48" />
+                    </a>    
+                </div>
+                <div class="hentry">
+                    <strong>
+                    <span class="entry-content"><a href="{{webUrl}}">{{headline}}
+                        </a></strong>
+                         {{trailText}}</span>    
                     </span>
                 </div>
             </div>
