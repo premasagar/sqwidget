@@ -15,8 +15,10 @@ div#search_history_1 {
 	font-size: small;	
 }
 div#current_search {
-    width: 300px;
+    width: 400px;
     float:right;
+    top: -50px;
+    position:relative;
 }
 
 div.curr_search_txt {
@@ -61,7 +63,7 @@ top: -57px;
 
 #tweet_display ul.tweet_list li {
 	list-style-type: none;
-	height: 80px;
+	//height: 80px;
 	
 }
 
