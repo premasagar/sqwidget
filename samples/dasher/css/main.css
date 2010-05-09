@@ -5,6 +5,10 @@ body {
 	background-color: rgba(63,92,34,0.27);
 }
 
+abbr[title] {
+    cursor:help;
+}
+
 div#twitter_processor_1 {
 	width: 300px;
 	color: #707170;
