@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Stream reader</title>
+    <script>
+    widget.config({
+      "name": "showmsg",
+      "version": "1.0.0",
+      "title": "Test messaging plugin",
+      "desc": "Search history",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	   dependencies: ['messaging']
+    });
+	</script>
+	<script>
+		widget.ready(function() {
+		    widget.setTemplate('default');
+		    var stream = widget.getSetting('stream'),
+		        setSearchStream = widget.getSetting('set_search_stream'),
+		        li;
+		    // append messages received
+		    plugins.messaging.listen(stream, function(event,stuff) {
+		        li=jQuery('<li><a class="search_history_item" href="# '+ stuff.text +'">' + stuff.text + '</a>');
+		        li.click(function(e) {
+		            plugins.messaging.send(setSearchStream, {text:stuff.text});
+		        });
+		        jQuery(".history_list", container).prepend( li );		            
+		    });
+		});
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+</head>
+
+<body>
+    <p>Search history</p>
+    <ul class="history_list"></ul>
+</body>
+</html>

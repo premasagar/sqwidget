@@ -10,8 +10,9 @@ div#twitter_processor_1 {
 	color: #707170;
 }
 
-div#showmsg1 {
-	width:300px;	
+div#search_history_1 {
+	width:150px;
+	font-size: small;	
 }
 div#current_search {
     width: 300px;
@@ -27,3 +28,17 @@ div.use_note {
 	font-size: x-small;
 	color: #87989e;	
 }
+
+div#tweet_display_surround {
+    float:right;
+    width:280px;
+    top: 100px;
+    right: 20px;
+    position: absolute;
+    font-size:small;
+}
+
+a.search_history_item {
+	list-style-type: none;
+}
+

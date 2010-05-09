@@ -19,19 +19,21 @@
     <script type="text/javascript" charset="utf-8">
         widget.ready(function() {
             widget.setTemplate('default');
-            var stream = widget.getSetting('stream');
+            var stream = widget.getSetting('stream'),
+                setSearchStream = widget.getSetting('set_search_stream');
             // set name of list
             // replace with set of messages
             plugins.messaging.listen(stream, function(event, tweets) {
                 var feedUl = jQuery('.tweet_list', container),
-                    articleHtml;
+                    articleHtml, i;
                 // fill in a basic template
-                jQuery.each(tweets.tweets, function(t, tweet) {
-                    debugger;
-                    articleHtml = widget.renderWithTemplate('tweet', {tweet:tweet});
-                    // inject into template
+                for (i=tweets.tweets.length-1; i >= 0; i -= 1) {
+                    articleHtml = widget.renderWithTemplate('tweet', {tweet:tweets.tweets[i]});
                     feedUl.prepend(articleHtml);
-                });
+                }
+            });
+            plugins.messaging.listen(set_search_stream, function(event,stuff) {
+                jQuery('.tweet_list', container).empty();
             });
         });
     </script>
@@ -62,7 +64,6 @@
 </head>
 
 <body>
-    <p>Tweets</p>
     <ul class="tweet_list">        
     </ul>
 </body>
