@@ -38,9 +38,11 @@
                     return this;
                 },
             
-                connect: function(streamHandler){
-                    var path = this.config.apiPath;
-                    
+                connect: function(streamHandler, method, q){
+                    var path = this.config.apiPath +
+                        '?' + (method || 'track') +
+                        '=' + (q || 'twitter');
+                        
                     // HACK: connect global window var to method
                     window.streamEvent = streamHandler;
                         
