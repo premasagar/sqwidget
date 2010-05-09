@@ -45,6 +45,7 @@
                 );
                 if (rep > 0) {
                     _('setting timer...');
+                    clearTimeout(searchTimer);
                     searchTimer = setTimeout(function() {
                         doSearch(expr ,rep, true); }, rep*1000);
                 }
@@ -55,7 +56,6 @@
             // append messages received
             plugins.messaging.listen(
                 setSearchStream, function(event,stuff){
-                    stopSearch();
                     jQuery('#search_field').val(stuff.text);
                     doSearch(stuff.text, 10);
             });

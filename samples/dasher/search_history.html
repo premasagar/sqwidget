@@ -22,9 +22,11 @@
 		        li;
 		    // append messages received
 		    plugins.messaging.listen(stream, function(event,stuff) {
-		        li=jQuery('<li><a class="search_history_item" href="# '+ stuff.text +'">' + stuff.text + '</a>');
+		        li=jQuery('<li><a class="search_history_item" href="#'+ stuff.text +'">' + stuff.text + '</a>');
 		        li.click(function(e) {
-		            plugins.messaging.send(setSearchStream, {text:stuff.text});
+		            var term=jQuery(this).text();
+		            plugins.messaging.send(setSearchStream, {text:term});
+		            return false;
 		        });
 		        jQuery(".history_list", container).prepend( li );		            
 		    });
