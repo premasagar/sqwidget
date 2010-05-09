@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<meta charset="utf-8">
+    <meta charset="utf-8">
     <title>Stream reader</title>
     <script>
     widget.config({
@@ -10,33 +10,59 @@
       "title": "Display a number of tweets",
       "desc": "Receives a bunch of tweets and displays them",
       "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
-	  "ui" : "hostpage",
-	   dependencies: [
-			'messaging'
-		],
+      "ui" : "hostpage",
+       dependencies: [
+            'messaging'
+        ],
     });
-	</script>
-	<script type="text/javascript" charset="utf-8">
-		widget.ready(function() {
-		    widget.setTemplate('default');
-		    var stream = widget.getSetting('stream');
-		    // set name of list
-		    jQuery('p',container).html('Messages received by ' + container.id + ' listening to stream ' + stream);
-		    // append messages received
-		    plugins.messaging.listen(stream, function(event,stuff) {
-		        alert('got tweets');
-		        jQuery(".message_list", container).append('<li>got msg ' + stuff.text + ' from ' + stuff.from + '</li>' );
-		    });
-		    // send a message to topic
-		});
-	</script>
-	<script type="text/template" id="loading">
-	    <p>Loading...<p>
-	</script>
+    </script>
+    <script type="text/javascript" charset="utf-8">
+        widget.ready(function() {
+            widget.setTemplate('default');
+            var stream = widget.getSetting('stream');
+            // set name of list
+            // replace with set of messages
+            plugins.messaging.listen(stream, function(event,tweets) {
+                var feedUl = jQuery('.tweet_list', container),
+                    articleHtml;
+                _(tweets);
+                // fill in a basic template
+                jQuery.each(tweets, function(t, tweet) {
+                    articleHtml = widget.renderWithTemplate('tweet', tweet);
+                    // inject into template
+                    feedUl.prepend(articleHtml);
+                });
+            });
+        });
+    </script>
+    <script type="text/template" id="loading">
+        <p>Loading...</p>
+    </script>
+    <script type="text/template" id="tweet">
+        <li>
+            <div class="tweet">
+                <div class="vcard">
+                    <a href="http://twitter.com/' + tweet.user.screen_name + '" class="url">
+                        <img style="height: 48px; width: 48px;" alt="{{tweet.user.name}}" class="photo fn" height="48" src="tweet.user.profile_image_url}}" width="48" />
+                    </a>
+                </div>
+                <div class="hentry">
+                    <strong>
+                    <span class="entry-content"><a href="http://twitter.com/{{tweet.user.screen_name}}" title="{{tweet.user.name}}">{{tweet.user.screen_name}}
+                    </a></strong>
+                {{tweet.text}}</span> 
+                <span class="meta entry-meta">
+                <a href="http://twitter.com/{{tweet.user.screen_name}}/status/{{tweet.id}}" class="entry-date" rel="bookmark">
+                    <span class="published" title="tweet.created_at">{{tweet.created_at}}</span>    
+                </a>
+            </div>
+        </div>
+        </li>
+    </script>
 </head>
 
 <body>
-    <p></p>
+    <p>Tweets</p>
     <ul class="tweet_list">        
     </ul>
 </body>
