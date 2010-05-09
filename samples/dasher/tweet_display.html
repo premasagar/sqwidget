@@ -64,17 +64,16 @@
                 jQuery('.tweet_list').empty();
             });
             if (mode==='gu') {
-            plugins.messaging.listen('command', function(event, stuff) {
-                
+                plugins.messaging.listen('command', function(event, stuff) {
                 var text = stuff.text.split(' ');
                 var cmd = text.shift();
                 if (cmd === 'gu') {                    
                     var keyword = text.shift();
-                    var url = 'http://api.guardianapis.com//content/search?q=' + keyword +  '&format=json&after=20100506';
+                    var url = 'http://api.guardianapis.com/content/search?q=' + keyword +  '&format=json&after=20100506&api_key=2t5vpzkf7kv47r5er6hkz7zd';
                     jQuery.getJSON(url, function(data, succ) {
                        // show results
                        var results = data.search.results;
-                       jQuery.each(results, function(r, result) {
+                       jQuery.each(results, function(r, result)  {
                            $articleHtml = widget.renderWithTemplate('gures', result);
                            jQuery('.lb_link', articleHtml).click( function (e) {
                                plugins.libox.showUrl(jQuery(this).attr('href'));
