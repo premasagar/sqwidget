@@ -20,7 +20,8 @@
             var
                 _ = sqwidget._ || window._ || function(){},
                 plugins = widget.plugins,
-                twstreamer = plugins.twstreamer;
+                twstreamer = plugins.twstreamer,
+                $ = jQuery;
             
             twstreamer
                 .init()
@@ -31,10 +32,16 @@
                     },
                     'track',
                     '#cmd',
-                    '10.195.80.143'
+                    'stream.twitter.com'
                 );
                 
             widget.setTemplate('default');
+            
+            $('button.disconnect')
+                .click(function(){
+                    _('disconnecting...');
+                    twstreamer.disconnect();
+                });
         });
     </script>
     <script type="text/template" id="loading">
@@ -44,5 +51,8 @@
 
 <body>
     <p>Blah</p>
+    <p>
+        <button class=disconnect>Disconnect</button>
+    </p>
 </body>
 </html>

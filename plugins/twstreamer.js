@@ -9,20 +9,7 @@
     );
     
     
-    ///////////////////    
-    
-(function(){
-
-    Sqwidget.plugin('twstreamer', function(sqwidget, widget, $){
-    var pathToSwf = Sqwidget.buildResourcePath(
-        '../../',
-        'plugins/',
-        'TwStreamFlash.swf',
-        ''
-    );
-    
-    
-    ///////////////////    
+///////////////////    
     
 /*!*
 * TwStreamer
@@ -98,7 +85,7 @@
                   var decodedTweet = encodedTweet.replace(/%22/g, "\"").replace(/%5c/g, "\\").replace(/%26/g, "&").replace(/%25/g, "%");
                   handler(decodedTweet);
                 };
-_(host);
+                
                 if (path && user && pass){
                     streamer.flash(function(){
                         this.ConnectToStream(host, path, user, pass);
@@ -120,18 +107,11 @@ _(host);
 
 }(jQuery));
 
-        ///////////////////
+///////////////////
 
-        return jQuery.twstreamer;
-    
-    }, '0.1.0', ['jquery, swfobject']);
 
-}());
+    return jQuery.twstreamer;
 
-        ///////////////////
-
-        return jQuery.twstreamer;
-    
-    }, '0.1.0', ['jquery, swfobject']);
+}, '0.1.0', ['jquery, swfobject']);
 
 }());
