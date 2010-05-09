@@ -19,7 +19,7 @@
                     
                     // TODO: Change swf.url to absolute path on production
                     swf: {
-                        url: Sqwidget.buildResourcePath('../../', 'plugins/', 'TwStreamFlash.swf', ''),
+                        swf: Sqwidget.buildResourcePath('../../', 'plugins/', 'TwStreamFlash.swf', ''),
                         width: 1,
                         height: 1
                     }
@@ -41,11 +41,10 @@
                 connect: function(streamHandler, method, q){
                     var path = this.config.apiPath +
                         '?' + (method || 'track') +
-                        '=' + (q || 'twitter');
+                        '=' + (q || 'love');
                         
                     // HACK: connect global window var to method
-                    window.streamEvent = streamHandler;
-                        
+                    window.streamEvent = streamHandler;   
                     if (path && user && pass){
                         streamer.flash(function(){
                             this.ConnectToStream(path, user, pass);
