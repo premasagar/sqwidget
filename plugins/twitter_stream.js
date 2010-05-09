@@ -14,7 +14,7 @@
             //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
             _ = sqwidget._ || window._ || function () {},
             config = {
-                limit: 3
+                limit: 10
             },
             searchTerm = '';
             twitterlib = widget.plugins.twitterlib;
