@@ -11,7 +11,7 @@
       "desc": "Twitter socket connector widget, listening to #cmd",
       "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
       "ui" : "hostpage",
-       dependencies: ['swfobject', 'twstreamer']
+       dependencies: ['messaging', 'swfobject', 'twstreamer']
     });
     </script>
     
@@ -22,16 +22,34 @@
                 plugins = widget.plugins,
                 twstreamer = plugins.twstreamer,
                 $ = jQuery;
+            
+            function parseTweet(tweet){
+                var
+                    txt = tweet.text,
+                    key = '#cmd',
+                    cmd = $.trim(
+                        txt.slice(txt.indexOf(key) + key.length)
+                    ),
+                    val;
                 
+                // Route command
+                if (cmd.indexOf('search ') === 0){
+                    val = cmd.slice('search '.length);
+                    
+                    // send to "search tweets"
+                    plugins.messaging.send(
+                        'set_search',
+                        {text:val}
+                    );
+                }
+            }
             
             function connect(q){
                 twstreamer
                     .init()
                     .credentials('twidgetsqwidget', 'YADAyadaYADA')
                     .connect(
-                        function(tweet){
-                            console.log(tweet);
-                        },
+                        parseTweet,
                         'track',
                         q,
                         'stream.twitter.com'
