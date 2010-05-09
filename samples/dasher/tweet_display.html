@@ -22,13 +22,13 @@
             var stream = widget.getSetting('stream');
             // set name of list
             // replace with set of messages
-            plugins.messaging.listen(stream, function(event,tweets) {
+            plugins.messaging.listen(stream, function(event, tweets) {
                 var feedUl = jQuery('.tweet_list', container),
                     articleHtml;
-                _(tweets);
                 // fill in a basic template
-                jQuery.each(tweets, function(t, tweet) {
-                    articleHtml = widget.renderWithTemplate('tweet', tweet);
+                jQuery.each(tweets.tweets, function(t, tweet) {
+                    debugger;
+                    articleHtml = widget.renderWithTemplate('tweet', {tweet:tweet});
                     // inject into template
                     feedUl.prepend(articleHtml);
                 });
@@ -42,18 +42,18 @@
         <li>
             <div class="tweet">
                 <div class="vcard">
-                    <a href="http://twitter.com/' + tweet.user.screen_name + '" class="url">
-                        <img style="height: 48px; width: 48px;" alt="{{tweet.user.name}}" class="photo fn" height="48" src="tweet.user.profile_image_url}}" width="48" />
+                    <a href="http://twitter.com/{{tweet.user.screen_name}}" class="url">
+                        <img style="height: 48px; width: 48px;" alt="{{tweet.user.name}}" class="photo fn" height="48" src="{{tweet.user.profile_image_url}}" width="48" />
                     </a>
                 </div>
                 <div class="hentry">
                     <strong>
-                    <span class="entry-content"><a href="http://twitter.com/{{tweet.user.screen_name}}" title="{{tweet.user.name}}">{{tweet.user.screen_name}}
+                    <span class="entry-content"><a href="http://twitter.com/{{tweet.user.screen_name}}" title="{{tweet.user.screen_name}}">{{tweet.user.screen_name}}
                     </a></strong>
                 {{tweet.text}}</span> 
                 <span class="meta entry-meta">
                 <a href="http://twitter.com/{{tweet.user.screen_name}}/status/{{tweet.id}}" class="entry-date" rel="bookmark">
-                    <span class="published" title="tweet.created_at">{{tweet.created_at}}</span>    
+                    <span class="published" title="{{tweet.created_at}}">{{tweet.created_at}}</span>    
                 </a>
             </div>
         </div>
