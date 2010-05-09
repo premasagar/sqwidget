@@ -11,7 +11,7 @@
       "desc": "Twitter socket connector widget, listening to #cmd",
       "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
       "ui" : "hostpage",
-       dependencies: ['messaging', 'swfobject', 'twstreamer']
+       dependencies: ['messaging', 'swfobject', 'twstreamer', 'libox']
     });
     </script>
     
@@ -21,13 +21,26 @@
                 _ = sqwidget._ || window._ || function(){},
                 plugins = widget.plugins,
                 twstreamer = plugins.twstreamer,
+                lb = plugins.libox,
                 $ = jQuery,
                 channel = '#cmd',
-                cmdRe = RegExp(channel + '\\s*(\\w+)\\s*(\\S*)');
+                cmdRe = RegExp(channel + '\\s*(\\w+)\\s*(\\S*)'),
+                user, pass;
+                
+            function getCredentials(){
+                if (window.location.search.indexOf('?dev') === 0){
+                    user = 'twidgetsqwidget';
+                    pass = 'YADAyadaYADA';
+                }
+                else {
+                    alert("We need your Twitter username & password, because the streaming API is limited to one connection per user. Your details are not stored.");
+                    user = prompt("What's your Twitter username?");
+                    pass = prompt("and your Twitter password?");
+                }
+            }
             
             function parseTweet(tweet){
                 function parseCmd(cmd){
-                    _('log', cmd);
                     return cmd.match(cmdRe);
                 }
             
@@ -35,14 +48,14 @@
                     txt = $.trim(tweet.text),
                     cmd = parseCmd(txt),
                     sub, val;
-                    
-                _('cmd: ' + cmd, txt);
                 
                 if (!cmd){
                     return;
                 }
                 sub = cmd[1];
                 val = cmd[2];
+                    
+                _('cmd:', {cmd:cmd, sub:sub, val:val, txt:txt});
                 
                 $('h2.cmd').text(txt);
                 
@@ -54,12 +67,23 @@
                         {text:val}
                     );
                 }
+                else if (
+                    sub === 'url' ||
+                    (sub === 'lb' && val !== 'close')
+                ){
+                    lb.showUrl(val);
+                }
+                else if (sub === 'lb'){
+                    if (val === 'close'){
+                        lb.hide();
+                    }
+                }
             }
             
             function connect(q){
                 twstreamer
                     .init()
-                    .credentials('twidgetsqwidget', 'YADAyadaYADA')
+                    .credentials(user, pass)
                     .connect(
                         parseTweet,
                         'track',
@@ -91,7 +115,8 @@
                 .click(function(){
                     disconnect();
                 });
-                
+            
+            getCredentials();
             connect('#cmd');
         });
     </script>
@@ -101,6 +126,7 @@
 </head>
 
 <body>
+    <!--
     <p>Command line</p>
     <form class=cmd>
         <label>key</label>
@@ -108,5 +134,6 @@
         <button class=connect>Connect</button>
         <button class=disconnect>Disconnect</button>
     </form>
+    -->
 </body>
 </html>
