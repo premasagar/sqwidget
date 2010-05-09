@@ -43,7 +43,25 @@ a.search_history_item {
 }
 
 ul.tweet_list {
+	padding-top: 2em;
     overflow:auto;
-    height:40em;
+    height:35em;
+}
+
+div.tweet {
+	position: relative;
+}
+
+#tweet_display ul.tweet_list li div.tweet div.hentry {
+position:relative;
+width: 280px;
+left: 55px;
+top: -57px;
+}
+
+#tweet_display ul.tweet_list li {
+	list-style-type: none;
+	height: 80px;
+	
 }
 
