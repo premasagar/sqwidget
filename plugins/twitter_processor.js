@@ -72,7 +72,7 @@
                     }
                     tweetsById[r.id] = r;
                     tweets.push(r);
-                    if (r.metadata.result_type == 'popular'){
+                    if (r.metadata.result_type === 'popular'){
                         popular.push(r);
                     }
                     else {
@@ -83,14 +83,12 @@
                 // extract any URLs
                 // array of [extracted url, tweets]
                 
-                
-                
-                // push output to streams
+                _(tweets);
                 // TODO slicing
-                widget.plugins.messaging.send('tweets', tweets);
-                widget.plugins.messaging.send('popular', popular);
-                widget.plugins.messaging.send('not_popular', notPopular);
-                widget.plugins.messaging.send('resources', resources);
+                widget.plugins.messaging.send('tweets', {tweets:tweets});
+                widget.plugins.messaging.send('popular', {tweets:popular});
+                widget.plugins.messaging.send('not_popular', {tweets:notPopular});
+                widget.plugins.messaging.send('resources', {tweets:resources});
             }
             else {
                 // ignore
