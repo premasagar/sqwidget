@@ -37,7 +37,12 @@
          */
          
         self.reset = function () {
-            // TODO restart the search stream
+           
+            tweetsById = {};
+            tweets=[];
+            popular=[];
+            notPopular=[];
+            resources=[];
         };
         
         /** handle a completed message coming in from the twitter api */

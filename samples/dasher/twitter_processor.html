@@ -24,15 +24,15 @@
             var currentSearchStream = widget.getSetting('current_search_stream');
             
             function doSearch(expr) {
+                plugins.messaging.send(currentSearchStream, {text:expr, from:container.id});
+                plugins.twitter_processor.reset();
                 plugins.twitter_stream.search(
                     expr,
                     plugins.twitter_processor.message
                 );
-                plugins.messaging.send(currentSearchStream, {text:expr, from:container.id});
                 jQuery('#search_field').val('');
                 
             };
-            
             
             // set name of list
             jQuery('p.info',container).html('Twitter processor ' + container.id + ' listening to search stream ' + setSearchStream);

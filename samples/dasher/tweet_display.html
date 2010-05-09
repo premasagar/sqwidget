@@ -20,7 +20,7 @@
         widget.ready(function() {
             widget.setTemplate('default');
             var stream = widget.getSetting('stream'),
-                setSearchStream = widget.getSetting('set_search_stream');
+                currentSearchStream = widget.getSetting('current_search_stream');
             // set name of list
             // replace with set of messages
             plugins.messaging.listen(stream, function(event, tweets) {
@@ -32,8 +32,8 @@
                     feedUl.prepend(articleHtml);
                 }
             });
-            plugins.messaging.listen(set_search_stream, function(event,stuff) {
-                jQuery('.tweet_list', container).empty();
+            plugins.messaging.listen(currentSearchStream, function(event,stuff) {
+                jQuery('.tweet_list').empty();
             });
         });
     </script>
