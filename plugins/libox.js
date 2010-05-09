@@ -1448,6 +1448,11 @@
         $.extend(true, config, newConfig);
 
         self.showUrl = function (url) {
+            try {
+                lb.close();
+            }
+            catch(e) {
+            }
             lb.open(jQuery.iframe(url, { 
                     attr: {
                         scrolling: 'yes'
