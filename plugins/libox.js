@@ -1434,21 +1434,21 @@
 
 (function(){
 
-    Sqwidget.plugin('libox', function (sqwidget, widget, $, newConfig) {
+    Sqwidget.plugin('libox', function (sqwidget, widget, jQuery, newConfig) {
         var 
             self = {},
             //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
             _ = sqwidget._ || window._ || function () {},
             config = {
             },
-            lb=$.nitelite();
+            lb=jQuery.nitelite();
         
         _('libox called');
         /* init config from supplied*/
-        jQuery.extend(true, config, newConfig);
+        $.extend(true, config, newConfig);
 
         self.showUrl = function (url) {
-            lb.open($.iframe(url));
+            lb.open(jQuery.iframe(url));
         };
         
         self.hide = function () {
