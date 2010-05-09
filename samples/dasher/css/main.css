@@ -31,7 +31,7 @@ div.use_note {
 
 div#tweet_display_surround {
     float:right;
-    width:280px;
+    width:400px;
     top: 100px;
     right: 20px;
     position: absolute;
@@ -40,5 +40,10 @@ div#tweet_display_surround {
 
 a.search_history_item {
 	list-style-type: none;
+}
+
+ul.tweet_list {
+    overflow:auto;
+    height:40em;
 }
 
