@@ -82,8 +82,16 @@
                 host = host || 'stream.twitter.com';
 
                 window[this.config.globalHandler] = function(encodedTweet) {
-                  var decodedTweet = encodedTweet.replace(/%22/g, "\"").replace(/%5c/g, "\\").replace(/%26/g, "&").replace(/%25/g, "%");
-                  handler(decodedTweet);
+                    var decodedTweet = $.parseJSON(
+                        encodedTweet
+                            .replace(/%22/g, "\"")
+                            .replace(/%5c/g, "\\")
+                            .replace(/%26/g, "&")
+                            .replace(/%25/g, "%")
+                    );
+                    if (decodedTweet){
+                        handler(decodedTweet);
+                    }
                 };
                 
                 if (path && user && pass){
