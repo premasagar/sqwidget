@@ -1,3 +1,11 @@
+/**
+ * SwfObject wrapper
+ */
+
+Sqwidget.plugin('swfobject', function(sqwidget, widget, $) {
+
+/////
+
 (function ($, flash) {
 	var createAttrs = function (obj) {
 		var aEach,
@@ -185,3 +193,9 @@
 		return this;
 	};
 }(jQuery, 'flash'));
+
+
+    // jQuery is extended with jQuery.fn.flash
+    return $.fn.flash;
+
+}, '0.1.0');
