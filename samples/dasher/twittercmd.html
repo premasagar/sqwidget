@@ -16,15 +16,20 @@
     </script>
     
     <script>
-        widget.ready(function() {
+        widget.ready(function(){
             var
-                _ = sqwidget._ || window._ || function () {},
+                _ = sqwidget._ || window._ || function(){},
                 plugins = widget.plugins,
                 twstreamer = plugins.twstreamer;
-                
+            
             twstreamer
+                .init()
                 .credentials('twidgetsqwidget', 'YADAyadaYADA')
-                .connect();
+                .connect(function(tweet){
+                    console.log(tweet);
+                });
+                
+            widget.setTemplate('default');
         });
     </script>
     <script type="text/template" id="loading">
@@ -33,6 +38,6 @@
 </head>
 
 <body>
-    
+    <p>Blah</p>
 </body>
 </html>

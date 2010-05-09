@@ -1,70 +1,109 @@
-/**
- * TwStreamer
- * JavaScript/Flash socket connection to Twitter stream API
- * modified from http://github.com/r/twstreamer
- */
-
 (function(){
 
     Sqwidget.plugin('twstreamer', function(sqwidget, widget, $){
+    var pathToSwf = Sqwidget.buildResourcePath(
+        '../../',
+        'plugins/',
+        'TwStreamFlash.swf',
+        ''
+    );
+    
     
     ///////////////////    
     
-        var 
-            user,
-            pass,
-            plugin = {
-                config: {
-                    apiPath: '/1/statuses/filter.json',
-                    
-                    // TODO: Change swf.url to absolute path on production
-                    swf: {
-                        swf: Sqwidget.buildResourcePath('../../', 'plugins/', 'TwStreamFlash.swf', ''),
-                        width: 1,
-                        height: 1
-                    }
+/*!*
+* TwStreamer
+*   by Raffi Krikorian, http://github.com/r/twstreamer
+*   JavaScript API by Premasagar Rose, http://github.com/premasagar
+*
+*//*
+    Socket connection to Twitter stream API, via Flash
+
+    license:
+        opensource.org/licenses/mit-license.php
+        
+    usage:
+        jQuery.twstreamer
+            .init()                     // set up Flash listener
+            .credentials(myUsername, myPassword)
+            .connect(
+                function(tweet){        // callback
+                    console.log(tweet);
+                },
+                'track',                // api method
+                'love'                  // api query
+            );
+        
+        // some time later...
+        jQuery.twstreamer
+            .disconnect();
+*/
+
+(function($){
+
+    var 
+        user,       // private username
+        pass,       // private password
+        streamer,   // container for Flash object
+        api = {
+            config: {
+                apiPath: '/1/statuses/filter.json',
+                
+                swf: {
+                    //swf: 'TwStreamFlash.swf',
+                    swf: pathToSwf,
+                    width: 1,
+                    height: 1
                 },
                 
-                init: function(){
-                    streamer = $('<div id="twstreamer"></div>')
-                        .appendTo('body')
-                        .flash(this.config.swf);
-                    return this;
-                },
+                containerId: 'twstreamer', // id for container div
+                globalHandler: 'streamEvent' // global variable for Flash object to call repeatedly, on pushing tweets
+            },
             
-                credentials: function(username, password){
-                    user = username;
-                    pass = password;
-                    return this;
-                },
-            
-                connect: function(streamHandler, method, q){
-                    var path = this.config.apiPath +
-                        '?' + (method || 'track') +
-                        '=' + (q || 'love');
-                        
-                    // HACK: connect global window var to method
-                    window.streamEvent = streamHandler;   
-                    if (path && user && pass){
-                        streamer.flash(function(){
-                            this.ConnectToStream(path, user, pass);
-                        });
-                        return this;
-                    }
-                    return false;
-                },
-
-                disconnect: function(){
+            init: function(){
+                streamer = $('<div id="'+ this.config.containerId + '"></div>')
+                    .appendTo('body')
+                    .flash(this.config.swf);
+                return this;
+            },
+        
+            credentials: function(username, password){
+                user = username;
+                pass = password;
+                return this;
+            },
+        
+            connect: function(handler, method, q){
+                var path = this.config.apiPath +
+                    '?' + (method || 'track') +
+                    '=' + (q || 'love');
+                    
+                window[this.config.globalHandler] = handler;   
+                
+                if (path && user && pass){
                     streamer.flash(function(){
-                        this.DisconnectFromStream();
+                        this.ConnectToStream(path, user, pass);
                     });
                     return this;
                 }
-            };
+                return false;
+            },
+
+            disconnect: function(){
+                streamer.flash(function(){
+                    this.DisconnectFromStream();
+                });
+                return this;
+            }
+        };
+        
+    jQuery.twstreamer = api;
+        
+}(jQuery));
 
         ///////////////////
 
-        return plugin;
+        return jQuery.twstreamer;
     
     }, '0.1.0', ['jquery, swfobject']);
 
