@@ -1174,6 +1174,10 @@ var ready = (function(){
             return templateConfig[key];
         };
         
+        self.getSetting = function(key) {
+            return templateConfig.settings[key];
+        }
+        
         self.loadDependencies = function(widget) {
             jQuery.each(templateConfig.dependencies, function(i, dep) {
                 sqwidget.addDependency(widget, dep);
@@ -1390,7 +1394,7 @@ var ready = (function(){
          * Hierarchy here is data-sqwidget-settings, template config settings
          */
         self.getSetting = function(key, defaultValue) {
-            return settings[key] || template.getSettings(key) || defaultValue;
+            return settings[key] || template.getSetting(key) || defaultValue;
         };
 
         /**
