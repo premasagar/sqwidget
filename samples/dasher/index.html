@@ -73,18 +73,20 @@
         data-sqwidget-settings="set_search_stream:set_search, current_search_stream:current_search"
     ></div>
     
-    <div id="search_history"
-        data-sqwidget="template:stream_reader.html"
+    <div id="search_history_1"
+        data-sqwidget="template:search_history.html"
         data-sqwidget-settings="stream:current_search"
     ></div>
+        <div id="tweet_display_surround">
     <div id="tweet_display"
         data-sqwidget="template:tweet_display.html"
-        data-sqwidget-settings="stream:tweets"
+        data-sqwidget-settings="stream:not_popular,set_search_stream:current_search"
     ></div>
- <!--   <div id="twittercmd"
+    </div>
+<!--    <div id="twittercmd"
         data-sqwidget="template:twittercmd.html"
         data-sqwidget-settings="user:test, password:test"
-    ></div> -->
+    ></div>  -->
 </div>
 </body>
 </html>
