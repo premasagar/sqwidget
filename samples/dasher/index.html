@@ -65,25 +65,49 @@
     <a href="http://dharmafly.com/hashcommand">HashCommand</a>
 </h1>
 <h2 class="cmd"></h2>
-<p>Command line over Twitter's stream API. Built with <a href="http://github.com/premasagar/sqwidget">Sqwidget</a>, by <a href="http://twitter.com/premasagar">@premasagar</a> and <a href="http://twitter.com/grasuth">@grasuth</a>.</p>
+<p>
+    Command line over Twitter's stream API. Built with <a href="http://github.com/premasagar/sqwidget">Sqwidget</a>, by <a href="http://twitter.com/premasagar">@premasagar</a> and <a href="http://twitter.com/grasuth">@grasuth</a>.
+</p>
+
+<p>
+    Tweet this, from your Twitter account: <span style="font-family:monospace;">#cmd {command} {value}</span>
+</p>
+
+<p>
+    <strong>Commands:</strong>
+    <abbr title="Query Twitter">q</abbr>,
+    <abbr title="Display url">url</abbr>,
+    <abbr title="Background color">bg</abbr>,
+    <abbr title="Color">color</abbr>,
+    <abbr title="Google">g</abbr>,
+    <abbr title="Wikipedia">wiki</abbr>,
+    <abbr title="Guardian">gu</abbr>,
+    <abbr title="Yahoo GeoPlanet">geo</abbr>
+</p>
+
+<p>e.g. <span style="font-family:monospace;">#cmd q clegg</span></p>
 
 <div id="sqwidget-test">
     
     <div>
+        <!--
         <div id="current_search"
             data-sqwidget="template:current_search.html"
             data-sqwidget-settings="stream:current_search,set_search_stream:set_search"
         ></div>
+        -->
 
         <div id="twitter_processor_1"
             data-sqwidget="template:twitter_processor.html"
             data-sqwidget-settings="set_search_stream:set_search, current_search_stream:current_search"
         ></div>
         
+        <!--
         <div id="search_history_1"
             data-sqwidget="template:search_history.html"
             data-sqwidget-settings="stream:current_search,set_search_stream:set_search"
         ></div>
+        -->
         
         <div id="tweet_display_surround">
             <div id="tweet_display"

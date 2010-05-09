@@ -52,31 +52,58 @@
                 if (!cmd){
                     return;
                 }
-                sub = cmd[1];
+                sub = cmd[1].toLowerCase();
                 val = cmd[2];
                     
                 _('cmd:', {cmd:cmd, sub:sub, val:val, txt:txt});
                 
-                $('h2.cmd').text(txt);
+                $('h2.cmd').text(channel + ' ' + sub + ' ' + val);
                 
-                // Route command                
-                if (sub === 'q'){
-                    // send to "search tweets"
-                    plugins.messaging.send(
-                        'set_search',
-                        {text:val}
-                    );
-                }
-                else if (
-                    sub === 'url' ||
-                    (sub === 'lb' && val !== 'close')
-                ){
-                    lb.showUrl(val);
-                }
-                else if (sub === 'lb'){
-                    if (val === 'close'){
-                        lb.hide();
-                    }
+                // Route command  
+                switch (sub){              
+                    case 'q':
+                        // search tweets
+                        plugins.messaging.send(
+                            'set_search',
+                            {text:val}
+                        );
+                    break;
+                    
+                    case 'url':
+                        lb.showUrl(val);
+                    break;
+                    
+                    case 'lb':
+                        if (val === 'close'){
+                            lb.hide();
+                        }
+                        else if (val){
+                            lb.showUrl(val);
+                        }
+                    break;
+                    
+                    case 'bg':
+                        $('body').css('background-color', val);
+                    break;
+                    
+                    case 'color':
+                        $('body').css('color', val);
+                    break;
+                    
+                    case 'g':
+                        lb.showUrl('http://www.google.com/search?q=' + val);
+                    break;
+                    
+                    case 'wiki':
+                        lb.showUrl('http://en.wikipedia.org/wiki/Special:Search?fulltext=Search&search=' + val);
+                    break;
+                    
+                    case 'gu':
+                        plugins.messaging.send(
+                            'command',
+                            {text:'gu ' + val}
+                        );
+                    break;
                 }
             }
             

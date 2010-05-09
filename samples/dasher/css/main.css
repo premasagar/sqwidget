@@ -5,6 +5,10 @@ body {
 	background-color: rgba(63,92,34,0.27);
 }
 
+abbr[title] {
+    cursor:help;
+}
+
 div#twitter_processor_1 {
 	width: 300px;
 	color: #707170;
@@ -34,7 +38,7 @@ div.use_note {
 div#tweet_display_surround {
     float:right;
     width:400px;
-    top: 100px;
+    top: 120px;
     right: 20px;
     position: absolute;
     font-size:small;
