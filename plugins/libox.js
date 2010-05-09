@@ -1454,8 +1454,9 @@
                     },
                     css: {
                         width: '800px', 
-                        height: '600px' 
-                        },
+                        height: '600px',
+                        'background-color':'white'
+                    },
                 }));
         };
         
