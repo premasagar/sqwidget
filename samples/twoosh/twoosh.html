@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>twoosh</title>
+    <script>
+    widget.config({
+      "name": "twoosh",
+      "version": "0.0.1",
+      "title": "twoosh: the socket dashboard",
+      "desc": "Twitter socket connector widget",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+      "ui" : "hostpage",
+       dependencies: ['messaging', 'swfobject', 'twstreamer']
+    });
+    </script>
+    
+    <script>
+        widget.ready(function(){
+            var
+                _ = sqwidget._ || window._ || function(){},
+                plugins = widget.plugins,
+                twstreamer = plugins.twstreamer,
+                $ = jQuery,
+                channel = 'government',
+                user, pass;
+                
+            function getCredentials(){
+                if (window.location.search.indexOf('?dev') === 0){
+                    user = 'twidgetsqwidget';
+                    pass = 'YADAyadaYADA';
+                }
+                else {
+                    alert("We need your Twitter username & password, because the streaming API is limited to one connection per user. Your details are not stored.");
+                    user = prompt("What's your Twitter username?");
+                    pass = prompt("and your Twitter password?");
+                }
+            }
+            
+            function connect(q){
+                twstreamer
+                    .init()
+                    .credentials(user, pass)
+                    .connect(
+                        callback,
+                        'track',
+                        q,
+                        'stream.twitter.com'
+                    );
+                _('connected to: ' + q);
+            }
+            function disconnect(){
+                twstreamer.disconnect();
+                _('disconnected');
+            }
+                
+            widget.setTemplate('default');
+            _(widget);
+            
+            getCredentials();
+            connect(channel);
+        });
+    </script>
+    <script type="text/template" id="loading">
+        <p>Loading...<p>
+    </script>
+</head>
+
+<body>
+    <h1 class=channel>{{channel}}<h1>
+    <ol class=tweets>{{tweets}}</ol>
+</body>
+</html>
