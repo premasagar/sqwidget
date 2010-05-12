@@ -64,7 +64,7 @@ JavaScript jQuery plugin to manipulate !important rules for HTML elements in the
 
 Combined with CleanSlate, this allows CSS manipulation that is sandboxed from styling in the host document.
 
-*Status*: Stable. Additional methods to come.
+*Status*: Stable. Methods for converting external stylesheets still to come.
 
 
 h3. Nitelite
@@ -80,6 +80,6 @@ h3. Sqweeze
 
 "http://github.com/premasagar/sqwidget-builder":http://github.com/premasagar/sqweeze
 
-A Ruby on Rails tool for merging and minifying all the HTML, CSS, JavaScript and images used in developing a widget, to produce a single, compressed HTML file. This reduces the number of HTTP requests required to render a widget (potentially to just one request), and reduces the bandwidth transmitted over the wire to the bare minimum.
+A command-line Ruby tool for merging and minifying all the HTML, CSS, JavaScript and images used in developing a widget, to produce a single, compressed HTML file. This reduces the number of HTTP requests required to render a widget (potentially to just one request), and reduces the bandwidth transmitted over the wire to the bare minimum.
 
-*Status*: Incomplete. Under active development.
+*Status*: pre-alpha
