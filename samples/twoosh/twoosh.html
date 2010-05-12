@@ -19,6 +19,9 @@
         .terminal {
             font-family: monospace;
         }
+        body > * {
+            font-size: 2.6em;
+        }
     </style>
     
     <script>
@@ -47,7 +50,7 @@
             }
             
             function connect(q, callback){
-                twstreamer
+                var success = twstreamer
                     .init()
                     .credentials(user, pass)
                     .connect(
@@ -56,7 +59,14 @@
                         q,
                         'stream.twitter.com'
                     );
-                _('connected to: ' + q);
+                
+                _(
+                    (success ?
+                        'connected' :
+                        'could not connect'
+                    ) +
+                    ' to: ' + q
+                );
             }
             function disconnect(){
                 twstreamer.disconnect();
@@ -67,51 +77,43 @@
                 return 'http://twitter.com/' + user + '/status/' + statusid;
             }
             
-            function tweetHtml(channel, tweet){
-                return widget.renderWithTemplate(
-                    "tweet", // microtemplating bug on single quotes
-                    {channel:channel, tweet:tweet}
-                );
-            }
-            
             // **
             
             getCredentials();
             
-            /* // TEMP: bug? setTemplate doesn't work in callback
-            widget.setTemplate(
-                'waiting',
-                null,
-                {channel:channel}
-            );
-            */
-            
             widget.setTemplate('waiting', null, {channel: channel});
             
             connect(channel, function(tweet){
-                var html = tweetHtml(channel, tweet);
-                _(tweet, html);
-                $('#twoosh')
-                    .html(html);
+                var url = statusUrl(tweet.user.screen_name, tweet.id);
+                
+                widget.setTemplate(
+                    'tweet',
+                    null,
+                    {
+                        channel: channel,
+                        tweet: tweet,
+                        url: url
+                    }
+                );                
             });
         });
     </script>
     
     <script type="text/template" id="loading">
-        <p>Loading...<p>
+        <p>Loading twoosheroony...<p>
     </script>
     
     <script type="text/template" id="waiting">
-        <p>Listening to '<span class="terminal">{{channel}}</span>'</p>
+        <p>Listening to: '<span class="terminal">{{channel}}</span>'</p>
     </script>
     
     <script type="text/template" id="tweet">
-        <h1 class=channel>{{channel}}</h1>
+        <h1 class="channel terminal">{{channel}}</h1>
         
-        <div class=tweet>
+        <div class="tweet">
             <p>{{tweet.text}}</p>
             <p>
-                <a href="{{statusUrl(tweet.user.screen_name, tweet.id)}}">{{tweet.user.screen_name}}</a>
+                <a href="{{url}}">{{tweet.user.screen_name}}</a>
             </p>
         </div>
     </script>
