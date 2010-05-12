@@ -1267,9 +1267,23 @@ var ready = (function(){
             template.config(dict);
         };
         
-        self.getContainer = function(dict) {
+        self.getContainer = function() {
             return container;
         };
+        
+        /**
+         * Return unique Id for widget... either a stored id or 
+         * the id of the widget container div.
+         */
+        
+        self.getId = function() {
+            if (settings.hasOwnProperty('id')) {
+                return settings.id;
+            }
+            else {
+                return container.id;
+            }
+        }
         
         self.onTemplateLoaded= function() {
             self.runController(template.getScripts());    
