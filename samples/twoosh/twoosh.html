@@ -15,7 +15,16 @@
     });
     </script>
     
+    <style>
+        .terminal {
+            font-family: monospace;
+        }
+    </style>
+    
     <script>
+        $('body').data('w', widget);
+        // use: var w = $('body').data('w');
+    
         widget.ready(function(){
             var
                 _ = sqwidget._ || window._ || function(){},
@@ -37,7 +46,7 @@
                 }
             }
             
-            function connect(q){
+            function connect(q, callback){
                 twstreamer
                     .init()
                     .credentials(user, pass)
@@ -53,21 +62,62 @@
                 twstreamer.disconnect();
                 _('disconnected');
             }
-                
-            widget.setTemplate('default');
-            _(widget);
+            
+            function statusUrl(user, statusid){
+                return 'http://twitter.com/' + user + '/status/' + statusid;
+            }
+            
+            function tweetHtml(channel, tweet){
+                return widget.renderWithTemplate(
+                    "tweet", // microtemplating bug on single quotes
+                    {channel:channel, tweet:tweet}
+                );
+            }
+            
+            // **
             
             getCredentials();
-            connect(channel);
+            
+            /* // TEMP: bug? setTemplate doesn't work in callback
+            widget.setTemplate(
+                'waiting',
+                null,
+                {channel:channel}
+            );
+            */
+            
+            widget.setTemplate('waiting', null, {channel: channel});
+            
+            connect(channel, function(tweet){
+                var html = tweetHtml(channel, tweet);
+                _(tweet, html);
+                $('#twoosh')
+                    .html(html);
+            });
         });
     </script>
+    
     <script type="text/template" id="loading">
         <p>Loading...<p>
+    </script>
+    
+    <script type="text/template" id="waiting">
+        <p>Listening to '<span class="terminal">{{channel}}</span>'</p>
+    </script>
+    
+    <script type="text/template" id="tweet">
+        <h1 class=channel>{{channel}}</h1>
+        
+        <div class=tweet>
+            <p>{{tweet.text}}</p>
+            <p>
+                <a href="{{statusUrl(tweet.user.screen_name, tweet.id)}}">{{tweet.user.screen_name}}</a>
+            </p>
+        </div>
     </script>
 </head>
 
 <body>
-    <h1 class=channel>{{channel}}<h1>
-    <ol class=tweets>{{tweets}}</ol>
+    lorem ipsum
 </body>
 </html>

@@ -26,9 +26,24 @@
 
     <!-- debug - optional -->
     <script src="../../plugins/console.js"></script>
-    <script>var sqwidgetDebug = true;</script>
+    <script>
+        var sqwidgetDebug = true;
+    </script>
 
-    <!-- sqwidget - required -->
+    <!-- Sqwidget - required -->
     <script src="../../sqwidget.js"></script>
+    
+    <!-- Sqwidget environment - optional -->
+    <script>
+        // global sqwidget configuration options, if needed
+        Sqwidget.globalConfig({
+            development: true,
+            experimental: true,
+            automatic: true,
+            charset: 'utf-8',
+            basePath: '',
+            pluginPath: '../../plugins/',
+        });
+    </script>
 </body>
 </html>
