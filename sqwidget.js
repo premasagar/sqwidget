@@ -1327,6 +1327,28 @@ var ready = (function(){
             }            
         };
         
+        /**
+         * Create a body element (ie a popup) appended to the body 
+         * element.
+         * For later:  security here?
+         *
+         */
+        self.getBodyElement = function(idSuffix) {
+            var 
+                elId = self.getId() + '_' + idSuffix,
+                el = jQuery('#' + elId),
+                div;
+            if (el.length) {
+                return el;
+            }
+            else {
+                div = jQuery('<div></div>').attr('id', elId).css('display', 'none');
+                jQuery('body').append(div);
+                return div;
+            }
+        };
+        
+        
         //TODO fit this into the proper place
         ui = {
             head: function(content) {
