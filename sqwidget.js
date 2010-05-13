@@ -1051,9 +1051,6 @@ var ready = (function(){
                     loaded = true;
                 }
                 if (errors.length ===0) {
-                    // set default body into widgets
-                    // maybe don't do this here
-                    setLoading();
                     // run controllers to set up dependencies via template.config, and
                     // then resolve and load dependencies
                     initWidgets();
@@ -1286,7 +1283,8 @@ var ready = (function(){
         }
         
         self.onTemplateLoaded= function() {
-            self.runController(template.getScripts());    
+            self.runController(template.getScripts());
+            self.showLoading(); 
             template.loadDependencies(self);  
         };
         
