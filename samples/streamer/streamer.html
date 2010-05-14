@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>streamer</title>
+    <script>
+    widget.config({
+      "name": "streamer",
+      "version": "0.0.1",
+      "title": "twitter streamer: the socket dashboard",
+      "desc": "Twitter socket connector widget",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+      "ui" : "hostpage",
+       dependencies: ['messaging','socketio']
+    });
+    </script>
+    
+    <style>
+        .terminal {
+            font-family: monospace;
+        }
+        body > * {
+            font-size: 2.6em;
+        }
+    </style>
+    
+    <script>
+        $('body').data('w', widget);
+        // use: var w = $('body').data('w');
+    
+        widget.ready(function(){
+            var
+                _ = sqwidget._ || window._ || function(){},
+                plugins = widget.plugins,
+                //io = plugins.socketio,
+                $ = jQuery,
+                channel = 'government',
+                socket;
+            
+            function connect(q, callback){
+                socket = new jQuery.io.Socket('localhost', {port:8000});
+                socket.connect();
+                debugger;   
+                socket.addEvent('message', callback);
+            }
+            function disconnect(){
+                socket.disconnect();
+                _('disconnected');
+            }
+            
+            function statusUrl(user, statusid){
+                return 'http://twitter.com/' + user + '/status/' + statusid;
+            }
+            
+            // **
+                        
+            widget.setTemplate('waiting', null, {channel: channel});
+            
+            connect(channel, function(tweet){
+                var t = JSON.parse(tweet)
+                var url = statusUrl(tweet.user.screen_name, tweet.id);
+                
+                widget.setTemplate(
+                    'tweet',
+                    null,
+                    {
+                        channel: channel,
+                        tweet: tweet,
+                        url: url
+                    }
+                );                
+            });
+        });
+    </script>
+    
+    <script type="text/template" id="loading">
+        <p>Loading streamer...<p>
+    </script>
+    
+    <script type="text/template" id="waiting">
+        <p>Listening to: '<span class="terminal">{{channel}}</span>'</p>
+    </script>
+    
+    <script type="text/template" id="tweet">
+        <h1 class="channel terminal">{{channel}}</h1>
+        
+        <div class="tweet">
+            <p>{{tweet.text}}</p>
+            <p>
+                <a href="{{url}}">{{tweet.user.screen_name}}</a>
+            </p>
+        </div>
+    </script>
+</head>
+
+<body>
+    lorem ipsum
+</body>
+</html>
