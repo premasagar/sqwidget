@@ -1,7 +1,67 @@
-var coords = (function($){
+'use strict';
+
+(function(){
+
+/////////////////////////////////////////
+
+/*!
+* Coords
+*   github.com/premasagar/mishmash/tree/master/coords/
+*
+*//*
+    get coordinates for a) the mouse, or b) any element in the document, and determine when elements and/or the mouse are overlapping (jQuery plugin)
+
+    by Premasagar Rose
+        dharmafly.com
+
+    license
+        opensource.org/licenses/mit-license.php
+        
+    v0.1
+
+*//*
+    creates
+        jQuery.coords
+        jQuery(elem).coords
+        
+    examples
+        $.coords.mouse(true)        // start tracking mouse coords
+        $.coords.mouse()            // get mouse coords as [x,y]
+        $.coords.mouse('#elem')     // is mouse over #elem element?
+        $.coords.mouse(elem)        // is mouse over elem element?
+        $.coords.mouse([0,8,5,2])  // is mouse within boundary?
+        $.coords.mouse(false)       // stop tracking mouse coords
+        
+        $('#elem').coords()         // get coords of #elem element
+        $('#elem').coords('#other') // does #elem overlap #other?
+        $('#elem').coords(other)    // does #elem overlap other element?
+        $('#elem').coords([0,8,5,2])// does #elem overlap boundary?
+        
+        $.coords.elem([1,2,3,4], [5,6,7,8]) // do the two overlap?
+    
+    include margin
+        In all the above examples, the final argument can be given as boolean true, to include the elements' margins in measurements. Default is to exclude the margin (as with jQuery.offset)
+        
+    coordinates
+        a call to $(elem).coords() returns an array as [top, right, bottom, left], which means:
+        [
+            offset of top edge of element from top of document,
+            offset of right edge of element from left of document,
+            offset of bottom edge of element from top of document,
+            offset of left edge of element from left of document
+        ]
+    
+    requires
+        jQuery 1.4x, due to use of jQuery.isPlainObject()
+
+*/
+
+
+(function($){
+    var mouse, elem;
 
     // track the mouse's position
-    var mouse = (function(){
+    mouse = (function(){
         var document = window.document,
             x = null,
             y = null,
@@ -21,25 +81,21 @@ var coords = (function($){
         }
         
         return $.extend(
-            function(doTracking){
-                if (doTracking === true && !tracking){
+            function(arg1, includeMargin){
+                if (typeof arg1 !== 'undefined' && typeof arg1 !== 'boolean'){
+                    return elem(mouse(), arg1, includeMargin);
+                }
+                else if (arg1 === true && !tracking){
                     startTracking();
                     mouse.tracking = tracking = true;
                 }
-                else if (doTracking === false && tracking){
+                else if (arg1 === false && tracking){
                     stopTracking();
                     mouse.tracking = tracking = false;
                 }
-                return {
-                    x:x,
-                    y:y
-                };
+                return [x,y];
             },
             {
-                toArray: function(){
-                    var pos = this();
-                    return [pos.x, pos.y];
-                },
                 tracking: tracking
             }
         );
@@ -47,71 +103,52 @@ var coords = (function($){
 
 
     // check if coordinates are within a target element
-    var elem = (function(){        
+    elem = (function(){
         function toBounds(arg, includeMargin){
-            var top, right, bottom, left, elem, offset, w, h;
+            var elem, offset, top, left, w, h;
             
-            // point object: {x:n, y:n}
-            if ($.isPlainObject(arg) && 'x' in arg && 'y' in arg){
-                left = right = arg.x;
-                top = bottom = arg.y;
+            if ($.isArray(arg)){
+                // point array: [n, n]
+                if (arg.length === 2){
+                    arg.push(arg[0]);
+                    arg.unshift(arg[1]);
+                }
+                
+                else if (arg.length !== 4){
+                    return false;
+                }
             }
-            // point array: [n, n]
-            else if ($.isArray(arg) && arg.length === 2){
-                left = right = arg[0];
-                top = bottom = arg[1];
-            }
-            // bounds object: {top:n, right:n, bottom:n, left:n}
-            // NOTE: isPlainObject() requires jQuery 1.4x
-            else if ($.isPlainObject(arg) && 'top' in arg && 'right' in arg && 'bottom' in arg && 'left' in arg){
-                top = arg.top;
-                right = arg.right;
-                bottom = arg.bottom;
-                left = arg.left;
-            }
-            // bounds array: [n, n, n, n]
-            else if ($.isArray(arg) && arg.length === 4){
-                top = arg[0];
-                right = arg[1];
-                bottom = arg[2];
-                left = arg[3];
-            }
+            
             // element or selector
             else {
                 elem = $(arg);
                 offset = elem.offset();
+                top = offset.top;
+                left = offset.left;
                 w = elem.outerWidth(includeMargin);
                 h = elem.outerHeight(includeMargin);
                 
-                top = offset.top;
-                // distance of right of element from left of document
-                right = offset.left + w;
-                // distance of bottom of element from top of document
-                bottom = offset.top + h;
-                // distance of left of element from left of document
-                left = offset.left;
+                arg = [top, left + w, top + h, left];
             }
-            return {
-                top: top,
-                right: right,
-                bottom: bottom,
-                left: left
-            };
-        }        
-              
+            return arg;
+        }
+        
         function overlaps(bounds1, bounds2){
+                // bounds1
+            var t1 = bounds1[0], // top
+                r1 = bounds1[1], // right
+                b1 = bounds1[2], // bottom
+                l1 = bounds1[3], // left
+                
+                // bounds2
+                t2 = bounds2[0], // top
+                r2 = bounds2[1], // right
+                b2 = bounds2[2], // bottom
+                l2 = bounds2[3]; // left
+        
             return (
-                (
-                    bounds1.left >= bounds2.left &&
-                    bounds1.left <= bounds2.right &&
-                    bounds1.top >= bounds2.top &&
-                    bounds1.top <= bounds2.bottom
-                ) || (
-                    bounds1.right >= bounds2.left &&
-                    bounds1.right <= bounds2.right &&
-                    bounds1.bottom >= bounds2.top &&
-                    bounds1.bottom <= bounds2.bottom
-                )
+                (t1 >= t2 && t1 <= b2 && l1 >= l2 && l1 <= r2) ||
+                (r1 >= l2 && r1 <= r2 && b1 >= t2 && b1 <= b2)
             );
         }
         
@@ -135,8 +172,24 @@ var coords = (function($){
         };
     }());
     
-    return {
+    // **
+    
+    // Public api
+    $.coords = {
         mouse: mouse,
         elem: elem
     };
+    
+    $.fn.coords = function(arg1, arg2){
+        return elem(this, arg1, arg2);
+    };
 }(jQuery));
+
+/////////////////////////////////////////
+
+
+Sqwidget.plugin('coords', function(){
+    return jQuery.coords;
+}, '0.1.0', ['jquery']);
+
+}());
