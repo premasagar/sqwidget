@@ -1,40 +1,34 @@
-var widget, placeholder, mouseenterDelay, mouseleaveDelay, overPlaceholder, overWidget;   
+var widget, placeholder, widgetVisible, mouseenterDelay, mouseleaveDelay;   
     
 function mouseenter(){
+    coords.mouse(true);
     setTimeout(function(){
-        if (overPlaceholder && !widget.is(':visible')){
-            showWidget();
-            overWidget = true;
+        if (coords.elem(coords.mouse(), placeholder) && !widgetVisible){
+            widget = showWidget();
+            widgetVisible = true;
         }
     }, mouseenterDelay);
 }
 
 function mouseleave(){
-    setTimeout(function(){
-        if (!overPlaceholder && !overWidget && widget.is(':visible')){
-            hideWidget();
-        }
-    }, mouseleaveDelay);
+    if (widgetVisible){
+        setTimeout(function(){
+            if (!coords.elem(coords.mouse(), placeholder) && !coords.elem(coords.mouse(), widget) && widgetVisible){
+                hideWidget();
+                widgetVisible = false;
+            }
+            coords.mouse(false);
+        }, mouseleaveDelay);
+    }
 }
 
 // **
 
 $(placeholder)
-    .mouseenter(function(){
-        overPlaceholder = true;
-        mouseenter();
-    })
-    .mouseleave(function(){
-        overPlaceholder = false;
-        mouseleave();
-    });
+    .mouseenter(mouseenter)
+    .mouseleave(mouseleave);
 
 $(widget)
-    .mouseenter(function(){
-        overWidget = true;
-        // don't do anything
-    })
-    .mouseleave(function(){
-        overWidget = false;
-        mouseleave();
-    });
+    .mouseleave(mouseleave);
+    
+// TODO: click placeholder/click out of widget (incl. placeholder itself) trumps mouseenter/leave listeners
