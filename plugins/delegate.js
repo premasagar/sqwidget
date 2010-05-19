@@ -8,10 +8,12 @@
         var delegate
         
     usage
-        delegate(elem, showWidget, hideWidget);
+        delegate(elem, showWidget, hideWidget, [mouseenterDelay], [mouseleaveDelay]);
         // elem is the delegate element
         // showWidget is a function that shows the widget - it also returns the widget element
         // hideWidget is a function that hides the widget
+        // [opt] mouseenterDelay is the timeout delay in ms when the mouse enters the delegate element (default: 250ms)
+        // [opt] mouseleaveDelay is the timeout delay in ms when the mouse leaves the delegate element (default: same as mouseenterDelay)
 */
 
 
@@ -204,9 +206,14 @@
 /////////////////////////////////////////
 
 
-function delegate(elem, showWidget, hideWidget){
+function delegate(elem, showWidget, hideWidget, mouseenterDelay, mouseleaveDelay){
     // NOTE: showWidget() should return a reference to the widget, unless widget    
-    var widget, widgetVisible, mouseenterDelay, mouseleaveDelay;
+    var widget, widgetVisible, mouse, bounds;
+    
+    mouseenterDelay = mouseleaveDelay || 250;
+    mouseleaveDelay = mouseleaveDelay || mouseenterDelay;
+    mouse = $.coords.mouse;
+    bounds = $.coords.elem;
 
     function show(){
         widgetVisible = true;
@@ -221,35 +228,39 @@ function delegate(elem, showWidget, hideWidget){
     }
 
     function mouseleave(){
+        widget.unbind('mouseleave', mouseleave);
         if (widgetVisible){
             window.setTimeout(function(){
-                $.coords.mouse(false); // TODO: $.coords.mouse() what if another script still needs mouse tracking?
-                if (widgetVisible && !$.coords.mouse(elem) && !$.coords.mouse(widget)){
+                if (widgetVisible && !mouse(elem) && !mouse(widget)){
+                    mouse(false); // TODO: mouse() what if another script still needs mouse tracking?                    
                     hide();
-                    widget.unbind('mouseleave', mouseleave);
                 }
             }, mouseleaveDelay);
         }
     }
         
     function mouseenter(){
-        $.coords.mouse(true);
+        mouse(true);
+        widget.bind('mouseleave', mouseleave);
         window.setTimeout(function(){
-            if (!widgetVisible && $.coords.mouse(elem)){
+            if (!widgetVisible && mouse(elem)){
                 show();
-                widget.bind('mouseleave', mouseleave);
             }
         }, mouseenterDelay);
     }
 
     function clickDelegate(){
-        $.coords.mouse(false);
-        elem.unbind('mouseleave', mouseleave);
+        mouse(false);
+        elem
+            .unbind('mouseenter', mouseenter)
+            .unbind('mouseleave', mouseleave);
         show();
         
         $(window.document).one('click', function(ev){
-            if (!$.coords.elem([ev.pageX, ev.pageY], widget)){ // TODO: or see if ev.target === widget or a child of widget
-                elem.bind('mouseleave', mouseleave);
+            if (!bounds([ev.pageX, ev.pageY], widget)){ // TODO: or see if ev.target === widget or a child of widget
+                elem
+                    .bind('mouseenter', mouseenter)
+                    .bind('mouseleave', mouseleave);
                 hide();
             }
         });
