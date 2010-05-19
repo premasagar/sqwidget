@@ -529,13 +529,13 @@ var ready = (function(){
              * similar.
              * @return {SqwidgetTemplate} the template
              */
-            getTemplate: function(templateFilename) {
+            getTemplate: function(templateFilename, widget) {
                 // check to see if already loaded, if so, return instance.
                 var name = jQuery.trim(templateFilename);
                 var fullName = this.buildResourcePath(this.settings.basePath, '', templateFilename, 'html');
                 var t = this.widgetTemplates[fullName];
                 if (!t) {
-                    t = Template(this, fullName);
+                    t = Template(this, fullName, widget);
                     this.widgetTemplates[fullName] = t;
                 }
                 return t;
@@ -991,7 +991,7 @@ var ready = (function(){
      * @return a SqwigetTemplate object
         */
     
-    var Template = function(sqwidget, templateName) {
+    var Template = function(sqwidget, templateName, widget) {
         var self = {}; //neoclassical
         var sqwidget = sqwidget;
         var templateName = templateName;
@@ -1020,6 +1020,10 @@ var ready = (function(){
                  
              }
         };
+        
+        if (widget) {
+            widgets.push(widget);
+        }
 
         // PRIVATE methods
         var loadTemplate = function() {
@@ -1130,7 +1134,7 @@ var ready = (function(){
         var initWidgets = function() {
             jQuery.each(widgets, function(w, widget) {
                 _('running controller for ' + widget.toString());
-                widget.onTemplateLoaded();
+                widget.onTemplateLoaded(self);
             });
         };
         
@@ -1152,6 +1156,12 @@ var ready = (function(){
         self.widgets = widgets;
         
         self.register = function(widget) {
+            var i;
+            for (i=0;i<widgets.length;i++) {
+                if (widget === widgets[i]) {
+                    return;
+                }
+            }
             widgets.push(widget);
         };
 
@@ -1282,7 +1292,8 @@ var ready = (function(){
             }
         }
         
-        self.onTemplateLoaded= function() {
+        self.onTemplateLoaded= function(t) {
+            template = t;
             self.runController(template.getScripts());
             self.showLoading(); 
             template.loadDependencies(self);  
@@ -1415,9 +1426,12 @@ var ready = (function(){
          */
         self.init = function() {
             //attach ourselves to template -- this also loads the template if that hasn't happened before
-            var sqTemplate = sqwidget.getTemplate(dataSqwidget.template);
+            _('  getting template');
+            var sqTemplate = sqwidget.getTemplate(dataSqwidget.template, self);
             template = sqTemplate;
+            _('  registering widget');
             sqTemplate.register(self);
+            _('   widget registered');            
         };
                 
         /**
@@ -1521,6 +1535,7 @@ var ready = (function(){
          * Run the script controller
          */
         self.runController = function(scripts) {
+            _('  running controller scripts..');
             jQuery.each(scripts, function(s, script) {
                 evalScript(scripts[s]);
             });
@@ -1565,7 +1580,7 @@ Sqwidget.ready(function() {
         _('initing widgets...');
         // load templates as needed
         jQuery.each(widgets, function(w,widget) {
-            //_('init for w: ' + widgets[w].toString());
+            _('init for w: ' + widgets[w].toString());
             widget.init();
         });    
     }
