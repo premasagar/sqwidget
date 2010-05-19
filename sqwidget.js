@@ -1567,12 +1567,7 @@ Sqwidget.ready(function() {
         jQuery.each(widgets, function(w,widget) {
             //_('init for w: ' + widgets[w].toString());
             widget.init();
-        }); 
-            
-  //      jQuery.each(widgets, function(w,widget) {
-    //        //_('init for w: ' + widgets[w].toString());
-      //      widget.checkRun();
-//        });     
+        });    
     }
 });
  
