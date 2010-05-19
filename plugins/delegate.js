@@ -8,8 +8,8 @@
         var delegate
         
     usage
-        delegate(elem, showWidget, hideWidget, [mouseenterDelay], [mouseleaveDelay]);
-        // elem is the delegate element
+        delegate(delegateElem, showWidget, hideWidget, [mouseenterDelay], [mouseleaveDelay]);
+        // delegateElem is the delegate element (e.g. a placeholder for the widget)
         // showWidget is a function that shows the widget - it also returns the widget element
         // hideWidget is a function that hides the widget
         // [opt] mouseenterDelay is the timeout delay in ms when the mouse enters the delegate element (default: 250ms)
@@ -73,7 +73,6 @@
 
 */
 
-
 (function($){
     var mouse, elem;
 
@@ -87,6 +86,7 @@
         function captureCoords(ev){
             x = ev.pageX;
             y = ev.pageY;
+            $('#debug-report').html(x + ', ' + y);
         }
         
         function startTracking(){
@@ -206,18 +206,24 @@
 /////////////////////////////////////////
 
 
-function delegate(elem, showWidget, hideWidget, mouseenterDelay, mouseleaveDelay){
-    // NOTE: showWidget() should return a reference to the widget, unless widget    
-    var widget, widgetVisible, mouse, bounds;
+function delegate(delegateElem, showWidget, hideWidget, mouseenterDelay, mouseleaveDelay){
+    var
+        document = window.document,
+        widgetStickyOn = false,
+        widgetVisible = false,
+        mouse = $.coords.mouse,
+        bounds = $.coords.elem,
+        widget;
     
-    mouseenterDelay = mouseleaveDelay || 250;
-    mouseleaveDelay = mouseleaveDelay || mouseenterDelay;
-    mouse = $.coords.mouse;
-    bounds = $.coords.elem;
+    mouseenterDelay = typeof mouseenterDelay === 'number' ? mouseenterDelay : 250;
+    mouseleaveDelay = typeof mouseleaveDelay === 'number' ? mouseleaveDelay : mouseenterDelay;
 
     function show(){
         widgetVisible = true;
-        widget = showWidget();
+        widget = showWidget(); // NOTE: showWidget() should return a reference to the widget element
+        widget
+            .unbind('mouseleave', mouseleave) // unbind, in case it's already bound, since we only want to bind the function to a widget once, and we don't know if the widget is a new DOM element that we've never seen before, or if it's a reused element from before
+            .bind('mouseleave', mouseleave);
         return false;
     }
 
@@ -226,49 +232,63 @@ function delegate(elem, showWidget, hideWidget, mouseenterDelay, mouseleaveDelay
         hideWidget();
         return false;
     }
-
-    function mouseleave(){
-        widget.unbind('mouseleave', mouseleave);
-        if (widgetVisible){
-            window.setTimeout(function(){
-                if (widgetVisible && !mouse(elem) && !mouse(widget)){
-                    mouse(false); // TODO: mouse() what if another script still needs mouse tracking?                    
-                    hide();
-                }
-            }, mouseleaveDelay);
-        }
-    }
-        
-    function mouseenter(){
-        mouse(true);
-        widget.bind('mouseleave', mouseleave);
+    
+    function showDelay(){
         window.setTimeout(function(){
-            if (!widgetVisible && mouse(elem)){
+            if (!widgetVisible && mouse(delegateElem)){
                 show();
             }
         }, mouseenterDelay);
     }
-
-    function clickDelegate(){
-        mouse(false);
-        elem
-            .unbind('mouseenter', mouseenter)
-            .unbind('mouseleave', mouseleave);
-        show();
-        
-        $(window.document).one('click', function(ev){
-            if (!bounds([ev.pageX, ev.pageY], widget)){ // TODO: or see if ev.target === widget or a child of widget
-                elem
-                    .bind('mouseenter', mouseenter)
-                    .bind('mouseleave', mouseleave);
+    
+    function hideDelay(){
+        window.setTimeout(function(){
+            // TODO: mouse(false) doesn't fire if the mouse just brushes the placeholder, so mouse capturing continues. But we can't turn it off, in case it interferes with new mouse(true) calls.
+            if (widgetVisible && !mouse(delegateElem) && !mouse(widget)){
+                mouse(false); // TODO: mouse() what if another script still needs mouse tracking?
                 hide();
             }
-        });
+        }, mouseleaveDelay);
+    }
+
+    function mouseleave(ev){
+        if (widgetVisible && !widgetStickyOn){
+             hideDelay();
+        }
+    }
+        
+    function mouseenter(ev){
+        if (!widgetVisible){
+            mouse(true);
+            showDelay();
+        }
+    }
+    
+    function clickDocument(ev){
+        var mouseLoc = [ev.pageX, ev.pageY];
+        if (!bounds(mouseLoc, widget) && !bounds(mouseLoc, delegateElem)){
+            widgetStickyOn = false;
+            hide();
+        }
+    }
+
+    function clickDelegate(){
+        widgetStickyOn = !widgetVisible;
+               
+        if (widgetVisible){
+            $(document).unbind('click', clickDocument);
+            hide();
+        }
+        else {
+            mouse(false);
+            $(document).bind('click', clickDocument);
+            show();            
+        }
     }
 
     // **
 
-    $(elem)
+    $(delegateElem)
         .mouseenter(mouseenter)
         .mouseleave(mouseleave)
         .click(clickDelegate);

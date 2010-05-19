@@ -43,15 +43,13 @@
                 b.css('display', 'none');
                 return b;
             }
-            plugins.delegate(cont, showB, hideB, 250, 250 );
+            plugins.delegate(cont, showB, hideB);
             
         });
 
         widget.loading(function() {
             // disable loading...
         });
-
-        
     </script>
 
 
@@ -73,5 +71,6 @@
 
 <body>
        <img src="a.png" alt="Image A"/>
+       <div id="debug-report" style="position:absolute; top:0; right:0;"></div>
 </body>
 </html>
