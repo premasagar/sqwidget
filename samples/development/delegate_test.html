@@ -21,15 +21,34 @@
     </script>
     <script charset="utf-8">
         widget.ready(function() {
-         // this to be executed once loaded and all plugins satisfied
-        // run in the widget namespace
-        
-        
-        
+            var
+                cont = jQuery(container),
+                b = widget.getBodyElement('b');
+
+            b.css({
+                    border:'1px dotted black',
+                    position: 'relative',
+                    top: '-80px',
+                    left: '20px'
+                });
+            b.append('<img src="b.png"/>');
+            // display placeholder 'A'
+            widget.setTemplate('default');
+            // set up as delegate
+            function showB() {
+                b.css('display', 'block');
+                return b;
+            }
+            function hideB() {
+                b.css('display', 'none');
+                return b;
+            }
+            plugins.delegate(cont, showB, hideB, 250, 250 );
+            
         });
-        // and loading script.. has jQuery but not dependencies
+
         widget.loading(function() {
-            // disable loading for now
+            // disable loading...
         });
 
         
@@ -53,6 +72,6 @@
 </head>
 
 <body>
-    <p>Hello world (2)</p>
+       <img src="a.png" alt="Image A"/>
 </body>
 </html>
