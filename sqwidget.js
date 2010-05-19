@@ -191,7 +191,7 @@ var ready = (function(){
                 automatic: true,
                 charset: 'utf-8',
                 basePath: '',
-                pluginPath: 'plugins/',
+                pluginPath: 'plugins/'
             },
             /** Sqwidget's own dependencies. TODO not currently used:  Use it or lose it*/
             dependencies: {
@@ -650,15 +650,13 @@ var ready = (function(){
                 jQuery.each(this.widgetTemplates, function(wt, template) {
                     template.runAll();
                 });
-            },
+            }
             
             
             
             
             
         };
-        
-
         /////
 
 
@@ -1102,7 +1100,7 @@ var ready = (function(){
             j.filter('script:not([type]), script[type=text/javascript]')
              .each(function(i, t){
                 t = jQuery(t);
-                scripts.push(t.text());
+                scripts.push(t.html());
             }); 
             
             // capture css
@@ -1111,12 +1109,14 @@ var ready = (function(){
             j.filter('style')
              .each(function(i, t) {
                  t = jQuery(t);
-                 styles.push({text:t.text(),media:t.attr('media'), type:t.attr('type'), title:t.attr('title')} );
+                 styles.push({text:t.html(),media:t.attr('media'), type:t.attr('type'), title:t.attr('title')} );
              });
             //TODO hook for style injection -- not done for now
             // modes -- simple injection with container div added
             jQuery.each(styles, function(s,style) {
-                var ss = jQuery('<style></style>').attr({title:style.title, type:style.type, media:style.media}).text(style.text);
+                var ss = jQuery('<style>' + style.text + '</style>');
+                ss.attr({title:style.title, type:style.type, media:style.media});
+                //ss.text(style.text);
                 jQuery('head').append(ss);
             });
         };
@@ -1236,11 +1236,11 @@ var ready = (function(){
          * @param {String} string of script to eval. Should be text/javascript
          * @return {undefined}
          */
-        var evalScript = function(evalScript) {
-            _('eval script is ' + evalScript);
+        var evalScript = function(script) {
+            _('eval script is ' + script);
             var widget = self;
             //TODO minimise context for controller functions
-            eval(evalScript.toString());
+            eval(script.toString());
         };
         
         /**
