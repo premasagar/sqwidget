@@ -616,9 +616,11 @@ var ready = (function(){
                 var c,d;
                 for (d in this.dependencyRegister) {
                     if (this.dependencyRegister.hasOwnProperty(d)) {
-                        for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
-                            if (!(this.dependencyRegister[d].loaded)) {
+                        if (!(this.dependencyRegister[d].loaded)) {
+                            for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
+                                if (this.dependencyRegister[d].clients[c] === widgetClient) {
                                     return false;
+                                }
                             }
                         }
                     }
@@ -1241,6 +1243,7 @@ var ready = (function(){
             errorFn = null,
             loadingFn = null,
             readyRun=false;
+            dependenciesRequested = false;
         /**
          * eval script in the context of this object
          * @param {String} string of script to eval. Should be text/javascript
@@ -1258,7 +1261,7 @@ var ready = (function(){
          * Check we have all plugins namespaced, er how do we know
          */
         var allPluginsLoaded = function() {
-            return sqwidget.checkDependencies(self);
+            return dependenciesRequested && sqwidget.checkDependencies(self);
         };
          
         self.readyFn = readyFn;
@@ -1282,7 +1285,7 @@ var ready = (function(){
          * Return unique Id for widget... either a stored id or 
          * the id of the widget container div.
          */
-        
+        // TODO use the template name if not available in the container
         self.getId = function() {
             if (settings.hasOwnProperty('id')) {
                 return settings.id;
@@ -1296,7 +1299,8 @@ var ready = (function(){
             template = t;
             self.runController(template.getScripts());
             self.showLoading(); 
-            template.loadDependencies(self);  
+            template.loadDependencies(self);
+            dependenciesRequested = true;
         };
         
         self.setPlugin = function(name, module, config) {
@@ -1582,6 +1586,10 @@ Sqwidget.ready(function() {
         jQuery.each(widgets, function(w,widget) {
             _('init for w: ' + widgets[w].toString());
             widget.init();
+        });    
+        jQuery.each(widgets, function(w,widget) {
+            _('checkrun for w: ' + widgets[w].toString());
+            widget.checkRun();
         });    
     }
 });
