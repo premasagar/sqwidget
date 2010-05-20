@@ -16,14 +16,16 @@
 */
 
 
-(function(sqwidget, widget, $){
+(function($){
 
 /////////////////////////////////////////
+
+var mouseInWidget = false; // this is an outside variable so that we can expose methods to manipulate it
 
 
 function delegate(delegateElem, showWidget, hideWidget, mouseenterDelay, mouseleaveDelay){
     var document = window.document,
-        widget, widgetStickyOn, widgetVisible, mouseInWidget, mouseInDelegate, waitTillMouseLeavesDelegate;
+        widget, widgetStickyOn, widgetVisible, mouseInDelegate, waitTillMouseLeavesDelegate;
         
     function show(){
         widgetVisible = true;
@@ -101,10 +103,19 @@ function delegate(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
         });
 }
 
+// This is here to expose control over whether the mouse is considered to be truly within the widget. This is useful, for example, in IE6 where it erroneously fires the 'mouseleave' event on the widget, when a select box within the widget is opened.
+delegate.mouseInWidget = function(isInWidget){
+    if (typeof isInWidget === 'boolean'){
+        mouseInWidget = isInWidget;
+    }
+    return mouseInWidget;
+};
+
+
 /////////////////////////////////////////
 
 
-Sqwidget.plugin('delegate', function(){
+Sqwidget.plugin('delegate', function(jQuery){
     return delegate;
 }, '0.1.0', ['jquery']);
 
