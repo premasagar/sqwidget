@@ -1,10 +1,17 @@
-(function(){
+(function($){
 
-    Sqwidget.plugin('pngfix', function(sqwidget, widget, $){
-    
-    
-/////////////////// 
+/////////////////////////////////////////
 
+/*
+    MODIFIED pngfix script
+    usage
+        pngfix(selectorOrElement);
+        
+    examples
+        pngfix('#mydiv, '#thatdiv .someelement');   // a selector string
+        pngfix(myHtmlElement);                      // a native HTML element
+        pngfix(jQuery(myHtmlElement));              // a jQuery-wrapped HTML element
+*/
 
 /**
 * DD_belatedPNG: Adds IE6 support: PNG images for CSS background-image and HTML <IMG/>.
@@ -22,7 +29,7 @@
 /*
 IE's rendering of certain pixels doesn't make sense
 */
-function pngfix() {
+function pngfix(selectorOrElement){
     window.DD_belatedPNG = {
 
         ns: 'DD_belatedPNG',
@@ -108,12 +115,14 @@ function pngfix() {
         },
 
         attachHandlers: function(el) {
-            /* MOD: DF */
+            //////////////////////////////////
+            
+            /* MODIFIED: Dharmafly */
             var self = this;
             function applyVmlOffsets(){
                 self.vmlOffsets(el);
             }
-            $('#bbcwswidget')
+            $(selectorOrElement)
                 .bind('width-adjust', applyVmlOffsets)
                 .bind('move', applyVmlOffsets);
             return;
@@ -323,14 +332,24 @@ function pngfix() {
     DD_belatedPNG.createVmlNameSpace();
     DD_belatedPNG.createVmlStyleSheet();
     
-    DD_belatedPNG.fix('#bbcwswidget, #bbcwswidget .pngfix'); // === #bbcwswidget, #bbcwswidget .pngfix
+    ////////////
+    
+    // MODIFIED Dharmafly
+    if (typeof selectorOrElement === 'string'){
+        DD_belatedPNG.fix(selectorOrElement);
+    }
+    else {
+        selectorOrElement = $(selectorOrElement)[0]; // Allows argument to be either a node or jQuery wrapped node
+        DD_belatedPNG.fixPng(selectorOrElement);
+    }
 }
 
-///////////////////
+
+/////////////////////////////////////////
 
 
-    return DD_belatedPNG;
+Sqwidget.plugin('pngfix', function(){
+    return pngfix;
+}, '0.0.7', ['jquery']);
 
-}, '0.0.7');
-
-}());
+}(jQuery));
