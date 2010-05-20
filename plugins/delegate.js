@@ -123,8 +123,8 @@ delegate.mouseInWidget = function(isInWidget){
 /////////////////////////////////////////
 
 
-Sqwidget.plugin('delegate', function(jQuery){
+Sqwidget.plugin('delegate', function(){
     return delegate;
 }, '0.1.0', ['jquery']);
 
-}());
+}(jQuery));
