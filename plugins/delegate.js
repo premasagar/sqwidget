@@ -104,6 +104,14 @@ function delegate(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
 }
 
 // This is here to expose control over whether the mouse is considered to be truly within the widget. This is useful, for example, in IE6 where it erroneously fires the 'mouseleave' event on the widget, when a select box within the widget is opened.
+
+/*
+    if (ie6){
+        $(optionElement).mouseenter(function(){
+            delegate.mouseInWidget(true);
+        });
+    }
+*/
 delegate.mouseInWidget = function(isInWidget){
     if (typeof isInWidget === 'boolean'){
         mouseInWidget = isInWidget;
