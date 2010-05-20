@@ -100,6 +100,7 @@ function delegate(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
                 $(document).unbind('click', clickDocument);
                 hide();
             }
+            return false;
         });
 }
 
