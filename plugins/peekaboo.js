@@ -20,7 +20,9 @@
 
 /////////////////////////////////////////
 
-var mouseInWidget = false; // this is an outside variable so that we can expose methods to manipulate it
+// outer variables so that we can expose methods to manipulate them
+var mouseInWidget = false, 
+    remoteControlOn = false;
 
 
 function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mouseleaveDelay){
@@ -42,8 +44,8 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     function hideDelay(){
         _('hideDelay');
         window.setTimeout(function(){
-            _('hideDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate);
-            if (widgetVisible && !widgetStickyOn && !mouseInDelegate && !mouseInWidget){
+            _('hideDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
+            if (widgetVisible && !widgetStickyOn && !mouseInDelegate && !mouseInWidget && !remoteControlOn){
                 hide();
             }
         }, mouseleaveDelay);
@@ -63,20 +65,22 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     function showDelay(){
         _('showDelay');
         window.setTimeout(function(){
-            _('showDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate);
-            if (!widgetVisible && mouseInDelegate && !waitTillMouseLeavesDelegate){
+            _('showDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
+            if (!widgetVisible && mouseInDelegate && !waitTillMouseLeavesDelegate && !remoteControlOn){
                 widget = show();
-                $(widget)
-                    .unbind('mouseenter', mouseenterWidget) // unbind handlers, since we don't know if this is the first time we're seeing the widget DOM node, or if we have already bound events to it
-                    .unbind('mouseleave', mouseleaveWidget)
-                    .one('mouseenter', mouseenterWidget)
-                    .one('mouseleave', mouseleaveWidget);
+                if (widget){
+                    $(widget)
+                        .unbind('mouseenter', mouseenterWidget) // unbind handlers, since we don't know if this is the first time we're seeing the widget DOM node, or if we have already bound events to it
+                        .unbind('mouseleave', mouseleaveWidget)
+                        .one('mouseenter', mouseenterWidget)
+                        .one('mouseleave', mouseleaveWidget);
+                }
             }
         }, mouseenterDelay);
     }
     
     function clickDocument(){
-        _('clickDocument', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate);
+        _('clickDocument', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
         if (widgetVisible && widgetStickyOn && !mouseInDelegate && !mouseInWidget){
             widgetStickyOn = false;
             hide();
@@ -96,7 +100,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
         )
         .click(function(){
             widgetStickyOn = !widgetStickyOn;
-            _('clickDelegateElem', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate);
+            _('clickDelegateElem', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
             if (widgetStickyOn){
                 $(document).click(clickDocument);
                 show();
@@ -123,13 +127,23 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
         });
     }
 */
-peekaboo.mouseInWidget = function(isInWidget){
-    _('peekaboo.mouseInWidget', isInWidget);
-    if (typeof isInWidget === 'boolean'){
-        mouseInWidget = isInWidget;
+
+$.extend(peekaboo, {
+    remoteControl: function(underControl){
+        _('peekaboo.remoteControl', underControl);
+        if (typeof underControl === 'boolean'){
+            remoteControlOn = underControl;
+        }
+        return remoteControlOn;
+    },
+    mouseInWidget: function(isInWidget){
+        _('peekaboo.mouseInWidget', isInWidget);
+        if (typeof isInWidget === 'boolean'){
+            mouseInWidget = isInWidget;
+        }
+        return mouseInWidget;
     }
-    return mouseInWidget;
-};
+});
 
 
 /////////////////////////////////////////
