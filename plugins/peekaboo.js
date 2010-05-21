@@ -28,17 +28,21 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
         widget, widgetStickyOn, widgetVisible, mouseInDelegate, waitTillMouseLeavesDelegate;
         
     function show(){
+        _('show');
         widgetVisible = true;
         return showWidget();
     }
     
     function hide(){
+        _('hide');
         widgetVisible = false;
         return hideWidget();
     }
     
     function hideDelay(){
+        _('hideDelay');
         window.setTimeout(function(){
+            _('hideDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate);
             if (widgetVisible && !widgetStickyOn && !mouseInDelegate && !mouseInWidget){
                 hide();
             }
@@ -46,16 +50,20 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
     
     function mouseenterWidget(){
+        _('mouseenterWidget');
         mouseInWidget = true;
     }
     
     function mouseleaveWidget(){
+        _('mouseleaveWidget');
         mouseInWidget = false;
         hideDelay();
     }
         
     function showDelay(){
+        _('showDelay');
         window.setTimeout(function(){
+            _('showDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate);
             if (!widgetVisible && mouseInDelegate && !waitTillMouseLeavesDelegate){
                 widget = show();
                 $(widget)
@@ -68,6 +76,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
     
     function clickDocument(){
+        _('clickDocument', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate);
         if (widgetVisible && widgetStickyOn && !mouseInDelegate && !mouseInWidget){
             widgetStickyOn = false;
             hide();
@@ -87,6 +96,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
         )
         .click(function(){
             widgetStickyOn = !widgetStickyOn;
+            _('clickDelegateElem', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate);
             if (widgetStickyOn){
                 $(document).click(clickDocument);
                 show();
@@ -114,6 +124,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
 */
 peekaboo.mouseInWidget = function(isInWidget){
+    _('peekaboo.mouseInWidget', isInWidget);
     if (typeof isInWidget === 'boolean'){
         mouseInWidget = isInWidget;
     }
