@@ -1,13 +1,13 @@
 'use strict';
 /*
-    Delegate
+    Peekaboo
         Allows user to interact with a delegate element (e.g. a placeholder image or icon), to cause the widget to appear or disappear.
     
     exports
-        var delegate
+        var peekaboo
         
     usage
-        delegate(delegateElem, showWidget, hideWidget, [mouseenterDelay], [mouseleaveDelay]);
+        peekaboo(delegateElem, showWidget, hideWidget, [mouseenterDelay], [mouseleaveDelay]);
         // delegateElem is the delegate element (e.g. a placeholder for the widget)
         // showWidget is a function that shows the widget - it also returns the widget element
         // hideWidget is a function that hides the widget
@@ -23,7 +23,7 @@
 var mouseInWidget = false; // this is an outside variable so that we can expose methods to manipulate it
 
 
-function delegate(delegateElem, showWidget, hideWidget, mouseenterDelay, mouseleaveDelay){
+function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mouseleaveDelay){
     var document = window.document,
         widget, widgetStickyOn, widgetVisible, mouseInDelegate, waitTillMouseLeavesDelegate;
         
@@ -113,7 +113,7 @@ function delegate(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
         });
     }
 */
-delegate.mouseInWidget = function(isInWidget){
+peekaboo.mouseInWidget = function(isInWidget){
     if (typeof isInWidget === 'boolean'){
         mouseInWidget = isInWidget;
     }
@@ -124,8 +124,8 @@ delegate.mouseInWidget = function(isInWidget){
 /////////////////////////////////////////
 
 
-Sqwidget.plugin('delegate', function(){
-    return delegate;
+Sqwidget.plugin('peekaboo', function(){
+    return peekaboo;
 }, '0.1.0', ['jquery']);
 
 }(jQuery));
