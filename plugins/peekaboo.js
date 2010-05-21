@@ -42,7 +42,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
     
     function hideDelay(){
-        _('hideDelay');
+        _('hideDelay', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
         window.setTimeout(function(){
             _('hideDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
             if (widgetVisible && !widgetStickyOn && !mouseInDelegate && !mouseInWidget && !remoteControlOn){
@@ -59,11 +59,12 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     function mouseleaveWidget(){
         _('mouseleaveWidget');
         mouseInWidget = false;
+        _('mouseleaveWidget calling hideDelay');
         hideDelay();
     }
         
     function showDelay(){
-        _('showDelay');
+        _('showDelay', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
         window.setTimeout(function(){
             _('showDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
             if (!widgetVisible && mouseInDelegate && !waitTillMouseLeavesDelegate && !remoteControlOn){
@@ -72,8 +73,8 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
                     $(widget)
                         .unbind('mouseenter', mouseenterWidget) // unbind handlers, since we don't know if this is the first time we're seeing the widget DOM node, or if we have already bound events to it
                         .unbind('mouseleave', mouseleaveWidget)
-                        .one('mouseenter', mouseenterWidget)
-                        .one('mouseleave', mouseleaveWidget);
+                        .bind('mouseenter', mouseenterWidget)
+                        .bind('mouseleave', mouseleaveWidget);
                 }
             }
         }, mouseenterDelay);
@@ -95,6 +96,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
             },
             function(){
                 mouseInDelegate = false;
+                _('delegateElem: leave - calling hideDelay');
                 hideDelay();
             }
         )
@@ -118,32 +120,22 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
         });
 }
 
-// This is here to expose control over whether the mouse is considered to be truly within the widget. This is useful, for example, in IE6 where it erroneously fires the 'mouseleave' event on the widget, when a select box within the widget is opened.
+// This is here to expose control over whether the mouse is considered to be truly within the widget. This is useful, for example, in IE6 where it erroneously fires the 'mouseleave' event on the widget when a select box within the widget is opened.
 
 /*
     if (ie6){
-        $(optionElement).mouseenter(function(){
-            delegate.mouseInWidget(true);
+        $(selectElem).mouseenter(function(){
+            peekaboo.remoteControl(true);
         });
     }
 */
-
-$.extend(peekaboo, {
-    remoteControl: function(underControl){
-        _('peekaboo.remoteControl', underControl);
-        if (typeof underControl === 'boolean'){
-            remoteControlOn = underControl;
-        }
-        return remoteControlOn;
-    },
-    mouseInWidget: function(isInWidget){
-        _('peekaboo.mouseInWidget', isInWidget);
-        if (typeof isInWidget === 'boolean'){
-            mouseInWidget = isInWidget;
-        }
-        return mouseInWidget;
+peekaboo.remoteControl = function(underControl){
+    _('peekaboo.remoteControl', underControl);
+    if (typeof underControl === 'boolean'){
+        remoteControlOn = underControl;
     }
-});
+    return remoteControlOn;
+};
 
 
 /////////////////////////////////////////
