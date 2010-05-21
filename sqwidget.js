@@ -570,11 +570,14 @@ var ready = (function(){
                     name = null,
                     minVersion = null,
                     depConfig = {};
-                    
-                if (typeof(dependency) === 'string') {
+
+                if (!dependency) {
+                    name = null;
+                }
+                else if (typeof(dependency) === 'string') {
                     name = dependency;
                 }
-                else {
+                else if (typeof(dependency === 'object')) {
                     name = dependency[0];
                     if (typeof(dependency[1]) === 'object') {
                         depConfig = dependency[1];
@@ -586,21 +589,25 @@ var ready = (function(){
                         depConfig = dependency[2];
                     }
                 }
-                _('adding dependency ' + name);
-                var existing = this.dependencyRegister[name];
-                if (existing) {
-                    //TODO version comparison
-                    existing.clients.push(widget);
-                    if (existing.loaded) {
-                        widget.setPlugin(existing.name, existing.module, depConfig);
-                    }
-                }
                 else {
-                    this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
-                    // initiate load
-                    var loadPath = this.buildResourcePath(this.settings.basePath, this.settings.pluginPath, name, 'js');
-                    this.getScript(loadPath, function(){});
-                    
+                    name = null;
+                }
+                if (name && name.length > 0) {
+                    _('adding dependency ' + name);
+                    var existing = this.dependencyRegister[name];
+                    if (existing) {
+                        //TODO version comparison
+                        existing.clients.push(widget);
+                        if (existing.loaded) {
+                            widget.setPlugin(existing.name, existing.module, depConfig);
+                        }
+                    }
+                    else {
+                        this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
+                        // initiate load
+                        var loadPath = this.buildResourcePath(this.settings.basePath, this.settings.pluginPath, name, 'js');
+                        this.getScript(loadPath, function(){});
+                    }
                 }
             },
             
