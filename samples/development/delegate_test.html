@@ -12,7 +12,7 @@
       "url":     "http://github.com/premasagar/sqwidget", // get the widget, via your taskbar
       "ui" :     "hostpage",
       "dependencies": [
-        'delegate'
+        'peekaboo'
       ],
       "settings" : { //can we overridden by data-sqwidget-settings
         'package' : "en"
@@ -43,7 +43,7 @@
                 b.css('display', 'none');
                 return b;
             }
-            plugins.delegate(cont, showB, hideB);
+            plugins.peekaboo(cont, showB, hideB);
             
         });
 
