@@ -1,16 +1,16 @@
 (function($){
-
+    var self=this;
 /////////////////////////////////////////
 
 /*
     MODIFIED pngfix script
     usage
-        pngfix(selectorOrElement);
+        plugins.pngfix.pngfix(selectorOrElement);
         
     examples
-        pngfix('#mydiv, '#thatdiv .someelement');   // a selector string
-        pngfix(myHtmlElement);                      // a native HTML element
-        pngfix(jQuery(myHtmlElement));              // a jQuery-wrapped HTML element
+        plugins.pngfix.pngfix('#mydiv, '#thatdiv .someelement');   // a selector string
+        plugins.pngfix.pngfix(myHtmlElement);                      // a native HTML element
+        plugins.pngfix.pngfix(jQuery(myHtmlElement));              // a jQuery-wrapped HTML element
 */
 
 /////////////////////////////////////////
@@ -34,7 +34,7 @@ PLEASE READ:
 Absolutely everything in this script is SILLY.  I know this.  IE's rendering of certain pixels doesn't make sense, so neither does this code!
 */
 
-var DD_belatedPNG = {
+self.DD_belatedPNG = {
     ns: 'DD_belatedPNG',
     imgSize: {},
     delay: 10,
@@ -352,11 +352,11 @@ DD_belatedPNG.createVmlStyleSheet();
 /////////////////////////////////////////
 
 
-function pngfix(selectorOrElement){
+self.pngfix = function(selectorOrElement){
     // override attachHandlers method in original script
-    DD_belatedPNG.attachHandlers = function(el){
+    self.DD_belatedPNG.attachHandlers = function(el){
         function applyVmlOffsets(){
-            DD_belatedPNG.vmlOffsets(el);
+            self.DD_belatedPNG.vmlOffsets(el);
         }
     
         $(selectorOrElement)
@@ -366,11 +366,11 @@ function pngfix(selectorOrElement){
 
     // interpret argument, and then pngfix it
     if (typeof selectorOrElement === 'string'){
-        DD_belatedPNG.fix(selectorOrElement);
+        self.DD_belatedPNG.fix(selectorOrElement);
     }
     else {
         selectorOrElement = $(selectorOrElement)[0]; // Allows argument to be either a node or jQuery wrapped node
-        DD_belatedPNG.fixPng(selectorOrElement);
+        self.DD_belatedPNG.fixPng(selectorOrElement);
     }
 }
 
@@ -379,7 +379,7 @@ function pngfix(selectorOrElement){
 
 
 Sqwidget.plugin('pngfix', function(){
-    return pngfix;
+    return self;
 }, '0.0.7', ['jquery']);
 
 }(jQuery));
