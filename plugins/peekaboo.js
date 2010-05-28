@@ -30,21 +30,21 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
         widget, widgetStickyOn, widgetVisible, mouseInDelegate, waitTillMouseLeavesDelegate;
         
     function show(){
-        _('show');
+        //_('show');
         widgetVisible = true;
         return showWidget();
     }
     
     function hide(){
-        _('hide');
+        //_('hide');
         widgetVisible = false;
         return hideWidget();
     }
     
     function hideDelay(){
-        _('hideDelay', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
+        //_('hideDelay', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
         window.setTimeout(function(){
-            _('hideDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
+            //_('hideDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
             if (widgetVisible && !widgetStickyOn && !mouseInDelegate && !mouseInWidget && !remoteControlOn){
                 hide();
             }
@@ -52,21 +52,21 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
     
     function mouseenterWidget(){
-        _('mouseenterWidget');
+        //_('mouseenterWidget');
         mouseInWidget = true;
     }
     
     function mouseleaveWidget(){
-        _('mouseleaveWidget');
+        //_('mouseleaveWidget');
         mouseInWidget = false;
-        _('mouseleaveWidget calling hideDelay');
+        //_('mouseleaveWidget calling hideDelay');
         hideDelay();
     }
         
     function showDelay(){
-        _('showDelay', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
+        //_('showDelay', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
         window.setTimeout(function(){
-            _('showDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
+            //_('showDelay setTimeout', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
             if (!widgetVisible && mouseInDelegate && !waitTillMouseLeavesDelegate && !remoteControlOn){
                 widget = show();
                 if (widget){
@@ -81,7 +81,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
     
     function clickDocument(){
-        _('clickDocument', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
+        //_('clickDocument', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
         if (widgetVisible && widgetStickyOn && !mouseInDelegate && !mouseInWidget){
             widgetStickyOn = false;
             hide();
@@ -96,13 +96,13 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
             },
             function(){
                 mouseInDelegate = false;
-                _('delegateElem: leave - calling hideDelay');
+                //_('delegateElem: leave - calling hideDelay');
                 hideDelay();
             }
         )
         .click(function(){
             widgetStickyOn = !widgetStickyOn;
-            _('clickDelegateElem', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
+            //_('clickDelegateElem', widgetVisible, widgetStickyOn, mouseInDelegate, mouseInWidget, waitTillMouseLeavesDelegate, remoteControlOn);
             if (widgetStickyOn){
                 $(document).click(clickDocument);
                 show();
@@ -130,7 +130,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
 */
 peekaboo.remoteControl = function(underControl){
-    _('peekaboo.remoteControl', underControl);
+    //_('peekaboo.remoteControl', underControl);
     if (typeof underControl === 'boolean'){
         remoteControlOn = underControl;
     }
