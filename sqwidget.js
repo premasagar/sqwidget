@@ -339,10 +339,13 @@ var ready = (function(){
                 if (isAbsolute(item)) { 
                     return item; 
                 }
-                // check for item extension and add if needed
-                if (extension.length>0 && !item.match(new RegExp('\.' + extension  + '$'))) {
-                    item += '.js';
+                if (extension.length > 0 && item.lastIndexOf('.'+extension) != (item.length - extension.length -1) ) {
+                    item += '.' + extension;
                 }
+                // check for item extension and add if needed
+                //if (extension.length>0 && !item.match(new RegExp('\\\.' + extension  + '$'))) {
+                //    item += extension;
+                //}
                 if (isAbsolute(sub)) {
                     return sub + item;
                 }
@@ -352,7 +355,17 @@ var ready = (function(){
                 return base + sub + item;                
             },
             
-            
+            templateText: function(jsonData) {
+                var myTemplate;
+                _('Sqwidget.template text called');
+                if (jsonData && jsonData.name) {
+                    myTemplate = this.widgetTemplatesByName[jsonData.name];
+                    if (myTemplate) {
+                        myTemplate.templateText(jsonData.template);
+                    }
+                }
+                
+            },
             
             /**
              * Compare a version string with another, e.g. '1.2.6' with '1.3.2'
@@ -531,8 +544,16 @@ var ready = (function(){
              */
             getTemplate: function(templateFilename, widget) {
                 // check to see if already loaded, if so, return instance.
-                var name = jQuery.trim(templateFilename);
-                var fullName = this.buildResourcePath(this.settings.basePath, '', templateFilename, 'html');
+                var 
+                    filename = jQuery.trim(templateFilename),
+                    fullName;
+                if (filename.lastIndexOf('.js') == filename.length - 3) {
+                    // compile js template, so load as script
+                    fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'js');
+                }
+                else {
+                    fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'html');
+                }
                 var t = this.widgetTemplates[fullName];
                 if (!t) {
                     t = Template(this, fullName, widget);
@@ -1036,45 +1057,57 @@ var ready = (function(){
 
         // PRIVATE methods
         var loadTemplate = function() {
-            _('template name is ' + templateName);
+            var name;
+            _('template full name is ' + templateName);
+            // extract name and save it for later
+            name = templateName.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
+            _('template name is ' + name);
+            sqwidget.widgetTemplatesByName[name] = self;
+            
             //path to the base 
-            jQuery.get(templateName, function(data, textStatus, request) {
-                // on template loaded
-                _('template data: ' + data);
-                _('template text status: ' + textStatus);
-                if (data.length === 0 || textStatus != 'success') {
-                    // template load failed
-                    errors.push('loading of template ' + templateName + ' failed.');
-                }
-                else {
-                    _('template loaded');                
-                    templateText = data;
-                    parseTemplateFile(templateText);
-                    // TODO put somewhere generically useful
-                    function props(a) {
-                         var r = [];
-                         for (key in a) {
-                             r.push(key + ': "' + a[key] + '"');
+            if (templateName.lastIndexOf(".js") == templateName.length-3) {
+                jQuery.getScript(templateName); //loading to continue on callback
+            }
+            else {
+            
+                jQuery.get(templateName, function(data, textStatus, request) {
+                    // on template loaded
+                    _('template data: ' + data);
+                    _('template text status: ' + textStatus);
+                    if (data.length === 0 || textStatus != 'success') {
+                        // template load failed
+                        errors.push('loading of template ' + templateName + ' failed.');
+                    }
+                    else {
+                        _('template loaded');                
+                        templateText = data;
+                        parseTemplateFile(templateText);
+                        // TODO put somewhere generically useful
+                        function props(a) {
+                             var r = [];
+                             for (key in a) {
+                                 r.push(key + ': "' + a[key] + '"');
+                             }
+                             return '{' + r.join(' ') + '}';
                          }
-                         return '{' + r.join(' ') + '}';
-                     }
-                    _('templates: ' + props(templates));
-                    loaded = true;
-                }
-                if (errors.length ===0) {
-                    // run controllers to set up dependencies via template.config, and
-                    // then resolve and load dependencies
-                    initWidgets();
-                    //runControllers();
-                    if (errors.length !==0) {
+                        _('templates: ' + props(templates));
+                        loaded = true;
+                    }
+                    if (errors.length ===0) {
+                        // run controllers to set up dependencies via template.config, and
+                        // then resolve and load dependencies
+                        initWidgets();
+                        //runControllers();
+                        if (errors.length !==0) {
+                            showErrorsInWidgets();
+                        }
+                    }
+                    else {
                         showErrorsInWidgets();
                     }
-                }
-                else {
-                    showErrorsInWidgets();
-                }
-            });
-        };      
+                });
+            }
+        };
         
         var parseTemplateFile = function(template) {
             _('parsing template file for ' + templateName);
@@ -1130,6 +1163,7 @@ var ready = (function(){
                 var ss = jQuery('<style>' + style.text + '</style>');
                 ss.attr({title:style.title, type:style.type, media:style.media});
                 //ss.text(style.text);
+                _('style block is: ' + style.text);
                 jQuery('head').append(ss);
             });
         };
@@ -1163,6 +1197,25 @@ var ready = (function(){
          */
          
         self.widgets = widgets;
+        
+        
+        self.templateText = function(t) {
+            parseTemplateFile(t);
+            loaded=true;
+            if (errors.length ===0) {
+                // run controllers to set up dependencies via template.config, and
+                // then resolve and load dependencies
+                initWidgets();
+                //runControllers();
+                if (errors.length !==0) {
+                    showErrorsInWidgets();
+                }
+            }
+            else {
+                showErrorsInWidgets();
+            }
+        };
+        
         
         self.register = function(widget) {
             var i;
