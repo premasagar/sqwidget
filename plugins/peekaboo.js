@@ -89,6 +89,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
     
     $(delegateElem)
+        .css('cursor', 'default') // to reset a style of cursor:wait while the scripts all load
         .hover(
             function(){
                 mouseInDelegate = true;
