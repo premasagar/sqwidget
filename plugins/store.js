@@ -9,7 +9,6 @@
 /*global Sqwidget,window,document */    
 
 (function () {
-
     /*
      * jQuery JSON Plugin
      * version: 2.1 (2009-08-14)
@@ -191,7 +190,7 @@
 
 
     // locally load jStorage into jQuery if not already there
-    // TODO properly embed with sandie when cross browser
+
     /**
      * ----------------------------- JSTORAGE -------------------------------------
      * Simple local storage wrapper to save data on the browser side, supporting
@@ -239,202 +238,304 @@
      *
      * -flush()
      * $.jStorage.flush() -> clears the cache
+     * 
+     * -storageObj()
+     * $.jStorage.storageObj() -> returns a read-ony copy of the actual storage
+     * 
+     * -storageSize()
+     * $.jStorage.storageSize() -> returns the size of the storage in bytes
      *
+     * -index()
+     * $.jStorage.index() -> returns the used keys as an array
+     * 
      * <value> can be any JSON-able value, including objects and arrays.
      *
      */
 
-    (function ($) {
-        if (!$ || !($.toJSON || Object.toJSON || window.JSON)) {
-            throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
-        }
+    (function($){
+    	if(!$ || !($.toJSON || Object.toJSON || window.JSON)){
+    		throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
+    	}
 
-        var
-            /* This is the object, that holds the cached values */ 
-            _storage = {},
+    	var
+    		/* This is the object, that holds the cached values */ 
+    		_storage = {},
 
-            /* Actual browser storage (localStorage or globalStorage['domain']) */
-            _storage_service = {jStorage: "{}"},
+    		/* Actual browser storage (localStorage or globalStorage['domain']) */
+    		_storage_service = {jStorage:"{}"},
 
-            /* DOM element for older IE versions, holds userData behavior */
-            _storage_elm = null,
+    		/* DOM element for older IE versions, holds userData behavior */
+    		_storage_elm = null,
 
-            /* function to encode objects to JSON strings */
-            json_encode = $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify)),
+    		/* How much space does the storage take */
+    		_storage_size = 0,
 
-            /* function to decode objects from JSON strings */
-            json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function (str)  {
-                return String(str).evalJSON();
-            };
+    		/* function to encode objects to JSON strings */
+    		json_encode = $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify)),
 
-        ////////////////////////// PRIVATE METHODS ////////////////////////
+    		/* function to decode objects from JSON strings */
+    		json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
+    			return String(str).evalJSON();
+    		},
 
-        /**
-         * Initialization function. Detects if the browser supports DOM Storage
-         * or userData behavior and behaves accordingly.
-         * @returns undefined
-         */
-        function _init (){
-            /* Check if browser supports localStorage */
-            if (window.localStorage) {
-                try {
-                    _storage_service = window.localStorage;
-                } catch(E0) {/* Firefox fails when touching localStorage and cookies are disabled */}
-            }
-            /* Check if browser supports globalStorage */
-            else if (window.globalStorage) {
-                try {
-                    _storage_service = window.globalStorage[window.location.hostname];
-                } catch(E1) {/* Firefox fails when touching localStorage and cookies are disabled */}
-            }
-            /* Check if browser supports userData behavior */
-            else {
-                _storage_elm = document.createElement('link');
-                if(_storage_elm.addBehavior){
+    		/**
+    		 * XML encoding and decoding as XML nodes can't be JSON'ized
+    		 * XML nodes are encoded and decoded if the node is the value to be saved
+    		 * but not if it's as a property of another object
+    		 * Eg. -
+    		 *   $.jStorage.set("key", xmlNode);        // IS OK
+    		 *   $.jStorage.set("key", {xml: xmlNode}); // NOT OK
+    		 */
+    		_XMLService = {
 
-                    /* Use a DOM element to act as userData storage */
-                    _storage_elm.style.behavior = 'url(#default#userData)';
+    			/**
+    			 * Validates a XML node to be XML
+    			 * based on jQuery.isXML function
+    			 */
+    			isXML: function(elm){
+    				var documentElement = (elm ? elm.ownerDocument || elm : 0).documentElement;
+    				return documentElement ? documentElement.nodeName !== "HTML" : false;
+    			},
 
-                    /* userData element needs to be inserted into the DOM! */
-                    document.getElementsByTagName('head')[0].appendChild(_storage_elm);
+    			/**
+    			 * Encodes a XML node to string
+    			 * based on http://www.mercurytide.co.uk/news/article/issues-when-working-ajax/
+    			 */
+    			encode: function(xmlNode) {
+    				if(!this.isXML(xmlNode)){
+    					return false;
+    				}
+    				try{ // Mozilla, Webkit, Opera
+    					return new XMLSerializer().serializeToString(xmlNode);
+    				}catch(E1) {
+    					try {  // IE
+    						return xmlNode.xml;
+    					}catch(E2){}
+    				}
+    				return false;
+    			},
 
-                    _storage_elm.load("jStorage");
-                    var data = "{}";
-                    try{
-                        data = _storage_elm.getAttribute("jStorage");
-                    }catch(E2){}
-                    _storage_service.jStorage = data;
-                }else{
-                    _storage_elm = null;
-                    return;
-                }
-            }
+    			/**
+    			 * Decodes a XML node from string
+    			 * loosely based on http://outwestmedia.com/jquery-plugins/xmldom/
+    			 */
+    			decode: function(xmlString){
+    				var dom_parser = ("DOMParser" in window && (new DOMParser()).parseFromString) ||
+    						(window.ActiveXObject && function(_xmlString) {
+    					var xml_doc = new ActiveXObject('Microsoft.XMLDOM');
+    					xml_doc.async = 'false';
+    					xml_doc.loadXML(_xmlString);
+    					return xml_doc;
+    				}),
+    				resultXML;
+    				if(!dom_parser){
+    					return false;
+    				}
+    				resultXML = dom_parser.call("DOMParser" in window && (new DOMParser()) || window, xmlString, 'text/xml');
+    				return this.isXML(resultXML)?resultXML:false;
+    			}
+    		};
 
-            /* if jStorage string is retrieved, then decode it */
-            if(_storage_service.jStorage){
-                try{
-                    _storage = json_decode(_storage_service.jStorage);
-                }catch(E3){_storage_service.jStorage = "{}";}
-            }else{
-                _storage_service.jStorage = "{}";
-            }
-        }
+    	////////////////////////// PRIVATE METHODS ////////////////////////
 
-        /**
-         * This functions provides the "save" mechanism to store the jStorage object
-         * @returns undefined
-         */
-        function _save(){
-            try{
-                _storage_service.jStorage = json_encode(_storage);
-                // If userData is used as the storage engine, additional
-                if(_storage_elm) {
-                    _storage_elm.setAttribute("jStorage",_storage_service.jStorage);
-                    _storage_elm.save("jStorage");
-                }
-            }catch(E4){/* probably cache is full, nothing is saved this way*/}
-        }
+    	/**
+    	 * Initialization function. Detects if the browser supports DOM Storage
+    	 * or userData behavior and behaves accordingly.
+    	 * @returns undefined
+    	 */
+    	function _init(){
+    		/* Check if browser supports localStorage */
+    		if("localStorage" in window){
+    			try {
+    				_storage_service = window.localStorage;
+    			} catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
+    		}
+    		/* Check if browser supports globalStorage */
+    		else if("globalStorage" in window){
+    			try {
+    				_storage_service = window.globalStorage[window.location.hostname];
+    			} catch(E4) {/* Firefox fails when touching localStorage and cookies are disabled */}
+    		}
+    		/* Check if browser supports userData behavior */
+    		else {
+    			_storage_elm = document.createElement('link');
+    			if(_storage_elm.addBehavior){
 
-        /**
-         * Function checks if a key is set and is string or numberic
-         */
-        function _checkKey(key){
-            if(!key || (typeof key !== "string" && typeof key !== "number")){
-                throw new TypeError('Key name must be string or numeric');
-            }
-            return true;
-        }
+    				/* Use a DOM element to act as userData storage */
+    				_storage_elm.style.behavior = 'url(#default#userData)';
 
-        ////////////////////////// PUBLIC INTERFACE /////////////////////////
+    				/* userData element needs to be inserted into the DOM! */
+    				document.getElementsByTagName('head')[0].appendChild(_storage_elm);
 
-        $.jStorage = {
-            /* Version number */
-            version: "0.1.3",
+    				_storage_elm.load("jStorage");
+    				var data = "{}";
+    				try{
+    					data = _storage_elm.getAttribute("jStorage");
+    				}catch(E5){}
+    				_storage_service.jStorage = data;
+    			}else{
+    				_storage_elm = null;
+    				return;
+    			}
+    		}
 
-            /**
-             * Sets a key's value.
-             * 
-             * @param {String} key - Key to set. If this value is not set or not
-             *              a string an exception is raised.
-             * @param value - Value to set. This can be any value that is JSON
-             *              compatible (Numbers, Strings, Objects etc.).
-             * @returns the used value
-             */
-            set: function(key, value){
-                _checkKey(key);
-                _storage[key] = value;
-                _save();
-                return value;
-            },
+    		/* if jStorage string is retrieved, then decode it */
+    		if(_storage_service.jStorage){
+    			try{
+    				_storage = json_decode(String(_storage_service.jStorage));
+    			}catch(E6){_storage_service.jStorage = "{}";}
+    		}else{
+    			_storage_service.jStorage = "{}";
+    		}
+    		_storage_size = _storage_service.jStorage?String(_storage_service.jStorage).length:0;
+    	}
 
-            /**
-             * Looks up a key in cache
-             * 
-             * @param {String} key - Key to look up.
-             * @param {mixed} def - Default value to return, if key didn't exist.
-             * @returns the key value, default value or <null>
-             */
-            get: function(key, def){
-                _checkKey(key);
-                if(key in _storage){
-                    return _storage[key];
-                }
-                return typeof(def) === 'undefined' ? null : def;
-            },
+    	/**
+    	 * This functions provides the "save" mechanism to store the jStorage object
+    	 * @returns undefined
+    	 */
+    	function _save(){
+    		try{
+    			_storage_service.jStorage = json_encode(_storage);
+    			// If userData is used as the storage engine, additional
+    			if(_storage_elm) {
+    				_storage_elm.setAttribute("jStorage",_storage_service.jStorage);
+    				_storage_elm.save("jStorage");
+    			}
+    			_storage_size = _storage_service.jStorage?String(_storage_service.jStorage).length:0;
+    		}catch(E7){/* probably cache is full, nothing is saved this way*/}
+    	}
 
-            /**
-             * Deletes a key from cache.
-             * 
-             * @param {String} key - Key to delete.
-             * @returns true if key existed or false if it didn't
-             */
-            deleteKey: function(key){
-                _checkKey(key);
-                if(key in _storage){
-                    delete _storage[key];
-                    _save();
-                    return true;
-                }
-                return false;
-            },
+    	/**
+    	 * Function checks if a key is set and is string or numberic
+    	 */
+    	function _checkKey(key){
+    		if((!key && key!==0) || (typeof key != "string" && typeof key != "number")){
+    			throw new TypeError('Key name must be string or numeric');
+    		}
+    		return true;
+    	}
 
-            /**
-             * Deletes everything in cache.
-             * 
-             * @returns true
-             */
-            flush: function(){
-                _storage = {};
-                _save();
-                /*
-                 * Just to be sure - andris9/jStorage#3
-                 */
-                if (window.localStorage){
-                    try{
-                        window.localStorage.clear();
-                    }catch(E5){}
-                }
-                return true;
-            },
+    	////////////////////////// PUBLIC INTERFACE /////////////////////////
 
-            /**
-             * Returns a read-only copy of _storage
-             * 
-             * @returns Object
-            */
-            storageObj: function(){
-                function F() {}
-                F.prototype = _storage;
-                return new F();
-            }
-        };
+    	$.jStorage = {
+    		/* Version number */
+    		version: "0.1.4.1",
 
-        // Initialize jStorage
-        _init();
+    		/**
+    		 * Sets a key's value.
+    		 * 
+    		 * @param {String} key - Key to set. If this value is not set or not
+    		 *				a string an exception is raised.
+    		 * @param value - Value to set. This can be any value that is JSON
+    		 *				compatible (Numbers, Strings, Objects etc.).
+    		 * @returns the used value
+    		 */
+    		set: function(key, value){
+    			_checkKey(key);
+    			if(_XMLService.isXML(value)){
+    				value = {_is_xml:true,xml:_XMLService.encode(value)};
+    			}
+    			_storage[key] = value;
+    			_save();
+    			return value;
+    		},
 
-    }(window.jQuery || window.$));
-    
-    
+    		/**
+    		 * Looks up a key in cache
+    		 * 
+    		 * @param {String} key - Key to look up.
+    		 * @param {mixed} def - Default value to return, if key didn't exist.
+    		 * @returns the key value, default value or <null>
+    		 */
+    		get: function(key, def){
+    			_checkKey(key);
+    			if(key in _storage){
+    				if(typeof _storage[key] == "object" &&
+    						_storage[key]._is_xml &&
+    							_storage[key]._is_xml){
+    					return _XMLService.decode(_storage[key].xml);
+    				}else{
+    					return _storage[key];
+    				}
+    			}
+    			return typeof(def) == 'undefined' ? null : def;
+    		},
+
+    		/**
+    		 * Deletes a key from cache.
+    		 * 
+    		 * @param {String} key - Key to delete.
+    		 * @returns true if key existed or false if it didn't
+    		 */
+    		deleteKey: function(key){
+    			_checkKey(key);
+    			if(key in _storage){
+    				delete _storage[key];
+    				_save();
+    				return true;
+    			}
+    			return false;
+    		},
+
+    		/**
+    		 * Deletes everything in cache.
+    		 * 
+    		 * @returns true
+    		 */
+    		flush: function(){
+    			_storage = {};
+    			_save();
+    			/*
+    			 * Just to be sure - andris9/jStorage#3
+    			 */
+    			try{
+    				window.localStorage.clear();
+    			}catch(E8){}
+    			return true;
+    		},
+
+    		/**
+    		 * Returns a read-only copy of _storage
+    		 * 
+    		 * @returns Object
+    		*/
+    		storageObj: function(){
+    			function F() {}
+    			F.prototype = _storage;
+    			return new F();
+    		},
+
+    		/**
+    		 * Returns an index of all used keys as an array
+    		 * ['key1', 'key2',..'keyN']
+    		 * 
+    		 * @returns Array
+    		*/
+    		index: function(){
+    			var index = [], i;
+    			for(i in _storage){
+    				if(_storage.hasOwnProperty(i)){
+    					index.push(i);
+    				}
+    			}
+    			return index;
+    		},
+
+    		/**
+    		 * How much space in bytes does the storage take?
+    		 * 
+    		 * @returns Number
+    		 */
+    		storageSize: function(){
+    			return _storage_size;
+    		}
+    	};
+
+    	// Initialize jStorage
+    	_init();
+
+    })(window.jQuery || window.$);   
 
     var 
         /** storage of keys for looking up 'owner' of jsonp results */
@@ -469,13 +570,30 @@
         
         self.set = function(key, value) {
             _('store: setting ' + self.widgetStoreKey(key) + ' to ' + value);
-            jQuery.jStorage.set(self.widgetStoreKey(key), value);
+            var wrap = {};
+            wrap.val = value;
+            jQuery.jStorage.set(self.widgetStoreKey(key), wrap);
         };
         
         self.get = function(key, defaultValue) {
-            var val=jQuery.jStorage.get(self.widgetStoreKey(key), defaultValue);
-            _('store: getting ' + self.widgetStoreKey(key) + ' is ' + val);
-            return val;
+            var k, val;
+            k = self.widgetStoreKey(key);
+             _('store: getting ' + k);
+            var val=jQuery.jStorage.get(k);
+            if (val === null) {
+                _('store: no stored value for ' + k + ' so returning given default');
+                return defaultValue;
+            }
+            else {
+                if (typeof(val) === 'object') {
+                    _('store: getting ' + k + ' is ' + val.val);                
+                    return val.val;                                        
+                }
+                else {
+                    _('store: getting ' + k + ' is ' + val);                
+                    return val;
+                }
+            }
         };
         
         self.del = function(key) {
