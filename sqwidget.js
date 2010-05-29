@@ -693,7 +693,7 @@ var ready = (function(){
 // Sqwidget - extend Sqwidget once jQuery is loaded, and assign to Sqwidget
 // *********
     Sqwidget.onjQueryReady(function(jQuery){
-        var $ = jQuery, namespace, cloneFn, cachedFuncs;
+        var $ = jQuery, namespace;
         
         namespace = 'sqwidget';
         function ns(props, delimiter){
@@ -709,81 +709,6 @@ var ready = (function(){
             }
         }
         
-        // TEMP
-        //window.jQuery = $;
-        
-        // Store original jQuery functions so that when we extend them for Sqwidget, we can restore them for non-Sqwidget uses
-        cloneFn = $.extend({}).fn;
-        cachedFuncs = {
-            css: cloneFn.css,
-            show: cloneFn.show,
-            hide: cloneFn.hide
-        };
-        
-            
-        // EXTEND JQUERY
-        // =============
-
-
-// **
-
-        // NEW JQUERY ELEMENT METHODS
-        
-        $.extend(
-            $.fn,
-            {
-                // TODO: Lazy load CleanslateCSS, or allow it to be preloaded
-
-                // TODO: Integrate with .css(), allowing third argument to be !important boolean; allow option for method to be cssImportant() or the third arg in css()
-                cssImportant: function(key, value){
-                    var prop, $el;
-                    $el = this;
-                    
-                    // If just getting value, then use default CSS method
-                    if (typeof key !== 'object' && typeof value === 'undefined'){
-                        return cachedFuncs.css.apply(this, arguments);
-                    }
-                    
-                    // Create object, if arg is a string
-                    if (typeof key === 'string'){
-                        prop = key;
-                        key = {};
-                        key[prop] = value;
-                    }
-                    
-                    $.each(key, function(key, value){ // if value === null, then remove from style attr        
-                        var style, rule;
-                        style = $el.attr('style') || '';
-                            
-                        rule = (value !== null) ? key + ':' + value + ' !important;' : '';
-                        if (style.toLowerCase().indexOf(key.toLowerCase()) !== -1){
-                            style = style.replace(new RegExp(key + '\\s*:\\s*[^;]*(;|$)', 'i'), rule);
-                        }
-                        else {
-                            style = $.trim(style);
-                            if (style !== ''){
-                                if (style.slice(-1) !== ';'){
-                                    style += ';';
-                                }
-                                style += ' ';
-                            }
-                            style += rule;
-                        }          
-                        $el.attr('style', style);
-                    });
-                    return $el;
-                },
-                
-                css: function(){
-                    var args, doImportant;
-                    args = arguments;
-                    doImportant = (typeof args[0] === 'string' && args.length > 2) || (typeof args[1] === 'string' && args.length > 2) &&  args.length > 1 && arguments[arguments.length-1] === true;
-                    return (doImportant ? this.cssImportant : cachedFuncs.css).apply(this, arguments);
-                }
-            }
-        );
-        
-        // ****
         
         // EXTEND SQWIDGET WITH JQUERY-DEPENDENT PROPS
         this.Sqwidget = Sqwidget = $.extend(
@@ -821,9 +746,12 @@ var ready = (function(){
                     return (/^https?:\/\/[\-\w]+\.\w[\-\w]+\S*$/).test(str);
                 },
 
-                uid: function(significantFigures){
-                    var M = Math;
-                    return M.round(M.pow(M.pow(10, significantFigures || 8), M.random()));
+                // random number. Default: maximum of 5 digits
+                uid: function(maxDigits){
+                    var m = Math;
+                    return m.floor(
+                        m.random() * m.pow(10, maxDigits || 5)
+                    );
                 },
                 
                 cssPresets: {        
