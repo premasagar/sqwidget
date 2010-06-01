@@ -1033,7 +1033,7 @@ var ready = (function(){
                     else {
                         showErrorsInWidgets();
                     }
-                });
+                }, 'text');
             }
         };
         
@@ -1462,17 +1462,19 @@ var ready = (function(){
         };
        
        /**
-        * Show the loading template
+        * Show the loading template.  But don't if a placeholder is present
         */
        self.showLoading = function() {
-           if (loadingFn) {
-               var widget=self;
-               loadingFn.call(self);
-           }
-           else {
-               var t = template.getTemplate('loading');
-               if (t) {
-                   self.render(t);
+           if (jQuery('.sqwidget-placeholder', container).length === 0) {
+               if (loadingFn) {
+                   var widget=self;
+                   loadingFn.call(self);
+               }
+               else {
+                   var t = template.getTemplate('loading');
+                   if (t) {
+                       self.render(t);
+                   }
                }
            }
        };
