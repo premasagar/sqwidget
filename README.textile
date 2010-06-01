@@ -38,6 +38,15 @@ Sqwidget is under rapid development at the moment. An initial release is anticip
 
 h2. Plugins and complementary projects
 
+h3. Sandie
+
+"http://github.com/premasagar/sandie":http://github.com/premasagar/sandie
+
+A simple method for creating a new JavaScript context in the browser, e.g. for loading external scripts into a page without affecting the global scope of the document. This is useful when there is a need to avoid collisions between otherwise conflicting scripts and to keep the global namespace clean.
+
+*Status*: Beta.
+
+
 h3. AppleOfMyIframe
 
 "http://github.com/premasagar/appleofmyiframe":http://github.com/premasagar/appleofmyiframe
