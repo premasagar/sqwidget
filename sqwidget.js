@@ -27,7 +27,6 @@
 /**
 * GLOBALS VARS
 **/
-// TODO: let sqwidget objects be created either with or without 'new' operator
 
 var Sqwidget;
   
@@ -712,22 +711,10 @@ var ready = (function(){
         
         // EXTEND SQWIDGET WITH JQUERY-DEPENDENT PROPS
         this.Sqwidget = Sqwidget = $.extend(
-            // Constructor
-        /*    function(data, callback){
-                Sqwidget.widgets.push(this);
-                
-                if (typeof data === 'object'){
-                    $.extend(this, data, {uid:Sqwidget.uid()});
-                }
-                if (typeof callback === 'function'){
-                    callback.call(this, $);
-                }
-            }, */
             // Original Sqwidget object
             Sqwidget,
             {
                 // Static Methods & Properties
-                // TODO: Confirm that the methods on Sqwidget and those on Sqwidget.prototype are in their correct place. What should be the guideline about whether a method is a static method, or an instance method? Some methods (e.g. uid()) are called by static objects (e.g. Lightbox), so they need to remain static methods - or both be moved to the prototype.
                 //TODO separate widget template functions from sqwidget page management
                 // do as: Lightbox.uid = Sqwidget.prototype.uid
                 
@@ -746,11 +733,11 @@ var ready = (function(){
                     return (/^https?:\/\/[\-\w]+\.\w[\-\w]+\S*$/).test(str);
                 },
 
-                // random number. Default: maximum of 5 digits
-                uid: function(maxDigits){
+                // random number. Default: maximum of 4 digits
+                rand: function(maxDigits){
                     var m = Math;
                     return m.floor(
-                        m.random() * m.pow(10, maxDigits || 5)
+                        m.random() * m.pow(10, maxDigits || 4)
                     );
                 },
                 
@@ -897,7 +884,6 @@ var ready = (function(){
                                 )
                             );
                         },
-                        
                     
                         loadCss: function(css, cacheTime){
                             cacheTime = cacheTime || this.settings.cssCacheTime;

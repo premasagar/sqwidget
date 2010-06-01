@@ -89,7 +89,7 @@ function peekaboo(delegateElem, showWidget, hideWidget, mouseenterDelay, mousele
     }
     
     $(delegateElem)
-        .css('cursor', 'default') // to reset a style of cursor:wait while the scripts all load
+        .css('cursor', 'pointer') // show that delegate is clickable; can be used to overwrite an initial style of cursor:wait, used while the widget loads
         .hover(
             function(){
                 mouseInDelegate = true;
