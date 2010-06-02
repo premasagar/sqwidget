@@ -403,81 +403,96 @@ var ready = (function(){
                 var scripts = document.getElementsByTagName("script");
                 return scripts[scripts.length - 1];
             },
-     
-            /**
-             * Load array of scripts into script elements.  
-             *
-             * Note, there is only one callback function here, called after each is loaded
-             *
-             * @param {Array} srcs array of source files to load
-             * @param {Function} callback 
-             * @param {Boolean} inOrder - if true, load scripts in given order
-             */
-     
-            getScripts: function(srcs, callback, inOrder) {
-				
-				var length = srcs.length,
-					loaded = 0;
-				
-				if (inOrder) {
-					// Recursive, each callback re-calls getScripts
-					// with a shifted array.
-					Sqwidget.getScript(srcs.shift(), function() {
-						if (length === 1) {
-							callback();
-						} else {
-						    // preserve inOrder when recursing
-							Sqwidget.getScripts(srcs, callback, true);
-						}
-					});
-				} else {
-					// Plain old loop
-					// Doesn't call callback until all scripts have loaded.
-					for (var i = 0; i < length; ++i) {
-						Sqwidget.getScript(srcs[i], function(){
-							if (++loaded === length) {
-								callback();
-							}
-						});
-					}
-				}
-				
-			},
 			
-            /**
-             * Load a script into a <script> element
-             * @param {String} src The source url for the script to load
-             * @param {Function} callback Called when the script has loaded
-             * TODO: 
-             * 1) Look in DOM for script element with that src already, and don't load it 
-             *    again if found (allows multiple Sqwidget scripts not to keep loading jQuery, etc)
-             * 2) {url: src, callback: fn} objects to allow specific callbacks for particular scripts; 
-             * 3) {lookForScriptSrcInDOM:false} options object; 
-             * 4) callback function when all scripts loaded
-             */
-            getScript: function(src, callback){
-                var head, script, loaded, computedSrc;
-                head = document.getElementsByTagName('head')[0];
-                callback = callback || function(){};
-                script = document.createElement('script');
-                computedSrc = src;
-                if (this.getConfig('development')) {
-                    computedSrc = this.cacheUrl(src, 1/(60*60*24));
-                }
-                script.src = computedSrc;
-                script.onload = script.onreadystatechange = function(){
-                    var state = this.readyState;
-                    if (!loaded && (!state || state === 'complete' || state === 'loaded')){
-                        _('script loaded: ' + src);
-                        loaded = true;
-                        callback();
-                        
-                        // Handle memory leak in IE
-                        script.onload = script.onreadystatechange = null;
-                        head.removeChild(script); // Worth removing script element once loaded?
+			// Wrapper around getScript, allowing cacheUrl for development
+			getScript: function(srcs, callback, targetWindow){
+			    var cacheTime, i, length;
+			    
+			    // Development mode: cache JavaScript files
+                if (this.getConfig('development')){
+                    if (typeof srcs === 'string'){
+                        srcs = [srcs];
                     }
-                };
-                head.appendChild(script);
+                    for (i=0; i<length; i++){
+                        srcs[i] = this.cacheUrl(srcs, 1); // cache for 1ms
+                    }
+                }
+			    getScript(srcs, callback, targetWindow);
+			
+			    // **
+			
+                /*
+                *   getScript
+                */
+                function getScript(srcs, callback, targetWindow){
+                    /**
+                     * Load a script into a <script> element
+                     * @param {String} src The source url for the script to load
+                     * @param {Function} callback Called when the script has loaded
+                     */
+                    function single(src, callback){
+                        var
+                            document = targetWindow.document,
+                            head = document.getElementsByTagName('head')[0],
+                            script = document.createElement('script'),
+                            loaded;
+                            
+                        script.src = src;
+                        // Line below only needed when not HTML5 doc, or Opera 10.60 gets gitchy
+                        // script.type = 'text/javascript';
+                        script.onload = script.onreadystatechange = function(){
+                            var state = this.readyState;
+                            if (!loaded && (!state || state === 'complete' || state === 'loaded')){
+                                // Handle memory leak in IE
+                                script.onload = script.onreadystatechange = null;
+                                // head.removeChild(script); // Worth removing script element once loaded?
+                                
+                                loaded = true;
+                                callback.call(targetWindow);
+                            }
+                        };
+                        head.appendChild(script);
+                    }
+
+                    // **
+
+                    /**
+                     * Load array of scripts into script elements.  
+                     *
+                     * Note, there is only one callback function here, called after each is loaded
+                     *
+                     * @param {Array} srcs array of source files to load
+                     * @param {Function} callback
+                     */
+
+                    // TODO: Allow arrays within arrays to be passed - at the moment, multiple is not in use
+                    function multiple(srcs, callback, targetWindow){
+                        var
+                            length = srcs.length,
+                            loaded = 0,
+                            checkIfComplete, i;
+                        
+                        // Check if all scripts have loaded
+                        checkIfComplete = function(){
+                            if (++loaded === length){
+                                callback.call(targetWindow);
+                            }
+                        };
+                        
+                        // Doesn't call callback until after all scripts have loaded
+                        for (i = 0; i < length; i++){
+                            single(srcs[i], checkIfComplete, targetWindow);
+                        }
+                    }
+
+                    // **
+
+                    var method = (typeof srcs === 'string') ? single : multiple;
+                    targetWindow = targetWindow || window;
+                    callback = callback || function(){};
+                    
+                    return method.call(this, srcs, callback, targetWindow);
+                }
             },
             
             /**
