@@ -65,42 +65,6 @@ var Sqwidget;
     v0.1
 
 *//*
-    creates method
-        splitdoc
-        
-    examples
-        // blank HTML document boilerplate, as an object
-        splitdoc();
-        // this returns {doctype:"<!doctype html>",htmlAttr:"",headAttr:"",headContents:"<meta charset=utf-8><title></title>",charset:"utf-8",title:"",bodyAttr:"",bodyContents:""}
-        
-        // return a blank HTML document boilerplate, as a string
-        splitdoc() + '';
-        splitdoc().toString(); // this is identical to the line above
-        // this returns '<!doctype html><html><head><meta charset=utf-8><title></title></head><body></body></html>'
-        
-        // Examples of HTML fragments that are converted to full HTML documents
-        splitdoc('hello world');
-        splitdoc('<p>blah</p>');
-        splitdoc('<body><p>blah</p></body>');
-        ...
-        splitdoc('<head><meta charset=utf-8><title>foo</title><body><p>blah</p></body></head>');
-        splitdoc('<!doctype html><head><meta charset=utf-8><title>foo</title><body><p>blah</p></body></head>');
-        
-        // Options - most of these set the default values for components of the HTML document
-        splitdoc('<p>blah</p>, {
-            doctype:'<!doctype html>',
-            title:'foo',
-            charset:'utf-8',
-            charsetmeta:'<meta charset="utf-8">'
-        });
-        
-    notes
-        The script attempts absolutely no valdation. It simply works with what it would expect from a valid document or fragment.
-        
-    TODO
-        handle IE conditional tags and the blocks they enclose
-
-*//*
     jslint browser: true, devel: true, onevar: true, undef: true, eqeqeq: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true
 */
 
