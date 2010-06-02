@@ -1187,7 +1187,6 @@ var ready = (function(){
             // For now: default body html stored -- and activated immediately
             var templateStr, head=null, body=null;
             
-            debugger;
             var s = splitdoc(template);
             head = s.headContents;
             _(' Head is ' + head);
