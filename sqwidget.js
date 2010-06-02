@@ -983,7 +983,12 @@ var ready = (function(){
             var name;
             _('template full name is ' + templateName);
             // extract name and save it for later
-            name = templateName.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
+            try {
+                name = templateName.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
+            }
+            catch(e) {
+                name = templateName;
+            }
             _('template name is ' + name);
             sqwidget.widgetTemplatesByName[name] = self;
             
