@@ -1304,7 +1304,7 @@ var ready = (function(){
                     }
                     else {
                         //TODO decide what extra contents will be displayed here
-                        self.setTemplate('default', null, {});
+                        self.setTemplate('default', {}, null);
                     }
                 }
             }
@@ -1322,7 +1322,7 @@ var ready = (function(){
                     }
                     else {
                         //TODO decide what extra contents will be displayed here
-                        self.setTemplate('default', null, {});
+                        self.setTemplate('default', {}, null);
                     }
                 }
             }            
@@ -1455,7 +1455,7 @@ var ready = (function(){
          * @param {jQuery} place The place to render into [optional]. Otherwise, 
          * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
          */ 
-        self.render = function(html, place, contents) {
+        self.render = function(html, contents, place) {
             var s = self.renderTemplate(html, contents);
             var p = place || container;
             jQuery(p).html(s);
@@ -1494,10 +1494,10 @@ var ready = (function(){
         * @param {jQuery} place The place to render into [optional]. Otherwise, 
         * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
         */        
-       self.setTemplate = function(name, place, contents) {
+       self.setTemplate = function(name, contents, place) {
            var d = template.getTemplate(name);
            if (d) {
-               self.render(d, place, contents);
+               self.render(d, contents, place);
            }
        };
 
