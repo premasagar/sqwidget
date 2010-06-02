@@ -490,19 +490,28 @@ var ready = (function(){
                     return templateUrl.replace(/^.*\/([\w]+)(?:\.[^\/]+)?$|^([\w]+)(?:\..*)?$/, '$1$2');
                 }
 
+                /**
+                 * Get settings from an attribute:
+                 * ';' separates key:value pairs
+                 * Use \; to include a ';' in a value
+                 */
                 function settings(str){
                     if (!str){
                         return {};
                     }
-                
+                    function reverse (s) {
+                        	return s.split('').reverse().join('');
+                    }
+
                     var
-                        keyvalPairs = str.split(','),
+                        keyvalPairs = reverse(str).split(/;(?!\\)/),
                         len = keyvalPairs.length,
                         widgetSettings = {},
                         keyval, i, pos;
-
+                        
                     for (i = len; i; i--){
-                        keyval = keyvalPairs[i-1];
+                        keyval = reverse(keyvalPairs[i-1]);
+                        keyval = keyval.replace('\\;', ';');
                         pos = keyval.indexOf(':');
                         if (pos !== -1){
                              widgetSettings[trim(keyval.slice(0,pos))] = trim(keyval.slice(pos+1));
