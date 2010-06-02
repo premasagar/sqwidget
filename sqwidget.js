@@ -438,8 +438,8 @@ var ready = (function(){
             },
 			
 			// Wrapper around getScript, allowing cacheUrl for development
-			getScript: function(srcs, callback, targetWindow){
-			    var cacheTime, i, length;
+			getScript: function(srcs, callback, options){
+			    var i, length;
 			    
 			    // Development mode: cache JavaScript files
                 if (this.getConfig('development')){
@@ -450,7 +450,7 @@ var ready = (function(){
                         srcs[i] = this.cacheUrl(srcs, 1); // cache for 1ms
                     }
                 }
-			    getScript(srcs, callback, targetWindow);
+			    getScript(srcs, callback, options);
             },
             
             /**
