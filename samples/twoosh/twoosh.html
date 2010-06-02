@@ -81,14 +81,13 @@
             
             getCredentials();
             
-            widget.setTemplate('waiting', null, {channel: channel});
+            widget.setTemplate('waiting', {channel: channel});
             
             connect(channel, function(tweet){
                 var url = statusUrl(tweet.user.screen_name, tweet.id);
                 
                 widget.setTemplate(
                     'tweet',
-                    null,
                     {
                         channel: channel,
                         tweet: tweet,

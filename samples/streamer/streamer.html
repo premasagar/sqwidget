@@ -30,18 +30,21 @@
     
         widget.ready(function(){
             var
-                _ = sqwidget._ || window._ || function(){},
+                _ = window._ || console.log || function(){},
                 plugins = widget.plugins,
                 //io = plugins.socketio,
                 $ = jQuery,
-                channel = 'government',
+                channel = 'eurovision',
                 socket;
             
             function connect(q, callback){
-                socket = new jQuery.io.Socket('localhost', {port:8000});
-                socket.connect();
-                debugger;   
+                _('connecting');
+                socket = new jQuery.io.Socket('localhost', {port:8080});
                 socket.addEvent('message', callback);
+                socket.addEvent('connect', function() {
+                    socket.send('{"q" : "' + q + '" }');
+                });
+                socket.connect();
             }
             function disconnect(){
                 socket.disconnect();
@@ -54,18 +57,18 @@
             
             // **
                         
-            widget.setTemplate('waiting', null, {channel: channel});
+            widget.setTemplate('waiting', {channel: channel});
             
             connect(channel, function(tweet){
+                _('got message ' + tweet);
                 var t = JSON.parse(tweet)
-                var url = statusUrl(tweet.user.screen_name, tweet.id);
+                var url = statusUrl(t.user.screen_name, t.id);
                 
                 widget.setTemplate(
                     'tweet',
-                    null,
                     {
                         channel: channel,
-                        tweet: tweet,
+                        tweet: t,
                         url: url
                     }
                 );                
@@ -73,7 +76,7 @@
         });
     </script>
     
-    <script type="text/template" id="loading">
+    <script     type="text/template" id="loading">
         <p>Loading streamer...<p>
     </script>
     

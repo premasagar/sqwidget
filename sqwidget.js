@@ -505,19 +505,28 @@ var ready = (function(){
                     return templateUrl.replace(/^.*\/([\w]+)(?:\.[^\/]+)?$|^([\w]+)(?:\..*)?$/, '$1$2');
                 }
 
+                /**
+                 * Get settings from an attribute:
+                 * ';' separates key:value pairs
+                 * Use \; to include a ';' in a value
+                 */
                 function settings(str){
                     if (!str){
                         return {};
                     }
-                
+                    function reverse (s) {
+                        	return s.split('').reverse().join('');
+                    }
+
                     var
-                        keyvalPairs = str.split(','),
+                        keyvalPairs = reverse(str).split(/;(?!\\)/),
                         len = keyvalPairs.length,
                         widgetSettings = {},
                         keyval, i, pos;
-
+                        
                     for (i = len; i; i--){
-                        keyval = keyvalPairs[i-1];
+                        keyval = reverse(keyvalPairs[i-1]);
+                        keyval = keyval.replace('\\;', ';');
                         pos = keyval.indexOf(':');
                         if (pos !== -1){
                              widgetSettings[trim(keyval.slice(0,pos))] = trim(keyval.slice(pos+1));
@@ -989,7 +998,12 @@ var ready = (function(){
             var name;
             _('template full name is ' + templateName);
             // extract name and save it for later
-            name = templateName.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
+            try {
+                name = templateName.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
+            }
+            catch(e) {
+                name = templateName;
+            }
             _('template name is ' + name);
             sqwidget.widgetTemplatesByName[name] = self;
             
@@ -1305,7 +1319,7 @@ var ready = (function(){
                     }
                     else {
                         //TODO decide what extra contents will be displayed here
-                        self.setTemplate('default', null, {});
+                        self.setTemplate('default', {}, null);
                     }
                 }
             }
@@ -1323,7 +1337,7 @@ var ready = (function(){
                     }
                     else {
                         //TODO decide what extra contents will be displayed here
-                        self.setTemplate('default', null, {});
+                        self.setTemplate('default', {}, null);
                     }
                 }
             }            
@@ -1456,7 +1470,7 @@ var ready = (function(){
          * @param {jQuery} place The place to render into [optional]. Otherwise, 
          * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
          */ 
-        self.render = function(html, place, contents) {
+        self.render = function(html, contents, place) {
             var s = self.renderTemplate(html, contents);
             var p = place || container;
             jQuery(p).html(s);
@@ -1495,10 +1509,10 @@ var ready = (function(){
         * @param {jQuery} place The place to render into [optional]. Otherwise, 
         * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
         */        
-       self.setTemplate = function(name, place, contents) {
+       self.setTemplate = function(name, contents, place) {
            var d = template.getTemplate(name);
            if (d) {
-               self.render(d, place, contents);
+               self.render(d, contents, place);
            }
        };
 
