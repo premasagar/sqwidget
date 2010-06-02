@@ -36,7 +36,7 @@ var Sqwidget;
 /**
 * SQWIDGET CORE
 **/
-(function () {
+(function(){
 
     // set up debug
     if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1){
@@ -46,28 +46,97 @@ var Sqwidget;
 // **
 // NATIVE JAVASCRIPT DEPENDENCIES
 
+/*
+* getScript
+*   github.com/premasagar/mishmash/tree/master/getscript/
+*
+*/
+function getScript(srcs, callback, options){
+    /**
+     * Load a script into a <script> element
+     * @param {String} src The source url for the script to load
+     * @param {Function} callback Called when the script has loaded
+     */
+    function single(src, callback, options){
+        var
+            charset = options.charset,
+            targetWindow = options.targetWindow,
+            document = targetWindow.document,
+            head = document.getElementsByTagName('head')[0],
+            script = document.createElement('script'),
+            loaded;
+            
+        script.src = src;
+        script.type = 'text/javascript'; // Needed for some gitchy browsers, outside of HTML5
+        script.charset = charset;
+        script.onload = script.onreadystatechange = function(){
+            var state = this.readyState;
+            if (!loaded && (!state || state === 'complete' || state === 'loaded')){
+                // Handle memory leak in IE
+                script.onload = script.onreadystatechange = null;
+                // head.removeChild(script); // Worth removing script element once loaded?
+                
+                loaded = true;
+                callback.call(targetWindow);
+            }
+        };
+        head.appendChild(script);
+    }
 
-/*!
+    // **
+
+    /**
+     * Load array of scripts into script elements.  
+     *
+     * Note, there is only one callback function here, called after each is loaded
+     *
+     * @param {Array} srcs array of source files to load
+     * @param {Function} callback
+     */
+
+    function multiple(srcs, callback, options){
+        var
+            length = srcs.length,
+            loaded = 0,
+            checkIfComplete, i;
+        
+        // Check if all scripts have loaded
+        checkIfComplete = function(){
+            if (++loaded === length){
+                callback.call(options.targetWindow);
+            }
+        };
+        
+        // Doesn't call callback until after all scripts have loaded
+        for (i = 0; i < length; i++){
+            single(srcs[i], checkIfComplete, options);
+        }
+    }
+
+    // **
+    
+    var
+        method = (typeof srcs === 'string') ? single : multiple;
+    
+    options = options || {};
+    if (!options.charset){
+        options.charset = 'utf-8';
+    }
+    if (!options.targetWindow){
+        options.targetWindow = window;
+    }
+    
+    callback = callback || function(){};        
+    return method.call(this, srcs, callback, options);
+}
+
+
+
+/*
 * splitdoc
 *   github.com/premasagar/mishmash/tree/master/splitdoc/
 *
-*//*
-    split an HTML doc into component sections
-        e.g. doctype, head, body, body content, scripts, styles, images, media, links
-        with a simple JavaScript jQuery api
-
-    by Premasagar Rose
-        dharmafly.com
-
-    license
-        opensource.org/licenses/mit-license.php
-        
-    v0.1
-
-*//*
-    jslint browser: true, devel: true, onevar: true, undef: true, eqeqeq: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true
 */
-
 var splitdoc = (function(){
     var exports = exports || {};
     
@@ -382,81 +451,6 @@ var ready = (function(){
                     }
                 }
 			    getScript(srcs, callback, targetWindow);
-			
-			    // **
-			
-                /*
-                *   getScript
-                */
-                function getScript(srcs, callback, targetWindow){
-                    /**
-                     * Load a script into a <script> element
-                     * @param {String} src The source url for the script to load
-                     * @param {Function} callback Called when the script has loaded
-                     */
-                    function single(src, callback){
-                        var
-                            document = targetWindow.document,
-                            head = document.getElementsByTagName('head')[0],
-                            script = document.createElement('script'),
-                            loaded;
-                            
-                        script.src = src;
-                        // Line below only needed when not HTML5 doc, or Opera 10.60 gets gitchy
-                        // script.type = 'text/javascript';
-                        script.onload = script.onreadystatechange = function(){
-                            var state = this.readyState;
-                            if (!loaded && (!state || state === 'complete' || state === 'loaded')){
-                                // Handle memory leak in IE
-                                script.onload = script.onreadystatechange = null;
-                                // head.removeChild(script); // Worth removing script element once loaded?
-                                
-                                loaded = true;
-                                callback.call(targetWindow);
-                            }
-                        };
-                        head.appendChild(script);
-                    }
-
-                    // **
-
-                    /**
-                     * Load array of scripts into script elements.  
-                     *
-                     * Note, there is only one callback function here, called after each is loaded
-                     *
-                     * @param {Array} srcs array of source files to load
-                     * @param {Function} callback
-                     */
-
-                    // TODO: Allow arrays within arrays to be passed - at the moment, multiple is not in use
-                    function multiple(srcs, callback, targetWindow){
-                        var
-                            length = srcs.length,
-                            loaded = 0,
-                            checkIfComplete, i;
-                        
-                        // Check if all scripts have loaded
-                        checkIfComplete = function(){
-                            if (++loaded === length){
-                                callback.call(targetWindow);
-                            }
-                        };
-                        
-                        // Doesn't call callback until after all scripts have loaded
-                        for (i = 0; i < length; i++){
-                            single(srcs[i], checkIfComplete, targetWindow);
-                        }
-                    }
-
-                    // **
-
-                    var method = (typeof srcs === 'string') ? single : multiple;
-                    targetWindow = targetWindow || window;
-                    callback = callback || function(){};
-                    
-                    return method.call(this, srcs, callback, targetWindow);
-                }
             },
             
             /**
