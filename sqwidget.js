@@ -1699,6 +1699,7 @@ var ready = (function(){
 
 Sqwidget.ready(function() {
     if (Sqwidget.settings.automatic) {
+        var _ = Sqwidget._ || window._ || function() {} ;
         _('sqwidget (on automatic) loading and starting widgets ');
     
         // get widgets in the page as Widget objects
