@@ -1365,7 +1365,8 @@ var ready = (function(){
             readyFn = null,
             errorFn = null,
             loadingFn = null,
-            readyRun=false;
+            readyRun=false,
+            templateLoaded=false,
             dependenciesRequested = false;
         /**
          * eval script in the context of this object
@@ -1384,11 +1385,9 @@ var ready = (function(){
          * Check we have all plugins namespaced, er how do we know
          */
         var allPluginsLoaded = function() {
-            return dependenciesRequested && sqwidget.checkDependencies(self);
+            return (dependenciesRequested && sqwidget.checkDependencies(self));
         };
          
-        self.readyFn = readyFn;
-            self.readyRun = readyRun;
         self.plugins = plugins;
         self.allPluginsLoaded = allPluginsLoaded;
         
@@ -1404,6 +1403,14 @@ var ready = (function(){
             return container;
         };
         
+        self.getReadyFn = function() { 
+            return readyFn;
+        };
+
+        self.getReadyRun = function() { 
+            return readyRun;
+        };
+        
         /**
          * Return unique Id for widget... either a stored id or 
          * the id of the widget container div.
@@ -1416,14 +1423,16 @@ var ready = (function(){
             else {
                 return container.id;
             }
-        }
+        };
         
         self.onTemplateLoaded= function(t) {
+            templateLoaded=true;
             template = t;
             self.runController(template.getScripts());
             self.showLoading(); 
             template.loadDependencies(self);
             dependenciesRequested = true;
+            self.checkRun();
         };
         
         self.setPlugin = function(name, module, config) {
@@ -1699,7 +1708,7 @@ var ready = (function(){
 
 Sqwidget.ready(function() {
     if (Sqwidget.settings.automatic) {
-        var _ = Sqwidget._ || window._ || function() {} ;
+    //    var _ = Sqwidget._ || window._ || function() {} ;
         _('sqwidget (on automatic) loading and starting widgets ');
     
         // get widgets in the page as Widget objects
