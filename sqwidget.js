@@ -38,13 +38,124 @@ var Sqwidget;
 **/
 (function(){
 
-    // set up debug
-    if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1){
-        this.sqwidgetDebug = true;
-    }
+    // console logging
+    var _ = function(){};
 
 // **
 // NATIVE JAVASCRIPT DEPENDENCIES
+
+
+/////////////////////////
+
+/*  Console logging functionality
+
+    This block may be safely ommited. If present, it enhances sqwidget.js with console logging ability, for debugging.
+
+    To activate console logging, add "?sqwidgetDebug" or "&sqwidgetDebug" to the URL in the browser address bar.
+*/
+
+/*!
+* Console
+*   github.com/premasagar/mishmash/tree/master/console/
+*
+*//*
+    cross-browser JavaScript debug console logging
+
+    by Premasagar Rose
+        dharmafly.com
+
+    license:
+        opensource.org/licenses/mit-license.php
+        
+    v1.2
+
+*/
+
+/* This function may be safely removed, if console logging is not required, e.g. for debugging */
+        
+sqwidgetConsole = (function(){
+    var
+        window = this,
+        ua = window.navigator.userAgent,
+        console = window.console,
+        opera = window.opera,
+        debug;
+    
+    // Doesn't support console API
+    if (!console){
+        // Opera 
+        return (opera && opera.postError) ?
+             function(){
+                 var i, argLen, log = opera.postError, args = arguments, arg, subArgs, prop;
+                 log(args);
+                 
+                 argLen = args.length;
+	             for (i=0; i < argLen; i++){
+	                 arg = args[i];
+	                 if (typeof arg === 'object' && arg !== null){
+	                    subArgs = [];
+	                    for (prop in arg){
+	                        try {
+	                            if (arg.hasOwnProperty(prop)){
+	                                subArgs.push(prop + ': ' + arg[prop]);
+	                            }
+	                        }
+	                        catch(e){}
+	                    }
+	                    log('----subArgs: ' + subArgs);
+	                 }
+	             }
+             } :
+             function(){};
+    }
+    // Temporary for WebKit, while its console has a bug in calling debug directly or log.apply
+    else if (/webkit/i.test(ua)){	    
+        return function(){
+            var i, argLen, args = arguments, indent = '';
+            argLen = args.length;
+	        for (i=0; i < argLen; i++){
+	            if (typeof args[i] === 'object' && JSON && JSON.stringify){
+	                args[i] = JSON.stringify(args[i]);
+	            }
+		        console.log(indent + args[i]);
+                indent = '---- ';
+	        }
+        };
+    }
+    else {
+        debug = console.debug;
+        return debug ? // FF Firebug
+	        debug :
+	        function(){
+		        var i, argLen, log = console.log, args = arguments, indent = '';
+		        if (log){ // WebKit
+			        if (typeof log.apply === 'function'){
+				        log.apply(console, args);
+			        }
+			        else { // IE8
+				        argLen = args.length;
+				        for (i=0; i < argLen; i++){
+					        log(indent + args[i]);
+                            indent = '---- ';
+				        }
+			        }
+		        }
+	        };
+	}
+}());
+/* end console logging */
+
+
+/////////////////////////
+
+
+// Determine if console logging is required
+if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole){
+    this.sqwidgetDebug = true;
+    _ = sqwidgetConsole;
+}
+
+
 
 /*
 * getScript
@@ -350,7 +461,7 @@ var ready = (function(){
     
     return onReady;
     
-}());   
+}());
 
 // **
 
@@ -359,8 +470,7 @@ var ready = (function(){
     var
         $,
         window = this,
-        document = window.document,
-        _ = window.sqwidgetDebug ? (window._ ? window._ : (window.console && window.console.firebug ? window.console.debug : function(){})) : function(){};
+        document = window.document;
         
         _('started console logging in sqwidget');
         // SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
@@ -827,11 +937,6 @@ var ready = (function(){
                     template.runAll();
                 });
             }
-            
-            
-            
-            
-            
         };
         /////
 
@@ -1707,8 +1812,16 @@ var ready = (function(){
 // a default function here, but can be overridden if called by the doc?
 
 Sqwidget.ready(function() {
+    /* TEMP BLOCK FOR DEBUGGING */
+        var _ = function(){};
+    // Determine if console logging is required
+if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole){
+    this.sqwidgetDebug = true;
+    _ = sqwidgetConsole;
+}
+    /* end TEMP BLOCK FOR DEBUGGING */
+
     if (Sqwidget.settings.automatic) {
-    //    var _ = Sqwidget._ || window._ || function() {} ;
         _('sqwidget (on automatic) loading and starting widgets ');
     
         // get widgets in the page as Widget objects
