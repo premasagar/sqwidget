@@ -846,7 +846,9 @@ var ready = (function(){
                 var 
                     name = null,
                     minVersion = null,
-                    depConfig = {};
+                    depConfig = {},
+                    basePath = widget.getSetting('basePath', this.getConfig('basePath')),
+                    pluginPath = widget.getSetting('pluginPath', this.getConfig('pluginPath'));
 
                 if (!dependency) {
                     name = null;
@@ -1223,11 +1225,15 @@ var ready = (function(){
 
         // PRIVATE methods
         var loadTemplate = function() {
-            var name;
+            var name, tn;
             _('template full name is ' + templateName);
             // extract name and save it for later
             try {
-                name = templateName.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
+                tn = templateName;
+                if (tn.indexOf('/') === -1) {
+                    tn = './' + tn;
+                }
+                name = tn.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
             }
             catch(e) {
                 name = templateName;
