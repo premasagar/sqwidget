@@ -783,7 +783,7 @@ var ready = (function(){
                     if (dataSqwidget){
                         dataSqwidget = settings(dataSqwidget);
                         dataSqwidgetSettings = settings(dataSqwidgetSettings);
-                        widgetType = type(dataSqwidget.template || 'generic');
+                        widgetType = type(dataSqwidget.src || 'generic');
                         
                         widgets.push(
                             Widget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
@@ -1668,7 +1668,7 @@ var ready = (function(){
         self.init = function() {
             //attach ourselves to template -- this also loads the template if that hasn't happened before
             _('  getting template');
-            var sqTemplate = sqwidget.getTemplate(dataSqwidget.template, self);
+            var sqTemplate = sqwidget.getTemplate(dataSqwidget.src, self);
             template = sqTemplate;
             _('  registering widget');
             sqTemplate.register(self);
