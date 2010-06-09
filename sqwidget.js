@@ -884,7 +884,7 @@ var ready = (function(){
                     else {
                         this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
                         // initiate load
-                        var loadPath = this.buildResourcePath(this.settings.basePath, this.settings.pluginPath, name, 'js');
+                        var loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
                         this.getScript(loadPath, function(){});
                     }
                 }
@@ -1229,6 +1229,8 @@ var ready = (function(){
             _('template full name is ' + templateName);
             // extract name and save it for later
             try {
+                // annoying regex issue to be sorted out sometime
+                // filename match doesn't work unless pathed so adding './' to keep things happy
                 tn = templateName;
                 if (tn.indexOf('/') === -1) {
                     tn = './' + tn;
