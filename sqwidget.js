@@ -885,6 +885,7 @@ var ready = (function(){
                         this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
                         // initiate load
                         var loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
+                        _('loading dependency from: ' + loadPath);
                         this.getScript(loadPath, function(){});
                     }
                 }
