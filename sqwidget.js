@@ -847,8 +847,8 @@ var ready = (function(){
                     name = null,
                     minVersion = null,
                     depConfig = {},
-                    basePath = widget.getSetting('basePath', this.getConfig('basePath')),
-                    pluginPath = widget.getSetting('pluginPath', this.getConfig('pluginPath'));
+                    basePath = widget.getConfig('basePath', this.getConfig('basePath')),
+                    pluginPath = widget.getConfig('pluginPath', this.getConfig('pluginPath'));
 
                 if (!dependency) {
                     name = null;
@@ -1212,6 +1212,8 @@ var ready = (function(){
              "desc": "-",
              "url": "http://github.com/sqwidget", 
              "ui" : "hostpage",
+             "basePath" : null,
+             "pluginPath" : null,
              "dependencies": {
              },
              "settings": {
