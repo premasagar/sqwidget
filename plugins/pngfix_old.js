@@ -345,7 +345,10 @@ self.pngfix = function(selectorOrElement){
 }
 // call on resizing or manipulating the element to readjust the offsets
 self.pngfix.applyVmlOffsets = function(selectorOrElement){
-    self.DD_belatedPNG.vmlOffsets($(selectorOrElement)[0]);
+    var DD_belatedPNG = self.DD_belatedPNG;
+    $(selectorOrElement).each(function(i, el){
+        DD_belatedPNG.vmlOffsets(el);
+    });
 };
 
 /////////////////////////////////////////
