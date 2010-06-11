@@ -962,7 +962,7 @@ var ready = (function(){
                         // initiate load
                         var loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
                         _('loading dependency: '  + name + ', ' + loadPath);
-                        this.getScript(loadPath, function(){_('dependency loaded: ' + name);});
+                        this.getScript(loadPath, function(){});
                     }
                 }
             },
@@ -1626,14 +1626,16 @@ var ready = (function(){
         };
         
         self.setPlugin = function(name, module, config) {
+            _('setting up plugin: ' + name);
             plugins[name] = module(sqwidget, self, jQuery, config);
             //TODO check all plugins loaded
+            // TODO: merge this block with .checkRun() method below
             if (allPluginsLoaded()) {
                 if (!readyRun) {
                     readyRun = true;
                     if (readyFn) {
                         var widget=self;
-                        _('running ready() for widget ' + container.id);
+                        _('calling widget.ready(): ' + container.id);
                         readyFn.call(self);
                     }
                     else {
@@ -1651,7 +1653,7 @@ var ready = (function(){
                     readyRun=true;
                     if (readyFn) {
                         var widget=self;
-                        _('running ready() for widget ' + container.id);
+                        _('calling widget.ready(): ' + container.id);
                         readyFn.call(self);
                     }
                     else {
