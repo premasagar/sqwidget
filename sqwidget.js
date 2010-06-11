@@ -948,9 +948,9 @@ var ready = (function(){
                     name = null;
                 }
                 if (name && name.length > 0) {
-                    _('adding dependency ' + name);
                     var existing = this.dependencyRegister[name];
                     if (existing) {
+                        _('adding dependency (already exists): ' + name);
                         //TODO version comparison
                         existing.clients.push(widget);
                         if (existing.loaded) {
@@ -961,8 +961,8 @@ var ready = (function(){
                         this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
                         // initiate load
                         var loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
-                        _('loading dependency from: ' + loadPath);
-                        this.getScript(loadPath, function(){_('dependency script loaded: ' + name);});
+                        _('loading dependency: '  + name + ', ' + loadPath);
+                        this.getScript(loadPath, function(){_('dependency loaded: ' + name);});
                     }
                 }
             },
@@ -1375,7 +1375,6 @@ var ready = (function(){
             
             var s = splitdoc(template);
             head = s.headContents;
-            _(' Head is ' + head);
             body = s.bodyContents;
             if (head) {
                 templateStr = head;
@@ -1383,7 +1382,7 @@ var ready = (function(){
             else {
                 templateStr = template;
             }
-            _(' Body is ' + body);
+            _('template: ' + templateName, {head:head, body:body});
             if (body !== null) {
                 templates['default'] = body;
             }
@@ -1414,11 +1413,10 @@ var ready = (function(){
              });
             //TODO hook for style injection -- not done for now
             // modes -- simple injection with container div added
-            jQuery.each(styles, function(s,style) {
+            _('styles', styles);
+            jQuery.each(styles, function(s, style) {
                 var ss = jQuery('<style>' + style.text + '</style>');
                 ss.attr({title:style.title, type:style.type, media:style.media});
-                //ss.text(style.text);
-                _('style block is: ' + style.text);
                 jQuery('head').append(ss);
             });
         };
@@ -1566,7 +1564,7 @@ var ready = (function(){
          * @return {undefined}
          */
         var evalScript = function(script) {
-            _('eval script is ' + script);
+            _('eval script', {source:script});
             var widget = self;
             //TODO minimise context for controller functions
             eval(script.toString());
