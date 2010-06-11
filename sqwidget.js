@@ -886,7 +886,7 @@ var ready = (function(){
                         // initiate load
                         var loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
                         _('loading dependency from: ' + loadPath);
-                        this.getScript(loadPath, function(){});
+                        this.getScript(loadPath, function(){_('dependency script loaded: ' + name);});
                     }
                 }
             },
