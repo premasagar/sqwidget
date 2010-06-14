@@ -962,9 +962,9 @@ var ready = (function(){
 // Sqwidget - extend Sqwidget once jQuery is loaded, and assign to Sqwidget
 // *********
     Sqwidget.onjQueryReady(function(jQuery){
-        var $ = jQuery, namespace;
+        var $ = jQuery,
+            namespace = 'sqwidget';
         
-        namespace = 'sqwidget';
         function ns(props, delimiter){
             delimiter = delimiter || '-';
             if (!props){
@@ -977,7 +977,6 @@ var ready = (function(){
                 return [namespace].concat(props).join(delimiter);
             }
         }
-        
         
         // EXTEND SQWIDGET WITH JQUERY-DEPENDENT PROPS
         this.Sqwidget = Sqwidget = $.extend(
@@ -1064,28 +1063,12 @@ var ready = (function(){
                     return this.urlParam(url, 'cache', this.timeChunk(intervalDays));
                 },
                 
-                
-                // E.g.
-                // var ns = new Sqwidget.Namespace('blah');
-                // ns([ns(['hi','there','you'], '.'),ns(['all','is','full','of','love'])], ' -//- ');
-                //  Result:
-                //  "blah -//- blah.hi.there.you -//- blah-all-is-full-of-love"
-                /*
-                Namespace: function(namespace, defaultDelimiter){
-                    return function(props, delimiter){
-                        delimiter = delimiter || defaultDelimiter || '-';
-                        if (!props){
-                            return namespace;
-                        }
-                        else if (typeof props === 'string'){
-                                return namespace + delimiter + props;
-                        }
-                        else {
-                            return [namespace].concat(props).join(delimiter);
-                        }
-                    };
+                // preload images - argument is either string or array of strings
+                preload: function(srcs){
+                    $.each($.isArray(srcs) ? srcs : [srcs], function(i, src){
+                        var img = $('<img src="' + src + '" />');
+                    });
                 },
-                */
 
                 // ================
 
