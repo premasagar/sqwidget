@@ -491,7 +491,9 @@ var ready = (function(){
         // SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
         // TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
         this.Sqwidget = Sqwidget = {
-            version: '0.21a',
+            version: '0.21a',            
+            _: _, // console logger
+            
             /** 
              * These can be set from the Sqwidget.globalConfig()
              * All global settings need to be given an initial
@@ -1821,14 +1823,7 @@ var ready = (function(){
 // a default function here, but can be overridden if called by the doc?
 
 Sqwidget.ready(function() {
-    /* TEMP BLOCK FOR DEBUGGING */
-        var _ = function(){};
-    // Determine if console logging is required
-if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole){
-    this.sqwidgetDebug = true;
-    _ = sqwidgetConsole;
-}
-    /* end TEMP BLOCK FOR DEBUGGING */
+    var _ = Sqwidget._;
 
     if (Sqwidget.settings.automatic) {
         _('sqwidget (on automatic) loading and starting widgets ');
