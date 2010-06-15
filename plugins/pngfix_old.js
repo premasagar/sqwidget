@@ -117,18 +117,6 @@ IE's rendering of certain pixels doesn't make sense
         },
 
         attachHandlers: function(el) {
-            /* MOD: DF */
-            var self = this;
-            function applyVmlOffsets(){
-                self.vmlOffsets(el);
-            }
-            $('#bbcwswidget')
-                .bind('width-adjust', applyVmlOffsets)
-                .bind('move', applyVmlOffsets);
-            return;
-            
-            //////////////////////////////////
-            /* 
             var self = this;
             var handlers = {resize: 'vmlOffsets', move: 'vmlOffsets'};    
 
@@ -144,7 +132,6 @@ IE's rendering of certain pixels doesn't make sense
                 });
             }
             el.attachEvent('onpropertychange', this.readPropertyChange);
-             */
         },
 
         giveLayout: function(el) {
@@ -330,12 +317,38 @@ IE's rendering of certain pixels doesn't make sense
       document.execCommand("BackgroundImageCache", false, true); /* TredoSoft Multiple IE doesn't like this, so try{} it */
     } catch(r) {}
     
+    /*
+    MOD: DF
+    DD_belatedPNG.createVmlNameSpace();
+    DD_belatedPNG.createVmlStyleSheet();
+    */
+
+/////////////////////////////////////////
 
 
-self.pngfix = function(sel) {
+self.pngfix = function(selectorOrElement){
+    // override attachHandlers method in original script
+    self.DD_belatedPNG.attachHandlers = function(){};
+    
+    // initialise
     self.DD_belatedPNG.createVmlNameSpace();
     self.DD_belatedPNG.createVmlStyleSheet();
-    self.DD_belatedPNG.fix(sel); 
+
+    // interpret argument, and then pngfix it
+    if (typeof selectorOrElement === 'string'){
+        self.DD_belatedPNG.fix(selectorOrElement);
+    }
+    else {
+        selectorOrElement = $(selectorOrElement)[0]; // Allows argument to be either a node or jQuery wrapped node
+        self.DD_belatedPNG.fixPng(selectorOrElement);
+    }
+}
+// call on resizing or manipulating the element to readjust the offsets
+self.pngfix.applyVmlOffsets = function(selectorOrElement){
+    var DD_belatedPNG = self.DD_belatedPNG;
+    $(selectorOrElement).each(function(i, el){
+        DD_belatedPNG.vmlOffsets(el);
+    });
 };
 
 /////////////////////////////////////////
