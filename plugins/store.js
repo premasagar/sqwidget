@@ -252,17 +252,22 @@
      *
      */
 
-    (function($){
+    var jStorageService = function($, store_key){
     	if(!$ || !($.toJSON || Object.toJSON || window.JSON)){
     		throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
     	}
 
     	var
+    	    jStorage,
+    	    
     		/* This is the object, that holds the cached values */ 
     		_storage = {},
+    		
+    		/* Key that values are stored under */
+    		_store_key = store_key,
 
     		/* Actual browser storage (localStorage or globalStorage['domain']) */
-    		_storage_service = {jStorage:"{}"},
+    		_storage_service = {},
 
     		/* DOM element for older IE versions, holds userData behavior */
     		_storage_elm = null,
@@ -344,6 +349,8 @@
     	 * @returns undefined
     	 */
     	function _init(){
+    	    
+    	    _storage_service[_store_key] = "{}";
     		/* Check if browser supports localStorage */
     		if("localStorage" in window){
     			try {
@@ -367,12 +374,12 @@
     				/* userData element needs to be inserted into the DOM! */
     				document.getElementsByTagName('head')[0].appendChild(_storage_elm);
 
-    				_storage_elm.load("jStorage");
+    				_storage_elm.load(_store_key);
     				var data = "{}";
     				try{
-    					data = _storage_elm.getAttribute("jStorage");
+    					data = _storage_elm.getAttribute(_store_key);
     				}catch(E5){}
-    				_storage_service.jStorage = data;
+    				_storage_service[store_key] = data;
     			}else{
     				_storage_elm = null;
     				return;
@@ -380,14 +387,14 @@
     		}
 
     		/* if jStorage string is retrieved, then decode it */
-    		if(_storage_service.jStorage){
+    		if(_storage_service[_store_key]){
     			try{
-    				_storage = json_decode(String(_storage_service.jStorage));
-    			}catch(E6){_storage_service.jStorage = "{}";}
+    				_storage = json_decode(String(_storage_service[_store_key]));
+    			}catch(E6){_storage_service[_store_key] = "{}";}
     		}else{
-    			_storage_service.jStorage = "{}";
+    			_storage_service[_store_key] = "{}";
     		}
-    		_storage_size = _storage_service.jStorage?String(_storage_service.jStorage).length:0;
+    		_storage_size = _storage_service[_store_key]?String(_storage_service[_store_key]).length:0;
     	}
 
     	/**
@@ -396,13 +403,13 @@
     	 */
     	function _save(){
     		try{
-    			_storage_service.jStorage = json_encode(_storage);
+    			_storage_service[_store_key] = json_encode(_storage);
     			// If userData is used as the storage engine, additional
     			if(_storage_elm) {
-    				_storage_elm.setAttribute("jStorage",_storage_service.jStorage);
-    				_storage_elm.save("jStorage");
+    				_storage_elm.setAttribute(_store_key,_storage_service[_store_key]);
+    				_storage_elm.save(_store_key);
     			}
-    			_storage_size = _storage_service.jStorage?String(_storage_service.jStorage).length:0;
+    			_storage_size = _storage_service[_store_key]?String(_storage_service[_store_key]).length:0;
     		}catch(E7){/* probably cache is full, nothing is saved this way*/}
     	}
 
@@ -418,7 +425,7 @@
 
     	////////////////////////// PUBLIC INTERFACE /////////////////////////
 
-    	$.jStorage = {
+    	jStorage = {
     		/* Version number */
     		version: "0.1.4.1",
 
@@ -534,24 +541,29 @@
 
     	// Initialize jStorage
     	_init();
-
-    })(window.jQuery || window.$);   
+        return jStorage;
+    };   
 
     var 
         /** storage of keys for looking up 'owner' of jsonp results */
         keystore = {},
         /** simple in-memory cache */
-        cache = {};
-        
+        cache = {};        
 
     Sqwidget.plugin('store', function (sqwidget, widget, jQuery, newConfig) {
         var 
             self = {},
             //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
             _ = sqwidget._ || window._ || function () {},
+            
             config = {
                 storagePrefix: null
-            };        
+            },
+            
+            store_key = 'sqwidget-' + widget.getConfig('name','sqwidget-widget'),
+            
+            jStorage = jStorageService(jQuery, store_key);
+                    
         /* init config from supplied*/
         jQuery.extend(true,config,newConfig);
 
@@ -572,14 +584,14 @@
             _('store: setting ' + self.widgetStoreKey(key) + ' to ' + value);
             var wrap = {};
             wrap.val = value;
-            jQuery.jStorage.set(self.widgetStoreKey(key), wrap);
+            jStorage.set(self.widgetStoreKey(key), wrap);
         };
         
         self.get = function(key, defaultValue) {
             var k, val;
             k = self.widgetStoreKey(key);
              _('store: getting ' + k);
-            var val=jQuery.jStorage.get(k);
+            var val = jStorage.get(k);
             if (val === null) {
                 _('store: no stored value for ' + k + ' so returning given default');
                 return defaultValue;
@@ -597,11 +609,11 @@
         };
         
         self.del = function(key) {
-            jQuery.jStorage.deleteKey(self.widgetStoreKey(key));            
+            jStorage.deleteKey(self.widgetStoreKey(key));            
         };
 
         return self;
     
-    }, '0.2.0', ['jquery', 'jstorage']);
+    }, '0.3.0', ['jquery']);
 
 }());
