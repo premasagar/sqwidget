@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Offline store - wrapper for offline storage.  Basically a wrapper
  * around jStorage including generating nice ids to store stuff, but 
@@ -26,6 +28,17 @@
      */
 
     (function($) {
+        var _escapeable = /["\\\x00-\x1f\x7f-\x9f]/g,
+            _meta = {
+            '\b': '\\b',
+            '\t': '\\t',
+            '\n': '\\n',
+            '\f': '\\f',
+            '\r': '\\r',
+            '"' : '\\"',
+            '\\': '\\\\'
+        };    
+    
         /** jQuery.toJSON( json-serializble )
             Converts the given argument into a JSON respresentation.
 
@@ -37,50 +50,72 @@
          **/
         $.toJSON = function(o)
         {
-            if (typeof(JSON) == 'object' && JSON.stringify)
+            var type;
+        
+            if (typeof(JSON) === 'object' && JSON.stringify){
                 return JSON.stringify(o);
+            }
 
-            var type = typeof(o);
+            type = typeof(o);
 
-            if (o === null)
+            if (o === null){
                 return "null";
+            }
 
-            if (type == "undefined")
+            if (type === "undefined"){
                 return undefined;
+            }
 
-            if (type == "number" || type == "boolean")
+            if (type === "number" || type === "boolean"){
                 return o + "";
+            }
 
-            if (type == "string")
+            if (type === "string"){
                 return $.quoteString(o);
+            }
 
-            if (type == 'object')
+            if (type === 'object')
             {
-                if (typeof o.toJSON == "function") 
+                if (typeof o.toJSON === "function"){
                     return $.toJSON( o.toJSON() );
+                }
 
                 if (o.constructor === Date)
                 {
                     var month = o.getUTCMonth() + 1;
-                    if (month < 10) month = '0' + month;
+                    if (month < 10){
+                        month = '0' + month;
+                    }
 
                     var day = o.getUTCDate();
-                    if (day < 10) day = '0' + day;
+                    if (day < 10){
+                        day = '0' + day;
+                    }
 
                     var year = o.getUTCFullYear();
 
                     var hours = o.getUTCHours();
-                    if (hours < 10) hours = '0' + hours;
+                    if (hours < 10){
+                        hours = '0' + hours;
+                    }
 
                     var minutes = o.getUTCMinutes();
-                    if (minutes < 10) minutes = '0' + minutes;
+                    if (minutes < 10){
+                        minutes = '0' + minutes;
+                    }
 
                     var seconds = o.getUTCSeconds();
-                    if (seconds < 10) seconds = '0' + seconds;
+                    if (seconds < 10){
+                        seconds = '0' + seconds;
+                    }
 
                     var milli = o.getUTCMilliseconds();
-                    if (milli < 100) milli = '0' + milli;
-                    if (milli < 10) milli = '0' + milli;
+                    if (milli < 100){
+                        milli = '0' + milli;
+                    }
+                    if (milli < 10){
+                        milli = '0' + milli;
+                    }
 
                     return '"' + year + '-' + month + '-' + day + 'T' +
                                  hours + ':' + minutes + ':' + seconds + 
@@ -89,31 +124,40 @@
 
                 if (o.constructor === Array) 
                 {
-                    var ret = [];
-                    for (var i = 0; i < o.length; i++)
+                    var ret = [],
+                        len = o.length,
+                        i;
+                    for (i = 0; i < len; i++){
                         ret.push( $.toJSON(o[i]) || "null" );
+                    }
 
                     return "[" + ret.join(",") + "]";
                 }
 
                 var pairs = [];
                 for (var k in o) {
-                    var name;
-                    var type = typeof k;
+                    if (o.hasOwnProperty(k)){
+                        var name;
+                        type = typeof k;
 
-                    if (type == "number")
-                        name = '"' + k + '"';
-                    else if (type == "string")
-                        name = $.quoteString(k);
-                    else
-                        continue;  //skip non-string or number keys
+                        if (type === "number"){
+                            name = '"' + k + '"';
+                        }
+                        else if (type === "string"){
+                            name = $.quoteString(k);
+                        }
+                        else {
+                            continue;  //skip non-string or number keys
+                        }
 
-                    if (typeof o[k] == "function") 
-                        continue;  //skip pairs where the value is a function.
+                        if (typeof o[k] === "function"){
+                            continue;  //skip pairs where the value is a function.
+                        }
 
-                    var val = $.toJSON(o[k]);
+                        var val = $.toJSON(o[k]);
 
-                    pairs.push(name + ":" + val);
+                        pairs.push(name + ":" + val);
+                   }
                 }
 
                 return "{" + pairs.join(", ") + "}";
@@ -125,8 +169,9 @@
          **/
         $.evalJSON = function(src)
         {
-            if (typeof(JSON) == 'object' && JSON.parse)
+            if (typeof(JSON) === 'object' && JSON.parse){
                 return JSON.parse(src);
+            }
             return eval("(" + src + ")");
         };
 
@@ -135,18 +180,21 @@
         **/
         $.secureEvalJSON = function(src)
         {
-            if (typeof(JSON) == 'object' && JSON.parse)
+            if (typeof(JSON) === 'object' && JSON.parse){
                 return JSON.parse(src);
+            }
 
             var filtered = src;
             filtered = filtered.replace(/\\["\\\/bfnrtu]/g, '@');
             filtered = filtered.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']');
             filtered = filtered.replace(/(?:^|:|,)(?:\s*\[)+/g, '');
 
-            if (/^[\],:{}\s]*$/.test(filtered))
+            if (/^[\],:{}\s]*$/.test(filtered)){
                 return eval("(" + src + ")");
-            else
+            }
+            else {
                 throw new SyntaxError("Error parsing JSON, source is not valid.");
+            }
         };
 
         /** jQuery.quoteString(string)
@@ -167,26 +215,16 @@
                 return '"' + string.replace(_escapeable, function (a) 
                 {
                     var c = _meta[a];
-                    if (typeof c === 'string') return c;
+                    if (typeof c === 'string'){
+                        return c;
+                    }
                     c = a.charCodeAt();
                     return '\\u00' + Math.floor(c / 16).toString(16) + (c % 16).toString(16);
                 }) + '"';
             }
             return '"' + string + '"';
         };
-
-        var _escapeable = /["\\\x00-\x1f\x7f-\x9f]/g;
-
-        var _meta = {
-            '\b': '\\b',
-            '\t': '\\t',
-            '\n': '\\n',
-            '\f': '\\f',
-            '\r': '\\r',
-            '"' : '\\"',
-            '\\': '\\\\'
-        };
-    })(jQuery);
+    }(jQuery));
 
 
     // locally load jStorage into jQuery if not already there
@@ -253,321 +291,319 @@
      */
 
     var jStorageService = function($, store_key){
-    	if(!$ || !($.toJSON || Object.toJSON || window.JSON)){
-    		throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
-    	}
+        if(!$ || !($.toJSON || Object.toJSON || window.JSON)){
+            throw new Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");
+        }
 
-    	var
-    	    jStorage,
-    	    
-    	    _storage_type = '',
-    	    
-    		/* This is the object, that holds the cached values */ 
-    		_storage = {},
-    		
-    		/* Key that values are stored under */
-    		_store_key = store_key,
+        var
+            jStorage,
+            
+            _storage_type = '',
+            
+            /* This is the object, that holds the cached values */ 
+            _storage = {},
+            
+            /* Key that values are stored under */
+            _store_key = store_key,
 
-    		/* Actual browser storage (localStorage or globalStorage['domain']) */
-    		_storage_service = {},
+            /* Actual browser storage (localStorage or globalStorage['domain']) */
+            _storage_service = {},
 
-    		/* DOM element for older IE versions, holds userData behavior */
-    		_storage_elm = null,
+            /* DOM element for older IE versions, holds userData behavior */
+            _storage_elm = null,
 
-    		/* How much space does the storage take */
-    		_storage_size = 0,
+            /* How much space does the storage take */
+            _storage_size = 0,
 
-    		/* function to encode objects to JSON strings */
-    		json_encode = $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify)),
+            /* function to encode objects to JSON strings */
+            json_encode = $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify)),
 
-    		/* function to decode objects from JSON strings */
-    		json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
-    			return String(str).evalJSON();
-    		},
+            /* function to decode objects from JSON strings */
+            json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
+                return String(str).evalJSON();
+            },
 
-    		/**
-    		 * XML encoding and decoding as XML nodes can't be JSON'ized
-    		 * XML nodes are encoded and decoded if the node is the value to be saved
-    		 * but not if it's as a property of another object
-    		 * Eg. -
-    		 *   $.jStorage.set("key", xmlNode);        // IS OK
-    		 *   $.jStorage.set("key", {xml: xmlNode}); // NOT OK
-    		 */
-    		_XMLService = {
+            /**
+             * XML encoding and decoding as XML nodes can't be JSON'ized
+             * XML nodes are encoded and decoded if the node is the value to be saved
+             * but not if it's as a property of another object
+             * Eg. -
+             *   $.jStorage.set("key", xmlNode);        // IS OK
+             *   $.jStorage.set("key", {xml: xmlNode}); // NOT OK
+             */
+            _XMLService = {
 
-    			/**
-    			 * Validates a XML node to be XML
-    			 * based on jQuery.isXML function
-    			 */
-    			isXML: function(elm){
-    				var documentElement = (elm ? elm.ownerDocument || elm : 0).documentElement;
-    				return documentElement ? documentElement.nodeName !== "HTML" : false;
-    			},
+                /**
+                 * Validates a XML node to be XML
+                 * based on jQuery.isXML function
+                 */
+                isXML: function(elm){
+                    var documentElement = (elm ? elm.ownerDocument || elm : 0).documentElement;
+                    return documentElement ? documentElement.nodeName !== "HTML" : false;
+                },
 
-    			/**
-    			 * Encodes a XML node to string
-    			 * based on http://www.mercurytide.co.uk/news/article/issues-when-working-ajax/
-    			 */
-    			encode: function(xmlNode) {
-    				if(!this.isXML(xmlNode)){
-    					return false;
-    				}
-    				try{ // Mozilla, Webkit, Opera
-    					return new XMLSerializer().serializeToString(xmlNode);
-    				}catch(E1) {
-    					try {  // IE
-    						return xmlNode.xml;
-    					}catch(E2){}
-    				}
-    				return false;
-    			},
+                /**
+                 * Encodes a XML node to string
+                 * based on http://www.mercurytide.co.uk/news/article/issues-when-working-ajax/
+                 */
+                encode: function(xmlNode) {
+                    if(!this.isXML(xmlNode)){
+                        return false;
+                    }
+                    try{ // Mozilla, Webkit, Opera
+                        return new XMLSerializer().serializeToString(xmlNode);
+                    }catch(E1) {
+                        try {  // IE
+                            return xmlNode.xml;
+                        }catch(E2){}
+                    }
+                    return false;
+                },
 
-    			/**
-    			 * Decodes a XML node from string
-    			 * loosely based on http://outwestmedia.com/jquery-plugins/xmldom/
-    			 */
-    			decode: function(xmlString){
-    				var dom_parser = ("DOMParser" in window && (new DOMParser()).parseFromString) ||
-    						(window.ActiveXObject && function(_xmlString) {
-    					var xml_doc = new ActiveXObject('Microsoft.XMLDOM');
-    					xml_doc.async = 'false';
-    					xml_doc.loadXML(_xmlString);
-    					return xml_doc;
-    				}),
-    				resultXML;
-    				if(!dom_parser){
-    					return false;
-    				}
-    				resultXML = dom_parser.call("DOMParser" in window && (new DOMParser()) || window, xmlString, 'text/xml');
-    				return this.isXML(resultXML)?resultXML:false;
-    			}
-    		};
+                /**
+                 * Decodes a XML node from string
+                 * loosely based on http://outwestmedia.com/jquery-plugins/xmldom/
+                 */
+                decode: function(xmlString){
+                    var dom_parser = ("DOMParser" in window && (new DOMParser()).parseFromString) ||
+                            (window.ActiveXObject && function(_xmlString) {
+                        var xml_doc = new ActiveXObject('Microsoft.XMLDOM');
+                        xml_doc.async = 'false';
+                        xml_doc.loadXML(_xmlString);
+                        return xml_doc;
+                    }),
+                    resultXML;
+                    if(!dom_parser){
+                        return false;
+                    }
+                    resultXML = dom_parser.call("DOMParser" in window && (new DOMParser()) || window, xmlString, 'text/xml');
+                    return this.isXML(resultXML)?resultXML:false;
+                }
+            };
 
-    	////////////////////////// PRIVATE METHODS ////////////////////////
+        ////////////////////////// PRIVATE METHODS ////////////////////////
 
-    	/**
-    	 * Initialization function. Detects if the browser supports DOM Storage
-    	 * or userData behavior and behaves accordingly.
-    	 * @returns undefined
-    	 */
-    	function _init(){
-    	    
-    	    _storage_service[_store_key] = "{}";
-    		/* Check if browser supports localStorage */
-    		if("localStorage" in window){
-    			try {
-    				_storage_service = window.localStorage;
-    				_storage_type = 'localstorage';
-    			} catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
-    		}
-    		/* Check if browser supports globalStorage */
-    		else if("globalStorage" in window){
-    			try {
-    				_storage_service = window.globalStorage[window.location.hostname];
-    				_storage_type = 'globalstorage';
-    			} catch(E4) {/* Firefox fails when touching localStorage and cookies are disabled */}
-    		}
-    		/* Check if browser supports userData behavior */
-    		else {
-    			_storage_elm = document.createElement('link');
-    			if(_storage_elm.addBehavior){
+        /**
+         * Initialization function. Detects if the browser supports DOM Storage
+         * or userData behavior and behaves accordingly.
+         * @returns undefined
+         */
+        function _init(){
+            
+            _storage_service[_store_key] = "{}";
+            /* Check if browser supports localStorage */
+            if("localStorage" in window){
+                try {
+                    _storage_service = window.localStorage;
+                    _storage_type = 'localstorage';
+                } catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
+            }
+            /* Check if browser supports globalStorage */
+            else if("globalStorage" in window){
+                try {
+                    _storage_service = window.globalStorage[window.location.hostname];
+                    _storage_type = 'globalstorage';
+                } catch(E4) {/* Firefox fails when touching localStorage and cookies are disabled */}
+            }
+            /* Check if browser supports userData behavior */
+            else {
+                _storage_elm = document.createElement('link');
+                if(_storage_elm.addBehavior){
 
-    				/* Use a DOM element to act as userData storage */
-    				_storage_elm.style.behavior = 'url(#default#userData)';
+                    /* Use a DOM element to act as userData storage */
+                    _storage_elm.style.behavior = 'url(#default#userData)';
 
-    				/* userData element needs to be inserted into the DOM! */
-    				document.getElementsByTagName('head')[0].appendChild(_storage_elm);
+                    /* userData element needs to be inserted into the DOM! */
+                    document.getElementsByTagName('head')[0].appendChild(_storage_elm);
 
-    				_storage_elm.load(_store_key);
-    				var data = "{}";
-    				try{
-    					data = _storage_elm.getAttribute(_store_key);
-    				}catch(E5){}
-    				_storage_service[store_key] = data;
-    				_storage_type = 'userdata';
-    			}else{
-    				_storage_elm = null;
-    				return;
-    			}
-    		}
+                    _storage_elm.load(_store_key);
+                    var data = "{}";
+                    try{
+                        data = _storage_elm.getAttribute(_store_key);
+                    }catch(E5){}
+                    _storage_service[store_key] = data;
+                    _storage_type = 'userdata';
+                }else{
+                    _storage_elm = null;
+                    return;
+                }
+            }
 
-    		/* if jStorage string is retrieved, then decode it */
-    		if(_storage_service[_store_key]){
-    			try{
-    				_storage = json_decode(String(_storage_service[_store_key]));
-    			}catch(E6){_storage_service[_store_key] = "{}";}
-    		}else{
-    			_storage_service[_store_key] = "{}";
-    		}
-    		_storage_size = _storage_service[_store_key]?String(_storage_service[_store_key]).length:0;
-    	}
+            /* if jStorage string is retrieved, then decode it */
+            if(_storage_service[_store_key]){
+                try{
+                    _storage = json_decode(String(_storage_service[_store_key]));
+                }catch(E6){_storage_service[_store_key] = "{}";}
+            }else{
+                _storage_service[_store_key] = "{}";
+            }
+            _storage_size = _storage_service[_store_key]?String(_storage_service[_store_key]).length:0;
+        }
 
-    	/**
-    	 * This functions provides the "save" mechanism to store the jStorage object
-    	 * @returns undefined
-    	 */
-    	function _save(){
-    		try{
-    			_storage_service[_store_key] = json_encode(_storage);
-    			// If userData is used as the storage engine, additional
-    			if(_storage_elm) {
-    				_storage_elm.setAttribute(_store_key,_storage_service[_store_key]);
-    				_storage_elm.save(_store_key);
-    			}
-    			_storage_size = _storage_service[_store_key]?String(_storage_service[_store_key]).length:0;
-    		}catch(E7){/* probably cache is full, nothing is saved this way*/
-    		    return false;
-    		}
-    		return true;
-    	}
+        /**
+         * This functions provides the "save" mechanism to store the jStorage object
+         * @returns undefined
+         */
+        function _save(){
+            try{
+                _storage_service[_store_key] = json_encode(_storage);
+                // If userData is used as the storage engine, additional
+                if(_storage_elm) {
+                    _storage_elm.setAttribute(_store_key,_storage_service[_store_key]);
+                    _storage_elm.save(_store_key);
+                }
+                _storage_size = _storage_service[_store_key]?String(_storage_service[_store_key]).length:0;
+            }catch(E7){/* probably cache is full, nothing is saved this way*/
+                return false;
+            }
+            return true;
+        }
 
-    	/**
-    	 * Function checks if a key is set and is string or numberic
-    	 */
-    	function _checkKey(key){
-    		if((!key && key!==0) || (typeof key != "string" && typeof key != "number")){
-    			throw new TypeError('Key name must be string or numeric');
-    		}
-    		return true;
-    	}
+        /**
+         * Function checks if a key is set and is string or numberic
+         */
+        function _checkKey(key){
+            if((!key && key!==0) || (typeof key !== "string" && typeof key !== "number")){
+                throw new TypeError('Key name must be string or numeric');
+            }
+            return true;
+        }
 
-    	////////////////////////// PUBLIC INTERFACE /////////////////////////
+        ////////////////////////// PUBLIC INTERFACE /////////////////////////
 
-    	jStorage = {
-    		/* Version number */
-    		version: "0.1.4.1",
+        jStorage = {
+            /* Version number */
+            version: "0.1.4.1",
 
-    		/**
-    		 * Sets a key's value.
-    		 * 
-    		 * @param {String} key - Key to set. If this value is not set or not
-    		 *				a string an exception is raised.
-    		 * @param value - Value to set. This can be any value that is JSON
-    		 *				compatible (Numbers, Strings, Objects etc.).
-    		 * @returns the used value
-    		 */
-    		set: function(key, value){
-    			_checkKey(key);
-    			if(_XMLService.isXML(value)){
-    				value = {_is_xml:true,xml:_XMLService.encode(value)};
-    			}
-    			_storage[key] = value;
-    			return _save();
-    		},
+            /**
+             * Sets a key's value.
+             * 
+             * @param {String} key - Key to set. If this value is not set or not
+             *                a string an exception is raised.
+             * @param value - Value to set. This can be any value that is JSON
+             *                compatible (Numbers, Strings, Objects etc.).
+             * @returns the used value
+             */
+            set: function(key, value){
+                _checkKey(key);
+                if(_XMLService.isXML(value)){
+                    value = {_is_xml:true,xml:_XMLService.encode(value)};
+                }
+                _storage[key] = value;
+                return _save();
+            },
 
-    		/**
-    		 * Looks up a key in cache
-    		 * 
-    		 * @param {String} key - Key to look up.
-    		 * @param {mixed} def - Default value to return, if key didn't exist.
-    		 * @returns the key value, default value or <null>
-    		 */
-    		get: function(key, def){
-    			_checkKey(key);
-    			if(key in _storage){
-    				if(typeof _storage[key] == "object" &&
-    						_storage[key]._is_xml &&
-    							_storage[key]._is_xml){
-    					return _XMLService.decode(_storage[key].xml);
-    				}else{
-    					return _storage[key];
-    				}
-    			}
-    			return def;
-    		},
+            /**
+             * Looks up a key in cache
+             * 
+             * @param {String} key - Key to look up.
+             * @param {mixed} def - Default value to return, if key didn't exist.
+             * @returns the key value, default value or <null>
+             */
+            get: function(key, def){
+                _checkKey(key);
+                if(key in _storage){
+                    if(typeof _storage[key] === "object" &&
+                            _storage[key]._is_xml &&
+                                _storage[key]._is_xml){
+                        return _XMLService.decode(_storage[key].xml);
+                    }else{
+                        return _storage[key];
+                    }
+                }
+                return def;
+            },
 
-    		/**
-    		 * Deletes a key from cache.
-    		 * 
-    		 * @param {String} key - Key to delete.
-    		 * @returns true if key existed or false if it didn't
-    		 */
-    		deleteKey: function(key){
-    			_checkKey(key);
-    			if(key in _storage){
-    				delete _storage[key];
-    				return _save();
-    			}
-    			return false;
-    		},
+            /**
+             * Deletes a key from cache.
+             * 
+             * @param {String} key - Key to delete.
+             * @returns true if key existed or false if it didn't
+             */
+            deleteKey: function(key){
+                _checkKey(key);
+                if(key in _storage){
+                    delete _storage[key];
+                    return _save();
+                }
+                return false;
+            },
 
-    		/**
-    		 * Deletes everything in cache.
-    		 * 
-    		 * @returns true
-    		 */
-    		flush: function(){
-    		    var ret;
-    			_storage = {};
-    			ret = _save();
-    			/*
-    			 * Just to be sure - andris9/jStorage#3
-    			 */
-    			try{
-    				window.localStorage.clear();
-    				ret = true;
-    			}catch(E8){
-    			    ret = ret || false;
-    			}
-    			return ret;
-    		},
+            /**
+             * Deletes everything in cache.
+             * 
+             * @returns true
+             */
+            flush: function(){
+                var ret;
+                _storage = {};
+                ret = _save();
+                /*
+                 * Just to be sure - andris9/jStorage#3
+                 */
+                try{
+                    window.localStorage.clear();
+                    ret = true;
+                }catch(E8){
+                    ret = ret || false;
+                }
+                return ret;
+            },
 
-    		/**
-    		 * Returns a read-only copy of _storage
-    		 * 
-    		 * @returns Object
-    		*/
-    		storageObj: function(){
-    			function F() {}
-    			F.prototype = _storage;
-    			return new F();
-    		},
+            /**
+             * Returns a read-only copy of _storage
+             * 
+             * @returns Object
+            */
+            storageObj: function(){
+                function F() {}
+                F.prototype = _storage;
+                return new F();
+            },
 
-    		/**
-    		 * Returns an index of all used keys as an array
-    		 * ['key1', 'key2',..'keyN']
-    		 * 
-    		 * @returns Array
-    		*/
-    		index: function(){
-    			var index = [], i;
-    			for(i in _storage){
-    				if(_storage.hasOwnProperty(i)){
-    					index.push(i);
-    				}
-    			}
-    			return index;
-    		},
+            /**
+             * Returns an index of all used keys as an array
+             * ['key1', 'key2',..'keyN']
+             * 
+             * @returns Array
+            */
+            index: function(){
+                var index = [], i;
+                for(i in _storage){
+                    if(_storage.hasOwnProperty(i)){
+                        index.push(i);
+                    }
+                }
+                return index;
+            },
 
-    		/**
-    		 * How much space in bytes does the storage take?
-    		 * 
-    		 * @returns Number
-    		 */
-    		storageSize: function(){
-    			return _storage_size;
-    		},
+            /**
+             * How much space in bytes does the storage take?
+             * 
+             * @returns Number
+             */
+            storageSize: function(){
+                return _storage_size;
+            },
 
-    		/**
-    		 * Which DOM storage type is being used?
-    		 * 
-    		 * @returns String
-    		 */
-    		storageType: function(){
-    			return _storage_type;
-    		}
-    	};
+            /**
+             * Which DOM storage type is being used?
+             * 
+             * @returns String
+             */
+            storageType: function(){
+                return _storage_type;
+            }
+        };
 
-    	// Initialize jStorage
-    	_init();
+        // Initialize jStorage
+        _init();
         return jStorage;
-    };   
+    };
+    
+    
+    //////////////
 
-    var 
-        /** storage of keys for looking up 'owner' of jsonp results */
-        keystore = {},
-        /** simple in-memory cache */
-        cache = {};        
 
     Sqwidget.plugin('store', function (sqwidget, widget, jQuery, newConfig) {
         var 
@@ -600,7 +636,7 @@
                     val: value
                 },
                 defaultOptions = {
-                    domStorage: true,
+                    storage: true,
                     cookies: false
                 },
                 ret;
@@ -610,13 +646,14 @@
             }
             options = jQuery.extend(defaultOptions, options);
             
-            if (!options.domStorage && options.cookies){
-                ret = cookie.set();
+            if (!options.storage && options.cookies){
+                _('store: piping to cookies');
+                ret = self.cookie.set(key, value, options.expires);
             }
             else {
                 ret = jStorage.set(self.widgetStoreKey(key), wrap);
                 if (!ret && options.cookies){
-                    ret = cookie.set();
+                    ret = self.cookie.set(key, value, options);
                 }
             }
             _('store: setting ' + self.widgetStoreKey(key) + ' to ' + value + '; ' + (ret ? 'success' : 'fail'));
@@ -652,8 +689,69 @@
         };
         
         self.type = function(){
-            return jStorage.storageType()
+            return jStorage.storageType();
         };
+        
+        self.cookie = jQuery.extend(
+            function(){},
+            
+            {
+                // modified from http://www.quirksmode.org/js/cookies.html
+                set: function(key, value, expires){
+                    var day = 86400000,
+                        expiryTime = '',
+                        deleting = (expires === -1),
+                        date, ret;
+                    
+                    if (typeof value === 'undefined' && !deleting){
+                        _('store.set.cookie: No value passed. Returning.');
+                        return false;
+                    }
+                
+                    key = self.widgetStoreKey(key);
+                    value = jQuery.toJSON(value);
+                    if (expires){
+                        date = new Date();
+                        date.setTime(date.getTime() + (expires * day));
+                        expiryTime = "; expires=" + date.toGMTString();
+                    }
+                    document.cookie = key + "=" + value + expiryTime + "; path=/";
+                    ret = !!(document.cookie) || deleting;
+                    _('store.cookie: setting ' + key + ' to ' + value + '; ' + (ret ? 'success' : 'fail'));
+                    return ret;
+                },
+                
+                get: function(key, defaultValue){
+                    key = self.widgetStoreKey(key);
+                    
+                    var keyEQ = key + "=",
+                        cookies = document.cookie.split(';'),
+                        value;
+                        
+                    jQuery.each(cookies, function(i, cookie){
+                        cookie = jQuery.trim(cookie);
+                        
+                        if (cookie.indexOf(keyEQ) === 0) {
+                            value = cookie.substring(keyEQ.length, cookie.length);
+                            return false; // exit each() loop
+                        }
+                    });
+                    
+                    if (typeof value === 'undefined'){
+                        return defaultValue;
+                    }
+                    return jQuery.evalJSON(value);
+                },
+                
+                del: function(key){
+                    var undef,
+                        cookiesBefore = document.cookie; // used to determine if cookies are present
+                                                
+                    this.set(key, undef, -1);                    
+                    return !!cookiesBefore;
+                }
+            }        
+        );
 
         return self;
     
