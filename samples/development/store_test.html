@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Store Test</title>
+    <script>
+    widget.config({
+      "name": "store-test",
+      "version": "1.0.0",
+      "title": "Test storage plugin",
+      "desc": "Test browser storage",
+      "url": "http://github.com/premasagar/sqwidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	   dependencies: [
+			'store'
+		],
+	  "settings" : { //can be overridden by data-sqwidget-settings
+		'package' : "en"
+	  }
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function(){
+		    var store = plugins.store;
+		    widget.setTemplate('default');
+		    window.store = store;
+		});
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+</head>
+
+<body>
+    <h1>Test storage</h1>
+    <ul class="test"></ul>
+</body>
+</html>

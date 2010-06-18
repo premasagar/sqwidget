@@ -260,6 +260,8 @@
     	var
     	    jStorage,
     	    
+    	    _storage_type = '',
+    	    
     		/* This is the object, that holds the cached values */ 
     		_storage = {},
     		
@@ -355,12 +357,14 @@
     		if("localStorage" in window){
     			try {
     				_storage_service = window.localStorage;
+    				_storage_type = 'localstorage';
     			} catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
     		}
     		/* Check if browser supports globalStorage */
     		else if("globalStorage" in window){
     			try {
     				_storage_service = window.globalStorage[window.location.hostname];
+    				_storage_type = 'globalstorage';
     			} catch(E4) {/* Firefox fails when touching localStorage and cookies are disabled */}
     		}
     		/* Check if browser supports userData behavior */
@@ -380,6 +384,7 @@
     					data = _storage_elm.getAttribute(_store_key);
     				}catch(E5){}
     				_storage_service[store_key] = data;
+    				_storage_type = 'userdata';
     			}else{
     				_storage_elm = null;
     				return;
@@ -410,7 +415,10 @@
     				_storage_elm.save(_store_key);
     			}
     			_storage_size = _storage_service[_store_key]?String(_storage_service[_store_key]).length:0;
-    		}catch(E7){/* probably cache is full, nothing is saved this way*/}
+    		}catch(E7){/* probably cache is full, nothing is saved this way*/
+    		    return false;
+    		}
+    		return true;
     	}
 
     	/**
@@ -444,8 +452,7 @@
     				value = {_is_xml:true,xml:_XMLService.encode(value)};
     			}
     			_storage[key] = value;
-    			_save();
-    			return value;
+    			return _save();
     		},
 
     		/**
@@ -466,7 +473,7 @@
     					return _storage[key];
     				}
     			}
-    			return typeof(def) == 'undefined' ? null : def;
+    			return def;
     		},
 
     		/**
@@ -479,8 +486,7 @@
     			_checkKey(key);
     			if(key in _storage){
     				delete _storage[key];
-    				_save();
-    				return true;
+    				return _save();
     			}
     			return false;
     		},
@@ -491,15 +497,19 @@
     		 * @returns true
     		 */
     		flush: function(){
+    		    var ret;
     			_storage = {};
-    			_save();
+    			ret = _save();
     			/*
     			 * Just to be sure - andris9/jStorage#3
     			 */
     			try{
     				window.localStorage.clear();
-    			}catch(E8){}
-    			return true;
+    				ret = true;
+    			}catch(E8){
+    			    ret = ret || false;
+    			}
+    			return ret;
     		},
 
     		/**
@@ -536,6 +546,15 @@
     		 */
     		storageSize: function(){
     			return _storage_size;
+    		},
+
+    		/**
+    		 * Which DOM storage type is being used?
+    		 * 
+    		 * @returns String
+    		 */
+    		storageType: function(){
+    			return _storage_type;
     		}
     	};
 
@@ -553,63 +572,87 @@
     Sqwidget.plugin('store', function (sqwidget, widget, jQuery, newConfig) {
         var 
             self = {},
-            //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
-            _ = sqwidget._ || window._ || function () {},
             
-            config = {
-                storagePrefix: null
-            },
+            _ = sqwidget._,
             
-            store_key = 'sqwidget-' + widget.getConfig('name','sqwidget-widget'),
+            config = {},
+            
+            // per-template overall storage object
+            store_key = 'sqwidget-' + widget.getConfig('name', 'anon'),
             
             jStorage = jStorageService(jQuery, store_key);
                     
         /* init config from supplied*/
         jQuery.extend(true,config,newConfig);
 
-        self.setStoragePrefix = function(prefix) {
-            config.storagePrefix = prefix;
-        };
-
         /**
          * Generate a unique storage key for this give key.  This will be unique 
          * for this widget instance
          */
         self.widgetStoreKey = function(key) {
-            var prefix = config.storagePrefix || widget.getId() || 'store';
+            // per-widget instance key, inside the per-template overall storage object
+            var prefix = widget.getId() || 'anon';
             return prefix + '.' + key;
         };
         
-        self.set = function(key, value) {
-            _('store: setting ' + self.widgetStoreKey(key) + ' to ' + value);
-            var wrap = {};
-            wrap.val = value;
-            jStorage.set(self.widgetStoreKey(key), wrap);
+        self.set = function(key, value, options) {
+            var wrap = {
+                    val: value
+                },
+                defaultOptions = {
+                    domStorage: true,
+                    cookies: false
+                },
+                ret;
+            if (typeof value === 'undefined'){
+                _('store.set: No value passed. Returning.');
+                return false;
+            }
+            options = jQuery.extend(defaultOptions, options);
+            
+            if (!options.domStorage && options.cookies){
+                ret = cookie.set();
+            }
+            else {
+                ret = jStorage.set(self.widgetStoreKey(key), wrap);
+                if (!ret && options.cookies){
+                    ret = cookie.set();
+                }
+            }
+            _('store: setting ' + self.widgetStoreKey(key) + ' to ' + value + '; ' + (ret ? 'success' : 'fail'));
+            return ret;
+        };
+        
+        self.getWrapper = function(key) {
+            var k = self.widgetStoreKey(key),
+                wrap = jStorage.get(k);
+            
+            _('store: getting wrapper ' + k, wrap);              
+            return wrap;
         };
         
         self.get = function(key, defaultValue) {
-            var k, val;
-            k = self.widgetStoreKey(key);
-             _('store: getting ' + k);
-            var val = jStorage.get(k);
-            if (val === null) {
-                _('store: no stored value for ' + k + ' so returning given default');
-                return defaultValue;
-            }
-            else {
-                if (typeof(val) === 'object') {
-                    _('store: getting ' + k + ' is ' + val.val);                
-                    return val.val;                                        
-                }
-                else {
-                    _('store: getting ' + k + ' is ' + val);                
-                    return val;
-                }
-            }
+            var wrap = self.getWrapper(key),
+                val = wrap ? wrap.val : defaultValue;
+                
+            _('store: getting ' + key, val);
+            return val;
         };
         
         self.del = function(key) {
-            jStorage.deleteKey(self.widgetStoreKey(key));            
+            return jStorage.deleteKey(self.widgetStoreKey(key));            
+        };
+        
+        self.module = function(name, methods){
+            // methods: get, set, del, flush
+        };
+        
+        self.size = function(key){
+            return jStorage.storageSize();
+        };
+        
+        self.type = function(){
+            return jStorage.storageType()
         };
 
         return self;

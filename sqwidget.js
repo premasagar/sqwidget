@@ -1256,7 +1256,7 @@ var ready = (function(){
                     // on template loaded
                     _('template data: ' + data);
                     _('template text status: ' + textStatus);
-                    if (data.length === 0 || textStatus != 'success') {
+                    if (data.length === 0 || textStatus !== 'success') {
                         // template load failed
                         errors.push('loading of template ' + templateName + ' failed.');
                     }
