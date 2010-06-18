@@ -1438,7 +1438,7 @@
         var 
             self = {},
             //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
-            _ = sqwidget._ || window._ || function () {},
+            _ = sqwidget._,
             config = {
             },
             lb=jQuery.nitelite();

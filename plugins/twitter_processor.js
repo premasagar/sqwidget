@@ -16,8 +16,7 @@
     Sqwidget.plugin('twitter_processor', function (sqwidget, widget, jQuery, newConfig) {
         var 
             self = {},
-            //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
-            _ = sqwidget._ || window._ || function () {},
+            _ = sqwidget._,
             config = {},
             tweetsById = {},
             tweets=[],

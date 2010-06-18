@@ -1,8 +1,8 @@
 /**
  * Argonaut - A sqwidget plugin
  * Why named this? http://en.wikipedia.org/wiki/Argonauts
- * For JSON transport witho optional local storage
- * Can use offline storage with jStorage (but that is loaded otherwise), if provided,
+ * For JSON transport with optional local storage
+ * Can use offline storage with jStorage, if provided,
  * works with it as a cache (ie it should exist in the jQuery provided)
  * @author Graeme Sutherland
  */
@@ -25,7 +25,7 @@
         var 
             self = {},
             //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
-            _ = sqwidget._ || window._ || function () {},
+            _ = sqwidget._,
             endpointName = 'jsonp',
             config = {
                 cache: {
@@ -33,7 +33,9 @@
                     mode : 'none',
                     /** default cache time in seconds. 0=don't cache */
                     defaultTime : 0,
-                    /** limit of number of items in memory cache (otherwise bump oldest?) */
+                    /** limit of number of items in memory cache (otherwise bump oldest?) 
+                     *  TODO or size limit
+                     */
                     memoryCacheItemLimit : 100
                 }
             };
@@ -84,7 +86,10 @@
             });
         };
     
-    
+        /**
+         * Request static JSONP by script tag.  For this, the host
+         *
+         */
         self.getStaticJSONP = function (url, key, callback) {
             _('argonaut static json request for ' + url + ' with key ' + key);
             // keep the key

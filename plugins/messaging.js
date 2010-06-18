@@ -15,6 +15,7 @@
  
 Sqwidget.plugin('messaging', function (sqwidget, widget, jQuery, newConfig) {
     var self = {},
+        _ = sqwidget._,
         brokerName = "sqwidget-message-broker",
         brokerHtml = '<div id="' + brokerName + '" style="display: none;"></div>',
         config = {};
