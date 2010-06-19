@@ -605,21 +605,24 @@
     //////////////
 
 
-    Sqwidget.plugin('store', function (sqwidget, widget, jQuery, newConfig) {
+    Sqwidget.plugin('store', function (sqwidget, widget, jQuery, options) {
         var 
-            self = {},
+            self = function(key, value, options){
+                return typeof value === 'undefined' ?
+                     self.get(key) :
+                     self.set(key, value, options);
+            },
             
             _ = sqwidget._,
             
-            config = {},
+            defaultOptions = {},
             
             // per-template overall storage object
-            store_key = 'sqwidget-' + widget.getConfig('name', 'anon'),
-            
+            store_key = 'sqwidget-' + (widget.getConfig('name') || 'anon');
+            _('store: piping to cookies');
             jStorage = jStorageService(jQuery, store_key);
                     
-        /* init config from supplied*/
-        jQuery.extend(true,config,newConfig);
+        options = jQuery.extend(true, defaultOptions, options);
 
         /**
          * Generate a unique storage key for this give key.  This will be unique 
@@ -636,36 +639,29 @@
                     val: value
                 },
                 defaultOptions = {
-                    storage: true,
                     cookies: false
                 },
+                k = self.widgetStoreKey(key),
                 ret;
+                
             if (typeof value === 'undefined'){
                 _('store.set: No value passed. Returning.');
                 return false;
             }
-            options = jQuery.extend(defaultOptions, options);
+            options = jQuery.extend(true, defaultOptions, options);
             
-            if (!options.storage && options.cookies){
-                _('store: piping to cookies');
-                ret = self.cookie.set(key, value, options.expires);
+            ret = jStorage.set(k, wrap);
+            if (!ret && options.cookies){
+                _('store.set: could not use DOMstorage, so trying cookies');
+                ret = self.cookie.set(key, value, options);
             }
-            else {
-                ret = jStorage.set(self.widgetStoreKey(key), wrap);
-                if (!ret && options.cookies){
-                    ret = self.cookie.set(key, value, options);
-                }
-            }
-            _('store: setting ' + self.widgetStoreKey(key) + ' to ' + value + '; ' + (ret ? 'success' : 'fail'));
+            _('store.set: setting ' + k + ' to ' + value + '; ' + (ret ? 'success' : 'fail'));
             return ret;
         };
         
         self.getWrapper = function(key) {
-            var k = self.widgetStoreKey(key),
-                wrap = jStorage.get(k);
-            
-            _('store: getting wrapper ' + k, wrap);              
-            return wrap;
+            var k = self.widgetStoreKey(key);
+            return jStorage.get(k);
         };
         
         self.get = function(key, defaultValue) {
@@ -680,11 +676,13 @@
             return jStorage.deleteKey(self.widgetStoreKey(key));            
         };
         
-        self.module = function(name, methods){
-            // methods: get, set, del, flush
-        };
-        
+        // TODO: verify that jStorage's storageSize is accurate for objects and arrays (it should prob use json_encode, rather than String())
         self.size = function(key){
+            var val;
+            if (key){
+                val = self.getWrapper(key);
+                return val ? jQuery.toJSON(val).length : 0;
+            }
             return jStorage.storageSize();
         };
         
@@ -692,8 +690,18 @@
             return jStorage.storageType();
         };
         
+        self.module = function(name, methods){
+            // methods: get, set, del, flush
+        };
+        
+        // COOKIE: This sets an individual cookie. Objects and Arrays can be stored. In order to keep cookies per domain to a minimum, it is suggested that widgets use only one cookie, and store an object hash of properties, rather than storing each property as its own cookie.
         self.cookie = jQuery.extend(
-            function(){},
+            function(key, value, expires){
+                var ck = self.cookie;
+                return typeof value === 'undefined' ?
+                     ck.get(key) :
+                     ck.set(key, value, expires);
+            },
             
             {
                 // modified from http://www.quirksmode.org/js/cookies.html
@@ -721,7 +729,7 @@
                     return ret;
                 },
                 
-                get: function(key, defaultValue){
+                getWrapper: function(key){
                     key = self.widgetStoreKey(key);
                     
                     var keyEQ = key + "=",
@@ -737,18 +745,30 @@
                         }
                     });
                     
-                    if (typeof value === 'undefined'){
-                        return defaultValue;
-                    }
-                    return jQuery.evalJSON(value);
+                    return value;
+                },
+                
+                get: function(key, defaultValue){
+                    var json = self.cookie.getWrapper(key);
+                    
+                    return (typeof json !== 'undefined') ?
+                        jQuery.evalJSON(json) :
+                        defaultValue;
                 },
                 
                 del: function(key){
                     var undef,
                         cookiesBefore = document.cookie; // used to determine if cookies are present
                                                 
-                    this.set(key, undef, -1);                    
+                    self.cookie.set(key, undef, -1);                    
                     return !!cookiesBefore;
+                },
+                
+                size: function(key){
+                    var json = self.cookie.getWrapper(key);
+                    return (typeof json !== 'undefined') ?
+                        json.length :
+                        0;
                 }
             }        
         );
