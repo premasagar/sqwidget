@@ -320,7 +320,7 @@
 
             /* function to decode objects from JSON strings */
             json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
-                return String(str).evalJSON();
+                return String(str).secureEvalJSON();
             },
 
             /**
@@ -617,11 +617,13 @@
             
             defaultOptions = {},
             
-            // per-template overall storage object
-            store_key = 'sqwidget-' + (widget.getConfig('name') || 'anon');
-            _('store: piping to cookies');
-            jStorage = jStorageService(jQuery, store_key);
-                    
+        // per-template storage
+        store_key = 'sqwidget-' + (widget.getConfig('name') || 'anon'),
+        
+        // per-template storage object
+        jStorage = jStorageService(jQuery, store_key);
+        
+        // options for configuration            
         options = jQuery.extend(true, defaultOptions, options);
 
         /**
@@ -634,28 +636,22 @@
             return prefix + '.' + key;
         };
         
-        self.set = function(key, value, options) {
+        self.set = function(key, value){
             var wrap = {
-                    val: value
-                },
-                defaultOptions = {
-                    cookies: false
+                    t: (new Date()) + '', // timestamp
+                    v: value // value being stored
                 },
                 k = self.widgetStoreKey(key),
+                storageType = self.type(),
                 ret;
-                
+            
             if (typeof value === 'undefined'){
                 _('store.set: No value passed. Returning.');
                 return false;
             }
-            options = jQuery.extend(true, defaultOptions, options);
             
             ret = jStorage.set(k, wrap);
-            if (!ret && options.cookies){
-                _('store.set: could not use DOMstorage, so trying cookies');
-                ret = self.cookie.set(key, value, options);
-            }
-            _('store.set: setting ' + k + ' to ' + value + '; ' + (ret ? 'success' : 'fail'));
+            _('store.set: ' + k, value, storageType);
             return ret;
         };
         
@@ -666,10 +662,11 @@
         
         self.get = function(key, defaultValue) {
             var wrap = self.getWrapper(key),
-                val = wrap ? wrap.val : defaultValue;
+                value = wrap ? wrap.v : defaultValue,
+                storageType = self.type();
                 
-            _('store: getting ' + key, val);
-            return val;
+            _('store.get: ' + key, value, storageType);
+            return value;
         };
         
         self.del = function(key) {
@@ -678,10 +675,10 @@
         
         // TODO: verify that jStorage's storageSize is accurate for objects and arrays (it should prob use json_encode, rather than String())
         self.size = function(key){
-            var val;
+            var value;
             if (key){
-                val = self.getWrapper(key);
-                return val ? jQuery.toJSON(val).length : 0;
+                value = self.getWrapper(key);
+                return value ? jQuery.toJSON(value).length : 0;
             }
             return jStorage.storageSize();
         };
