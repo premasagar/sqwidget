@@ -643,7 +643,7 @@
         
         self.widgetStoreKeyPrefix = function() {
             // per-widget instance key prefix
-            return (widget.getId() || 'anon') + '.';
+            return widget.getId() || 'anon';
         };
 
         /**
@@ -652,7 +652,7 @@
          */
         self.widgetStoreKey = function(key) {
             // per-widget instance key, inside the per-template overall storage object
-            return self.widgetStoreKeyPrefix() + key;
+            return self.widgetStoreKeyPrefix() + '.' + key;
         };
         
         self.set = function(key, value){
@@ -708,7 +708,7 @@
         // return a read-only copy of the storage object
         self.obj = function(full){
             var o = jStorage.storageObj(),
-                prefix = self.widgetStoreKeyPrefix(),
+                prefix = self.widgetStoreKeyPrefix() + '.',
                 prefixLen = prefix.length,
                 ret = {};
                 
