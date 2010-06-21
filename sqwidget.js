@@ -116,7 +116,12 @@ sqwidgetConsole = (function(){
             argLen = args.length;
 	        for (i=0; i < argLen; i++){
 	            if (typeof args[i] === 'object' && JSON && JSON.stringify){
-	                args[i] = JSON.stringify(args[i]);
+                    try {
+	                    args[i] = JSON.stringify(args[i]);
+	                }
+	                catch (err) {
+	                    args[i] = '[circular reference in object, can not stringify]';
+	                }
 	            }
 		        console.log(indent + args[i]);
                 indent = '---- ';
