@@ -167,6 +167,7 @@
         /** jQuery.evalJSON(src)
             Evaluates a given piece of json source.
          **/
+        /*
         $.evalJSON = function(src)
         {
             if (typeof(JSON) === 'object' && JSON.parse){
@@ -174,6 +175,7 @@
             }
             return eval("(" + src + ")");
         };
+        */
 
         /** jQuery.secureEvalJSON(src)
             Evals JSON in a way that is *more* secure.
@@ -395,14 +397,14 @@
             if("localStorage" in window){
                 try {
                     _storage_service = window.localStorage;
-                    _storage_type = 'localstorage';
+                    _storage_type = 'localStorage';
                 } catch(E3) {/* Firefox fails when touching localStorage and cookies are disabled */}
             }
             /* Check if browser supports globalStorage */
             else if("globalStorage" in window){
                 try {
                     _storage_service = window.globalStorage[window.location.hostname];
-                    _storage_type = 'globalstorage';
+                    _storage_type = 'globalStorage';
                 } catch(E4) {/* Firefox fails when touching localStorage and cookies are disabled */}
             }
             /* Check if browser supports userData behavior */
@@ -422,7 +424,7 @@
                         data = _storage_elm.getAttribute(_store_key);
                     }catch(E5){}
                     _storage_service[store_key] = data;
-                    _storage_type = 'userdata';
+                    _storage_type = 'userData';
                 }else{
                     _storage_elm = null;
                     return;
