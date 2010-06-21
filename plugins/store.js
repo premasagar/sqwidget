@@ -610,9 +610,22 @@
     Sqwidget.plugin('store', function (sqwidget, widget, jQuery, options) {
         var 
             self = function(key, value, options){
-                return typeof value === 'undefined' ?
-                     self.get(key) :
-                     self.set(key, value, options);
+                // return copy of the stored object for this widget
+                if (typeof key === 'undefined'){
+                    return self.obj();
+                }
+                // return copy of the stored object for this widget, with meta info
+                else if (key === true){
+                    return self.obj(true);
+                }
+                // get a value
+                else if (typeof value === 'undefined'){
+                     return self.get(key);
+                }
+                // set a value
+                else {
+                     return self.set(key, value, options);
+                }
             },
             
             _ = sqwidget._,
@@ -627,6 +640,11 @@
         
         // options for configuration            
         options = jQuery.extend(true, defaultOptions, options);
+        
+        self.widgetStoreKeyPrefix = function() {
+            // per-widget instance key prefix
+            return (widget.getId() || 'anon') + '.';
+        };
 
         /**
          * Generate a unique storage key for this give key.  This will be unique 
@@ -634,8 +652,7 @@
          */
         self.widgetStoreKey = function(key) {
             // per-widget instance key, inside the per-template overall storage object
-            var prefix = widget.getId() || 'anon';
-            return prefix + '.' + key;
+            return self.widgetStoreKeyPrefix() + key;
         };
         
         self.set = function(key, value){
@@ -675,7 +692,6 @@
             return jStorage.deleteKey(self.widgetStoreKey(key));            
         };
         
-        // TODO: verify that jStorage's storageSize is accurate for objects and arrays (it should prob use json_encode, rather than String())
         self.size = function(key){
             var value;
             if (key){
@@ -687,6 +703,33 @@
         
         self.type = function(){
             return jStorage.storageType();
+        };
+        
+        // return a read-only copy of the storage object
+        self.obj = function(full){
+            var o = jStorage.storageObj(),
+                prefix = self.widgetStoreKeyPrefix(),
+                prefixLen = prefix.length,
+                ret = {};
+                
+            jQuery.each(o, function(key, wrap){
+                if (key.indexOf(prefix) === 0){
+                    key = key.slice(prefixLen);
+                    wrap = jQuery.extend(true, {}, wrap);
+                    
+                    if (full){
+                        ret[key] = {
+                            t: wrap.t,
+                            v: wrap.v
+                        };
+                    }
+                    else {
+                        ret[key] = wrap.v;
+                    }
+                }
+            });
+            
+            return ret;
         };
         
         self.module = function(name, methods){
