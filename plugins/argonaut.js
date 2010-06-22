@@ -16,7 +16,9 @@
         /** storage of keys for looking up 'owner' of jsonp results */
         keystore = {},
         /** simple in-memory cache */
-        cache = {};
+        cache = {},
+        /** storage service */
+        storeService = null;
         
     //expose in Sqwidget namespace for debugging
     Sqwidget.keystore = keystore;
@@ -28,16 +30,6 @@
             _ = sqwidget._,
             endpointName = 'jsonp',
             config = {
-                cache: {
-                    /** valid settings are 'memory', 'offline_store', 'none' */
-                    mode : 'none',
-                    /** default cache time in seconds. 0=don't cache */
-                    defaultTime : 0,
-                    /** limit of number of items in memory cache (otherwise bump oldest?) 
-                     *  TODO or size limit
-                     */
-                    memoryCacheItemLimit : 100
-                }
             };
         
         
@@ -61,7 +53,7 @@
                     while (keystore[fullKey].length > 0) {
                         // pull out key and remove it
                         arr = keystore[fullKey].shift();
-                        arr[0].jsonpHandler(arr[1], jsonpValue);
+                        arr[0].jsonpHandler(arr[1], jsonpValue, fullKey, arr[2]);
                     }
                 }
             };
@@ -90,41 +82,80 @@
          * Request static JSONP by script tag.  For this, the host
          *
          */
-        self.getStaticJSONP = function (url, key, callback) {
+        self.getStaticJSONP = function (url, key, callback, options) {
             _('argonaut static json request for ' + url + ' with key ' + key);
             // keep the key
-            var fullKey = widget.getConfig('name', 'sqwidgetwidget') + '-' + key;
-            // register callback
-            if (fullKey in keystore) {
-                keystore[fullKey].push([self, callback]);
+            var 
+                opts = {cache:false, store: false, expiry:600 },
+                fullKey = widget.getConfig('name', 'sqwidgetwidget') + '-' + key,
+                cacheEntry;
+
+            jQuery.extend(opts, options);
+
+            // check for cache entry
+            cacheEntry = self.getCacheEntry(fullKey, opts);
+            if (cacheEntry) {
+                // short circuit result 
+                _('argonaut: returning cached entry for ' + fullKey);
+                callback(cacheEntry.data);
             }
-            else {
-                keystore[fullKey] = [[self, callback]];
+            else {            
+                _('argonaut: no cached entry for ' + fullKey);
+                // register callback
+                if (fullKey in keystore) {
+                    keystore[fullKey].push([self, callback,options]);
+                }
+                else {
+                    keystore[fullKey] = [[self, callback, options]];
+                }
+                jQuery.getScript(url);
             }
-            jQuery.getScript(url);
         };
 
         /**
          * Handle a response by script element
          */
-        self.jsonpHandler = function (callback, jsonpValue) {
+        self.jsonpHandler = function (callback, jsonpValue, fullKey, options) {
+            if (options && (options.cache || options.store)) {
+                _('argonaut: caching ' + fullKey);
+                jsonpValue.storeTime = (new Date()).getTime()
+                if (options.store && storeService) {
+                    storeService.set(fullKey, jsonpValue);
+                }
+                else {
+                    cache[fullKey] = jsonpValue;
+                }
+            }
             callback(jsonpValue.data);
         };
 
-
         /**
-         * Returns TRUE the given object (by url) in in the cache
-         * @param url  Lookup key for the cache
-         * @return {Boolean} true if in cache
+         * Set the persistant storage service
+         * .. which has set and get operations
          */
-        self.inCache = function (url) {
-            // TODO fill in here
-            return false;
+        self.setStoreService = function(ss){
+            storeService = ss;
         };
     
-        self.getFromCache = function (url) {
-            // TODO fill in here
-            return null;
+        self.getCacheEntry = function (key, options) {
+            var
+                cacheItem,
+                now = (new Date()).getTime();
+            if (!options.cache) {
+                return null;
+            }
+            if (options.store && storeService) {
+                cacheItem = storeService.get(key);                
+            }  
+            else if (options.cache){
+                cacheItem = cache[key];
+            }
+            if (cacheItem && (now - cacheItem.storeTime) < (options.expiry * 1000)) {
+                return cacheItem;
+            }
+            else {
+                return null;
+            }
         };
 
 
