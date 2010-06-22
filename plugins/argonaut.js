@@ -30,6 +30,7 @@
             _ = sqwidget._,
             endpointName = 'jsonp',
             config = {
+                cacheOptions: {cache:true, store: true, expiry:30*60 }
             };
         
         
@@ -86,11 +87,11 @@
             _('argonaut static json request for ' + url + ' with key ' + key);
             // keep the key
             var 
-                opts = {cache:false, store: false, expiry:600 },
+                opts = {},
                 fullKey = widget.getConfig('name', 'sqwidgetwidget') + '-' + key,
                 cacheEntry;
 
-            jQuery.extend(opts, options);
+            jQuery.extend(opts, config.cacheOptions, options);
 
             // check for cache entry
             cacheEntry = self.getCacheEntry(fullKey, opts);
