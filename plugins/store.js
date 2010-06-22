@@ -748,7 +748,7 @@
             {
                 // modified from http://www.quirksmode.org/js/cookies.html
                 set: function(key, value, expires){
-                    var day = 86400000,
+                    var unit = 1000, // 1 second === 1000 milliseconds
                         expiryTime = '',
                         deleting = (expires === -1),
                         date, ret;
@@ -762,7 +762,7 @@
                     value = jQuery.toJSON(value);
                     if (expires){
                         date = new Date();
-                        date.setTime(date.getTime() + (expires * day));
+                        date.setTime(date.getTime() + (expires * unit));
                         expiryTime = "; expires=" + date.toGMTString();
                     }
                     document.cookie = key + "=" + value + expiryTime + "; path=/";
