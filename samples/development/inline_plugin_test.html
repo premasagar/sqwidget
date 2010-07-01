@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>In-line Plugin Test</title>
+    <script type="text/javascript" charset="utf-8">
+        // inline plugin to test with
+
+(function () {
+
+/////////////////////////////////////////
+
+
+
+
+/////////////////////////////////////////
+
+
+    Sqwidget.plugin('inline_test', function (sqwidget, widget, jQuery, options){
+        var 
+            self = {};
+
+            self.yes = function() {
+                widget.setTemplate('default', {});
+            }
+
+        return self;
+    }, '0.1.0', ['jquery']);
+
+}());
+
+        
+    </script>
+    <script>
+    widget.config({
+      "name": "inline-plugin-test",
+      "version": "1.0.0",
+      "title": "Inline plugin test",
+      "desc": "Inline plugin test",
+      "url": "http://github.com/premasagar/swidget/plugins", // get the widget, via your taskbar
+	  "ui" : "hostpage",
+	  'dependencies' : [
+	  'inline_test'
+	  ],
+	  "settings" : { //can we overridden by data-sqwidget-settings
+	  }
+    });
+	</script>
+	<script type="text/javascript" charset="utf-8">
+		widget.ready(function() {
+             widget.plugins.inline_test.yes();
+        });
+	</script>
+	<script type="text/template" id="loading">
+	    <p>Loading...<p>
+	</script>
+</head>
+
+<body>
+    <p>Plugin loaded</p>
+</body>
+</html>
+
