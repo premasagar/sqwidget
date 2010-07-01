@@ -630,6 +630,7 @@ var ready = (function(){
                 if (jsonData && jsonData.name) {
                     myTemplate = this.widgetTemplatesByName[jsonData.name];
                     if (myTemplate) {
+                        _('running Template.templateText');
                         myTemplate.templateText(jsonData.template);
                     }
                 }
@@ -900,7 +901,11 @@ var ready = (function(){
                         //TODO version comparison
                         existing.clients.push(widget);
                         if (existing.loaded) {
+                            _('setting plugin (already loaded): ' + name);
                             widget.setPlugin(existing.name, existing.module, depConfig);
+                        }
+                        else {
+                            _('waiting for plugin load: ' + name);
                         }
                     }
                     else {
@@ -932,13 +937,23 @@ var ready = (function(){
                                 }
                             }
                         }
+                        else {
+                            for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
+                                if (this.dependencyRegister[d].clients[c] === widgetClient) {
+                                    if (typeof widgetClient.plugins[this.dependencyRegister[d].name] === 'undefined') {
+                                        return false;
+                                    }
+                                }
+                            }                            
+                        }
                     }
                 }
                 return true;
             },
             
             /**
-             * Called by plugins to register themselves
+             * Called by plugins to register themselves.   Plugins can show up here before appearing 
+             * in a list of dependencies, so need to allow this to add a dependency record
              * @param {String} name the namespace name for this thing
              * @param {Object} module the module constructor. Call to create an object of this type
              * @param {String} version the version of this plugin 
@@ -948,12 +963,27 @@ var ready = (function(){
             plugin: function(name, module, version) {
                 var dep = this.dependencyRegister[name],
                     i, clients;
-                dep.module = module;
-                dep.loaded = true;
-                dep.version = version;
-                jQuery.each(dep.clients, function(i,client) {
-                    client.setPlugin(name, module, dep.config);
-                });
+                if (typeof(dep) === 'undefined') {
+                    // add a new entry for this plugin, not requested yet but already loaded
+                    // which isn't a problem
+                    this.dependencyRegister[name] = {
+                        name: name,
+                        module: module,
+                        loaded : true,
+                        version : version,
+                        clients : [],
+                        config : {}
+                    };
+                }
+                else {
+                    dep.name =  name;
+                    dep.module = module;
+                    dep.loaded = true;
+                    dep.version = version;
+                    jQuery.each(dep.clients, function(i,client) {
+                        client.setPlugin(name, module, dep.config);
+                    });
+                }
             },
             
 
@@ -1555,7 +1585,7 @@ var ready = (function(){
         };
         
         self.setPlugin = function(name, module, config) {
-            _('setting up plugin: ' + name);
+            _('setting up plugin: ' + name + ' for widget ' + self.getId());
             plugins[name] = module(sqwidget, self, jQuery, config);
             //TODO check all plugins loaded
             // TODO: merge this block with .checkRun() method below
