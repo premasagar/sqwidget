@@ -37,7 +37,8 @@
             '\r': '\\r',
             '"' : '\\"',
             '\\': '\\\\'
-        };    
+        },
+        JSON = window.JSON;    
     
         /** jQuery.toJSON( json-serializble )
             Converts the given argument into a JSON respresentation.
@@ -51,9 +52,14 @@
         $.toJSON = function(o)
         {
             var type;
-        
-            if (typeof(JSON) === 'object' && JSON.stringify){
-                return JSON.stringify(o);
+            
+            if (typeof(JSON) === 'object'){
+                if (window.MooTools && JSON.encode){
+                    return JSON.encode(o);
+                }
+                else if (JSON.stringify){
+                    return JSON.stringify(o);
+                }
             }
 
             type = typeof(o);
@@ -382,6 +388,7 @@
                     return this.isXML(resultXML)?resultXML:false;
                 }
             };
+            
 
         ////////////////////////// PRIVATE METHODS ////////////////////////
 
