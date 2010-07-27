@@ -30,12 +30,12 @@
             _ = sqwidget._,
             endpointName = 'jsonp',
             config = {
-                cacheOptions: {cache:true, store: true, expiry:30*60 }
+                cacheOptions: {cache: true, store: true, expiry: 30 * 60 }
             };
         
         
         /* init config from supplied*/
-        jQuery.extend(true,config,newConfig);
+        jQuery.extend(true, config, newConfig);
 
         /**
          * Set up jsonp endpoint -- globally for Sqwidget, to redirect to appropriate argonaut instance
@@ -104,7 +104,7 @@
                 _('argonaut: no cached entry for ' + fullKey);
                 // register callback
                 if (fullKey in keystore) {
-                    keystore[fullKey].push([self, callback,options]);
+                    keystore[fullKey].push([self, callback, options]);
                 }
                 else {
                     keystore[fullKey] = [[self, callback, options]];
@@ -119,7 +119,7 @@
         self.jsonpHandler = function (callback, jsonpValue, fullKey, options) {
             if (options && (options.cache || options.store)) {
                 _('argonaut: caching ' + fullKey);
-                jsonpValue.storeTime = (new Date()).getTime()
+                jsonpValue.storeTime = (new Date()).getTime();
                 if (options.store && storeService) {
                     storeService.set(fullKey, jsonpValue);
                 }
@@ -134,7 +134,7 @@
          * Set the persistant storage service
          * .. which has set and get operations
          */
-        self.setStoreService = function(ss){
+        self.setStoreService = function (ss) {
             storeService = ss;
         };
     
@@ -148,7 +148,7 @@
             if (options.store && storeService) {
                 cacheItem = storeService.get(key);                
             }  
-            else if (options.cache){
+            else if (options.cache) {
                 cacheItem = cache[key];
             }
             if (cacheItem && (now - cacheItem.storeTime) < (options.expiry * 1000)) {
