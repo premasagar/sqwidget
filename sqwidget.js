@@ -1,6 +1,6 @@
 'use strict';
 
-/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true, nomen: false */
+/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: true, immed: true, nomen: false */
 
 /*!!
 * Sqwidget
@@ -43,7 +43,13 @@ var Sqwidget;
     // console logging placeholder function
     var 
         _ = function () {},
-        sqwidgetConsole;
+        sqwidgetConsole,
+        splitdoc,
+        ready,
+        $,
+        window = this,
+        document = window.document;
+        
 
 // **
 // NATIVE JAVASCRIPT DEPENDENCIES
@@ -105,12 +111,12 @@ var Sqwidget;
                         if (typeof arg === 'object' && arg !== null) {
                             subArgs = [];
                             for (prop in arg) {
-                                try {
-                                    if (arg.hasOwnProperty(prop)) {
-                                        subArgs.push(prop + ': ' + arg[prop]);
-                                    }
+                                if (arg.hasOwnProperty(prop)) {
+                                    try {
+                                            subArgs.push(prop + ': ' + arg[prop]);
+                                        }
+                                    catch (e) {}
                                 }
-                                catch (e) {}
                             }
                             log('----subArgs: ' + subArgs);
                         }
@@ -272,7 +278,7 @@ var Sqwidget;
     *   github.com/premasagar/mishmash/tree/master/splitdoc/
     *
     */
-    var splitdoc = (function () {
+    splitdoc = (function () {
         var exports = exports || {};
     
         function trim(str) {
@@ -397,7 +403,7 @@ var Sqwidget;
 
     */
 
-    var ready = (function () {
+    ready = (function () {
         var
             window = this,
             doc = window.document,
@@ -413,7 +419,9 @@ var Sqwidget;
     
         function fireReady() {
         
-            if (ready) { return; }
+            if (ready) { 
+                return; 
+            }
             ready = true;
         
             for (var i = 0, l = readyFns.length; i < l; i += 1) {
@@ -424,12 +432,14 @@ var Sqwidget;
     
         function scrollCheck() {
         
-            if (ready) { return; }
+            if (ready) { 
+                return; 
+            }
         
             try {
                 // http://javascript.nwbox.com/IEContentLoaded/
                 docEl.doScroll("left");
-            } catch(e) {
+            } catch (e) {
                 setTimeout(scrollCheck, 1);
                 return;
             }
@@ -441,11 +451,11 @@ var Sqwidget;
     
         function DOMContentLoaded() {
         
-            if ( addEventListener ) {
+            if (addEventListener) {
                 doc.removeEventListener(dcl, DOMContentLoaded, false);
                 fireReady();
             } else {
-                if ( attachEvent && doc.readyState === 'complete' ) {
+                if (attachEvent && doc.readyState === 'complete') {
                     doc.detachEvent(orsc, DOMContentLoaded);
                     fireReady();
                 }
@@ -457,16 +467,20 @@ var Sqwidget;
         
             readyFns.push(fn);
         
-            if ( ready ) { return fn(); }
-            if ( bound ) { return; }
+            if (ready) { 
+                return fn(); 
+            }
+            if (bound) { 
+                return; 
+            }
         
             bound = true;
         
-            if ( addEventListener ) {
+            if (addEventListener) {
                 doc.addEventListener(dcl, DOMContentLoaded, false);
                 window.addEventListener('load', fireReady, false); // fallback to window.onload
             } else {
-                if ( attachEvent ) {
+                if (attachEvent) {
                 
                     // IE Event model
                 
@@ -475,9 +489,9 @@ var Sqwidget;
                 
                     try {
                         atTopLevel = !window.frameElement;
-                    } catch(e) {}
+                    } catch (e) {}
                 
-                    if ( docEl.doScroll && atTopLevel ) {
+                    if (docEl.doScroll && atTopLevel) {
                         scrollCheck();
                     }
                 
@@ -498,538 +512,533 @@ var Sqwidget;
 // **
 // SETUP SQWIDGET
 
-    var
-        $,
-        window = this,
-        document = window.document;
+    _('started console logging in sqwidget');
+    // SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
+    // TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
+    this.Sqwidget = Sqwidget = {
+        version: '0.21a',            
+        _: _, // console logger
         
-        _('started console logging in sqwidget');
-        // SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
-        // TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
-        this.Sqwidget = Sqwidget = {
-            version: '0.21a',            
-            _: _, // console logger
+        /** 
+         * These can be set from the Sqwidget.globalConfig()
+         * All global settings need to be given an initial
+         * default value here so they can be set from the globalConfig method 
+         */
+        settings: { // TODO: Some props (e.g. 'lightbox') would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
+            jQuery: {
+                minVersion: '1.4', // minimum version of jQuery to allow, if already in DOM
+                src: 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
+                //src: 'jquery.js',
+                // Set noConflict properties to true to avoid global '$' and/or 'jQuery' variables in the global namespace. If '$' is false, then 'jQuery' is assumed to be false.
+                noConflict: {
+                    $: false,
+                    jQuery: false
+                }
+            },
+            development: false,
+            experimental: false,
+            automatic: true,
+            charset: 'utf-8',
+            basePath: '',
+            pluginPath: 'plugins/'
+        },
+        /** Sqwidget's own dependencies. TODO not currently used:  Use it or lose it*/
+        dependencies: {
+        },
+        
+        /** 
+         * global register of dependencies, keyed by name, containing objects
+         * like:
+         * {name:'thename', version:'the version', loaded: false, ref:<reference to loaded module>, clients: [] array of client widgets}
+         * */
+        dependencyRegister: {
+        }, 
+        
+        /** Sqwidget widget templates (classes) keyed by template path */
+        widgetTemplates: {},
+        
+        /** 
+         * Sqwidget widget templates by self-declared names
+         * TODO still needed
+         */
+        widgetTemplatesByName: {},
+        
+        /**
+         * Set global configuration (config)
+         * @param {Object} dictionary of global config options [optional]
+         * return {Object} dictionary of the global config
+         */
+        globalConfig: function (dict) {
+            var key;
             
-            /** 
-             * These can be set from the Sqwidget.globalConfig()
-             * All global settings need to be given an initial
-             * default value here so they can be set from the globalConfig method 
-             */
-            settings: { // TODO: Some props (e.g. 'lightbox') would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
-                jQuery: {
-                    minVersion: '1.4', // minimum version of jQuery to allow, if already in DOM
-                    src: 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
-                    //src: 'jquery.js',
-                    // Set noConflict properties to true to avoid global '$' and/or 'jQuery' variables in the global namespace. If '$' is false, then 'jQuery' is assumed to be false.
-                    noConflict: {
-                        $: false,
-                        jQuery: false
+            if (dict) {
+                for (key in dict) {
+                    if (key in this.settings) {
+                        this.settings[key] = dict[key];
                     }
-                },
-                development: false,
-                experimental: false,
-                automatic: true,
-                charset: 'utf-8',
-                basePath: '',
-                pluginPath: 'plugins/'
-            },
-            /** Sqwidget's own dependencies. TODO not currently used:  Use it or lose it*/
-            dependencies: {
-            },
+                }
+            }
+            return this.settings;
+        },
+        
+        getConfig: function (key) {
+            return this.settings[key];
+        },
+        
+        
+        thisDomScript: function () {
+            var scripts = document.getElementsByTagName("script");
+            return scripts[scripts.length - 1];
+        },
+        
+        // Wrapper around getScript, allowing cacheUrl for development
+        getScript: function (srcs, callback, options) {
+            var i, length;
             
-            /** 
-             * global register of dependencies, keyed by name, containing objects
-             * like:
-             * {name:'thename', version:'the version', loaded: false, ref:<reference to loaded module>, clients: [] array of client widgets}
-             * */
-            dependencyRegister: {
-            }, 
+            // Development mode: cache JavaScript files
+            if (this.getConfig('development')) {
+                if (typeof srcs === 'string') {
+                    srcs = [srcs];
+                }
+                for (i = 0; i < length; i += 1) {
+                    srcs[i] = this.cacheUrl(srcs, 1); // cache for 1ms
+                }
+            }
+            getScript(srcs, callback, options);
+        },
+        
+        /**
+         * Build a resource path, sqwidget style, with a base, another bit and
+         * a name of something to load.
+         * as in basePath + subPath (like pluginPath) + item where any of these can be base or absolute
+         * @param {String} base The base, usually going to be settings.basePath.  A '/' path separator will be added to the end of this if missing
+         * @param {String} sub The sub path element, like plugins or css or similar.
+         * @param {String} item The item name itself (with or without extension)
+         * @param {String} extension File extension to be added to item if it doesn't already have one on the end.  This is **without the dot**
+         */
+        
+        buildResourcePath: function (base, sub, item, extension) {
+            base = jQuery.trim(base);
+            sub = jQuery.trim(sub);
+            item = jQuery.trim(item);
+            extension = jQuery.trim(extension);
+            // check for absolutes
+            function isAbsolute(s) {
+                return s.search(/^[a-z]+:\/\//)===0 || s.search(/^\//)===0;
+            }
+            // if item is absolute, then just return it.
+            if (isAbsolute(item)) { 
+                return item; 
+            }
+            if (extension.length > 0 && item.lastIndexOf('.'+extension) !== (item.length - extension.length -1) ) {
+                item += '.' + extension;
+            }
+            // check for item extension and add if needed
+            //if (extension.length>0 && !item.match(new RegExp('\\\.' + extension  + '$'))) {
+            //    item += extension;
+            //}
+            if (isAbsolute(sub)) {
+                return sub + item;
+            }
+            if (base.length>0 && !base.match(/\/$/)) {
+                base += '/';
+            }
+            return base + sub + item;                
+        },
+        
+        templateText: function (jsonData) {
+            var myTemplate;
+            _('Sqwidget.template text called');
+            if (jsonData && jsonData.name) {
+                myTemplate = this.widgetTemplatesByName[jsonData.name];
+                if (myTemplate) {
+                    _('running Template.templateText');
+                    myTemplate.templateText(jsonData.template);
+                }
+            }
             
-            /** Sqwidget widget templates (classes) keyed by template path */
-            widgetTemplates: {},
-            
-            /** 
-             * Sqwidget widget templates by self-declared names
-             * TODO still needed
-             */
-            widgetTemplatesByName: {},
-            
-            /**
-             * Set global configuration (config)
-             * @param {Object} dictionary of global config options [optional]
-             * return {Object} dictionary of the global config
-             */
-            globalConfig: function(dict) {
-                var key;
-                
-                if (dict) {
-                    for(key in dict) {
-                        if (key in this.settings) {
-                            this.settings[key] = dict[key];
+        },
+        
+        /**
+         * Compare a version string with another, e.g. '1.2.6' with '1.3.2'
+         * @returns -1 (a<b), 0 (a==b) or 1 (b>a)
+         * TODO: Treat '1.4.0' the same as '1.4'
+         */
+        compareVersion: function (a, b){
+            var i, n = Number;
+                a = a.split('.');
+                b = b.split('.');
+ 
+                for (i=0; i<a.length; i++){
+                        if (typeof b[i] === 'undefined'){
+                                return -1;
                         }
-                    }
-                }
-                return this.settings;
-            },
-            
-            getConfig: function(key) {
-                return this.settings[key];
-            },
-            
-            
-            thisDomScript: function(){
-                var scripts = document.getElementsByTagName("script");
-                return scripts[scripts.length - 1];
-            },
-            
-            // Wrapper around getScript, allowing cacheUrl for development
-            getScript: function(srcs, callback, options){
-                var i, length;
-                
-                // Development mode: cache JavaScript files
-                if (this.getConfig('development')){
-                    if (typeof srcs === 'string'){
-                        srcs = [srcs];
-                    }
-                    for (i=0; i<length; i++){
-                        srcs[i] = this.cacheUrl(srcs, 1); // cache for 1ms
-                    }
-                }
-                getScript(srcs, callback, options);
-            },
-            
-            /**
-             * Build a resource path, sqwidget style, with a base, another bit and
-             * a name of something to load.
-             * as in basePath + subPath (like pluginPath) + item where any of these can be base or absolute
-             * @param {String} base The base, usually going to be settings.basePath.  A '/' path separator will be added to the end of this if missing
-             * @param {String} sub The sub path element, like plugins or css or similar.
-             * @param {String} item The item name itself (with or without extension)
-             * @param {String} extension File extension to be added to item if it doesn't already have one on the end.  This is **without the dot**
-             */
-            
-            buildResourcePath: function(base, sub, item, extension) {
-                base = jQuery.trim(base);
-                sub = jQuery.trim(sub);
-                item = jQuery.trim(item);
-                extension = jQuery.trim(extension);
-                // check for absolutes
-                function isAbsolute(s) {
-                    return s.search(/^[a-z]+:\/\//)===0 || s.search(/^\//)===0;
-                }
-                // if item is absolute, then just return it.
-                if (isAbsolute(item)) { 
-                    return item; 
-                }
-                if (extension.length > 0 && item.lastIndexOf('.'+extension) !== (item.length - extension.length -1) ) {
-                    item += '.' + extension;
-                }
-                // check for item extension and add if needed
-                //if (extension.length>0 && !item.match(new RegExp('\\\.' + extension  + '$'))) {
-                //    item += extension;
-                //}
-                if (isAbsolute(sub)) {
-                    return sub + item;
-                }
-                if (base.length>0 && !base.match(/\/$/)) {
-                    base += '/';
-                }
-                return base + sub + item;                
-            },
-            
-            templateText: function(jsonData) {
-                var myTemplate;
-                _('Sqwidget.template text called');
-                if (jsonData && jsonData.name) {
-                    myTemplate = this.widgetTemplatesByName[jsonData.name];
-                    if (myTemplate) {
-                        _('running Template.templateText');
-                        myTemplate.templateText(jsonData.template);
-                    }
-                }
-                
-            },
-            
-            /**
-             * Compare a version string with another, e.g. '1.2.6' with '1.3.2'
-             * @returns -1 (a<b), 0 (a==b) or 1 (b>a)
-             * TODO: Treat '1.4.0' the same as '1.4'
-             */
-            compareVersion: function(a, b){
-                var i, n = Number;
-                    a = a.split('.');
-                    b = b.split('.');
-     
-                    for (i=0; i<a.length; i++){
-                            if (typeof b[i] === 'undefined'){
-                                    return -1;
-                            }
-                            else if (n(a[i]) === n(b[i])){
-                                    continue;
-                            }
-                            return (n(a[i]) > n(b[i])) ? -1 : 1;
-                    }
-                    return (b.length > a.length) ? 1 : 0;
-            },
-            
-            /**
-             * Test if a version string is at least as high as the minimum version required
-             * @returns boolean true or false
-             */
-            hasMinVersion: function(testVersion, minVersion){
-                return this.compareVersion(minVersion, testVersion) >= 0;
-            },
-            
-            
-            /**
-              * Return jQuery object or false if minimum version can't be satisfied
-              * @param {String} minVersion
-              * @returns jQuery object or false
-              */
-            jQueryIsLoaded: function(minVersion){
-                if (!$){
-                    var jQuery = window.jQuery;
-                    if (jQuery && jQuery.fn && jQuery.fn.jquery &&
-                        this.hasMinVersion(jQuery.fn.jquery, minVersion || this.settings.jQuery.minVersion)){
-                        $ = jQuery;
-                    }
-                }
-                return $;
-            },
-            
-            
-            /**
-             * Call callback when jQuery is ready
-             * @param {function} callback callback function to call when jquery ready
-             *
-             * TODO: allow optional priority of execution, as with WordPress filters
-             */
-            onjQueryReady: function(callback){
-                _('Sqwidget.onjQueryReady');
-                var jQuery, jQuerySettings, callbacks;      
-                
-                if (!$){
-                    jQuery = this.jQueryIsLoaded();
-                    if (jQuery){
-                        _('jQuery found');
-                        $ = jQuery;
-                    }
-                    else {
-                        _('jQuery not found');
-                        jQuerySettings = this.settings.jQuery;
-                        
-                        // If this called for the first time, create array to store callbacks
-                        callbacks = this.onjQueryReady.callbacks;
-                        if (!callbacks){
-                            callbacks = this.onjQueryReady.callbacks = [];
-                            // load jQuery
-                            this.getScript(jQuerySettings.src, function(){
-                                var
-                                    jQuery = window.jQuery,
-                                    $ = jQuery;
-                                
-                                // Hide or expose global '$' and 'jQuery' vars, depending on settings
-                                if (jQuerySettings.noConflict.$){
-                                    jQuery.noConflict(jQuerySettings.noConflict.jQuery);
-                                }
-                                
-                                // once loaded, pass jQuery to each stored callback
-                                $.each(callbacks, function(){
-                                    callbacks.shift()($);
-                                });
-                            });
+                        else if (n(a[i]) === n(b[i])){
+                                continue;
                         }
-                        // Add callback to stack
-                        callbacks.push(callback);
-                        return;
-                    }
+                        return (n(a[i]) > n(b[i])) ? -1 : 1;
                 }
-                callback($);
-            },
+                return (b.length > a.length) ? 1 : 0;
+        },
+        
+        /**
+         * Test if a version string is at least as high as the minimum version required
+         * @returns boolean true or false
+         */
+        hasMinVersion: function (testVersion, minVersion){
+            return this.compareVersion(minVersion, testVersion) >= 0;
+        },
+        
+        
+        /**
+          * Return jQuery object or false if minimum version can't be satisfied
+          * @param {String} minVersion
+          * @returns jQuery object or false
+          */
+        jQueryIsLoaded: function (minVersion){
+            if (!$){
+                var jQuery = window.jQuery;
+                if (jQuery && jQuery.fn && jQuery.fn.jquery &&
+                    this.hasMinVersion(jQuery.fn.jquery, minVersion || this.settings.jQuery.minVersion)){
+                    $ = jQuery;
+                }
+            }
+            return $;
+        },
+        
+        
+        /**
+         * Call callback when jQuery is ready
+         * @param {function} callback callback function to call when jquery ready
+         *
+         * TODO: allow optional priority of execution, as with WordPress filters
+         */
+        onjQueryReady: function (callback){
+            _('Sqwidget.onjQueryReady');
+            var jQuery, jQuerySettings, callbacks;      
             
-            // Sqwidget ready
-            // TODO this requires DOM ready and jquery and dependencies ready
-            ready: function(callback){
-                this.onjQueryReady(function() {
-                    Sqwidget.domReady(callback);
-                });
-            },
-
-            
-            // Document DOM ready
-            domReady: function(callback){
-                jQuery().ready(callback);
-            },
-            /**
-             * @returns {Array} of the full set of widgets in the DOM, returning them as 
-             * as an array of SqwidgetWidget objects:
-             *
-             */
-            widgetsInDom: function(){
-                function trim(str){
-                    return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, '');
+            if (!$){
+                jQuery = this.jQueryIsLoaded();
+                if (jQuery){
+                    _('jQuery found');
+                    $ = jQuery;
                 }
-                
-                function type(templateUrl){
-                    return templateUrl.replace(/^.*\/([\w]+)(?:\.[^\/]+)?$|^([\w]+)(?:\..*)?$/, '$1$2');
-                }
-
-                /**
-                 * Get settings from an attribute:
-                 * ';' separates key:value pairs
-                 * Use \; to include a ';' in a value
-                 */
-                function settings(str){
-                    if (!str){
-                        return {};
-                    }
-                    function reverse (s) {
-                            return s.split('').reverse().join('');
-                    }
-
-                    var
-                        keyvalPairs = reverse(str).split(/;(?!\\)/),
-                        len = keyvalPairs.length,
-                        widgetSettings = {},
-                        keyval, i, pos;
-                        
-                    for (i = len; i; i--){
-                        keyval = reverse(keyvalPairs[i-1]);
-                        keyval = keyval.replace('\\;', ';');
-                        pos = keyval.indexOf(':');
-                        if (pos !== -1){
-                             widgetSettings[trim(keyval.slice(0,pos))] = trim(keyval.slice(pos+1));
-                        }
-                    }
-                    return widgetSettings;
-                }
-            
-                // Find 'div[data-sqwidget]'                    
-                var
-                    divs = document.getElementsByTagName('div'),
-                    len = divs.length,
-                    widgets = [],
-                    div, dataSqwidgetSettings, dataSqwidget, widgetType, i;
-                
-                for (i = 0; i<divs.length; i++){
-                    div = divs[i];
-                    dataSqwidget = div.getAttribute('data-sqwidget');
-                    dataSqwidgetSettings = div.getAttribute('data-sqwidget-settings');
+                else {
+                    _('jQuery not found');
+                    jQuerySettings = this.settings.jQuery;
                     
-                    if (dataSqwidget){
-                        dataSqwidget = settings(dataSqwidget);
-                        dataSqwidgetSettings = settings(dataSqwidgetSettings);
-                        widgetType = type(dataSqwidget.src || 'generic');
-                        
-                        widgets.push(Widget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
+                    // If this called for the first time, create array to store callbacks
+                    callbacks = this.onjQueryReady.callbacks;
+                    if (!callbacks){
+                        callbacks = this.onjQueryReady.callbacks = [];
+                        // load jQuery
+                        this.getScript(jQuerySettings.src, function(){
+                            var
+                                jQuery = window.jQuery,
+                                $ = jQuery;
+                            
+                            // Hide or expose global '$' and 'jQuery' vars, depending on settings
+                            if (jQuerySettings.noConflict.$){
+                                jQuery.noConflict(jQuerySettings.noConflict.jQuery);
+                            }
+                            
+                            // once loaded, pass jQuery to each stored callback
+                            $.each(callbacks, function(){
+                                callbacks.shift()($);
+                            });
+                        });
+                    }
+                    // Add callback to stack
+                    callbacks.push(callback);
+                    return;
+                }
+            }
+            callback($);
+        },
+        
+        // Sqwidget ready
+        // TODO this requires DOM ready and jquery and dependencies ready
+        ready: function (callback){
+            this.onjQueryReady(function() {
+                Sqwidget.domReady(callback);
+            });
+        },
+
+        
+        // Document DOM ready
+        domReady: function (callback){
+            jQuery().ready(callback);
+        },
+        /**
+         * @returns {Array} of the full set of widgets in the DOM, returning them as 
+         * as an array of SqwidgetWidget objects:
+         *
+         */
+        widgetsInDom: function (){
+            function trim(str){
+                return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, '');
+            }
+            
+            function type(templateUrl) {
+                return templateUrl.replace(/^.*\/([\w]+)(?:\.[^\/]+)?$|^([\w]+)(?:\..*)?$/, '$1$2');
+            }
+
+            /**
+             * Get settings from an attribute:
+             * ';' separates key:value pairs
+             * Use \; to include a ';' in a value
+             */
+            function settings(str){
+                if (!str){
+                    return {};
+                }
+                function reverse (s) {
+                        return s.split('').reverse().join('');
+                }
+
+                var
+                    keyvalPairs = reverse(str).split(/;(?!\\)/),
+                    len = keyvalPairs.length,
+                    widgetSettings = {},
+                    keyval, i, pos;
+                    
+                for (i = len; i; i--){
+                    keyval = reverse(keyvalPairs[i-1]);
+                    keyval = keyval.replace('\\;', ';');
+                    pos = keyval.indexOf(':');
+                    if (pos !== -1){
+                         widgetSettings[trim(keyval.slice(0,pos))] = trim(keyval.slice(pos+1));
                     }
                 }
-                return widgets;
-            },
+                return widgetSettings;
+            }
+        
+            // Find 'div[data-sqwidget]'                    
+            var
+                divs = document.getElementsByTagName('div'),
+                len = divs.length,
+                widgets = [],
+                div, dataSqwidgetSettings, dataSqwidget, widgetType, i;
             
-            /**
-             * Return SqwidgetTemplate for the given template name, creating it if not available
-             * @param templateFilename - The template filename (including extension), like templatename.html or 
-             * similar.
-             * @return {SqwidgetTemplate} the template
-             */
-            getTemplate: function(templateFilename, widget) {
-                // check to see if already loaded, if so, return instance.
-                var 
-                    filename = jQuery.trim(templateFilename),
-                    fullName;
-                if (filename.lastIndexOf('.js') === filename.length - 3) {
-                    // compile js template, so load as script
-                    fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'js');
+            for (i = 0; i<divs.length; i++){
+                div = divs[i];
+                dataSqwidget = div.getAttribute('data-sqwidget');
+                dataSqwidgetSettings = div.getAttribute('data-sqwidget-settings');
+                
+                if (dataSqwidget){
+                    dataSqwidget = settings(dataSqwidget);
+                    dataSqwidgetSettings = settings(dataSqwidgetSettings);
+                    widgetType = type(dataSqwidget.src || 'generic');
+                    
+                    widgets.push(Widget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
+                }
+            }
+            return widgets;
+        },
+        
+        /**
+         * Return SqwidgetTemplate for the given template name, creating it if not available
+         * @param templateFilename - The template filename (including extension), like templatename.html or 
+         * similar.
+         * @return {SqwidgetTemplate} the template
+         */
+        getTemplate: function(templateFilename, widget) {
+            // check to see if already loaded, if so, return instance.
+            var 
+                filename = jQuery.trim(templateFilename),
+                fullName;
+            if (filename.lastIndexOf('.js') === filename.length - 3) {
+                // compile js template, so load as script
+                fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'js');
+            }
+            else {
+                fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'html');
+            }
+            var t = this.widgetTemplates[fullName];
+            if (!t) {
+                t = Template(this, fullName, widget);
+                this.widgetTemplates[fullName] = t;
+            }
+            return t;
+        },
+        
+        /**
+         * Retrieve widget template by name (to do something like call a listener/callback
+         * with JSONP data for example)
+         */
+        getTemplateByName: function(templateName) {
+            return this.widgetTemplatesByName[templateName];
+        },
+        
+        /**
+         *  Set name for the given template.
+         *  Note, if a widget is reconfigured, it will get registered against a second name
+         */
+        setTemplateName: function(template, name) {
+            this.widgetTemplatesByName[name] = template;
+        },
+        
+         /**
+         * Load dependencies (check that versions are satisfied, and issue script loading instructions
+         * as needed)
+         * @param {Object:Template} template object that wants this dependency
+         * @param {Object} dependency a dependency in the form ['name', 'version'] or simply 'name'
+         *
+         */
+
+        addDependency: function(widget,dependency) {  
+            var 
+                name = null,
+                minVersion = null,
+                depConfig = {},
+                basePath = widget.getConfig('basePath', this.getConfig('basePath')),
+                pluginPath = widget.getConfig('pluginPath', this.getConfig('pluginPath'));
+
+            if (!dependency) {
+                name = null;
+            }
+            else if (typeof(dependency) === 'string') {
+                name = dependency;
+            }
+            else if (typeof(dependency === 'object')) {
+                name = dependency[0];
+                if (typeof(dependency[1]) === 'object') {
+                    depConfig = dependency[1];
                 }
                 else {
-                    fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'html');
+                    minVersion = dependency[1];
                 }
-                var t = this.widgetTemplates[fullName];
-                if (!t) {
-                    t = Template(this, fullName, widget);
-                    this.widgetTemplates[fullName] = t;
+                if (typeof(dependency[2]) === 'object') {
+                    depConfig = dependency[2];
                 }
-                return t;
-            },
-            
-            /**
-             * Retrieve widget template by name (to do something like call a listener/callback
-             * with JSONP data for example)
-             */
-            getTemplateByName: function(templateName) {
-                return this.widgetTemplatesByName[templateName];
-            },
-            
-            /**
-             *  Set name for the given template.
-             *  Note, if a widget is reconfigured, it will get registered against a second name
-             */
-            setTemplateName: function(template, name) {
-                this.widgetTemplatesByName[name] = template;
-            },
-            
-             /**
-             * Load dependencies (check that versions are satisfied, and issue script loading instructions
-             * as needed)
-             * @param {Object:Template} template object that wants this dependency
-             * @param {Object} dependency a dependency in the form ['name', 'version'] or simply 'name'
-             *
-             */
-
-            addDependency: function(widget,dependency) {  
-                var 
-                    name = null,
-                    minVersion = null,
-                    depConfig = {},
-                    basePath = widget.getConfig('basePath', this.getConfig('basePath')),
-                    pluginPath = widget.getConfig('pluginPath', this.getConfig('pluginPath'));
-
-                if (!dependency) {
-                    name = null;
-                }
-                else if (typeof(dependency) === 'string') {
-                    name = dependency;
-                }
-                else if (typeof(dependency === 'object')) {
-                    name = dependency[0];
-                    if (typeof(dependency[1]) === 'object') {
-                        depConfig = dependency[1];
+            }
+            else {
+                name = null;
+            }
+            if (name && name.length > 0) {
+                var existing = this.dependencyRegister[name];
+                if (existing) {
+                    _('adding dependency (already exists): ' + name);
+                    //TODO version comparison
+                    existing.clients.push(widget);
+                    if (existing.loaded) {
+                        _('setting plugin (already loaded): ' + name);
+                        widget.setPlugin(existing.name, existing.module, depConfig);
                     }
                     else {
-                        minVersion = dependency[1];
-                    }
-                    if (typeof(dependency[2]) === 'object') {
-                        depConfig = dependency[2];
+                        _('waiting for plugin load: ' + name);
                     }
                 }
                 else {
-                    name = null;
+                    this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
+                    // initiate load
+                    var loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
+                    _('loading dependency: '  + name + ', ' + loadPath);
+                    this.getScript(loadPath, function(){});
                 }
-                if (name && name.length > 0) {
-                    var existing = this.dependencyRegister[name];
-                    if (existing) {
-                        _('adding dependency (already exists): ' + name);
-                        //TODO version comparison
-                        existing.clients.push(widget);
-                        if (existing.loaded) {
-                            _('setting plugin (already loaded): ' + name);
-                            widget.setPlugin(existing.name, existing.module, depConfig);
-                        }
-                        else {
-                            _('waiting for plugin load: ' + name);
+            }
+        },
+        
+        getDependencyRegister: function() {
+            return this.dependencyRegister;
+        },
+        
+        /**
+         * Review all dependencies
+         * @return {Boolean} true if all dependencies satisfied
+         */
+        checkDependencies: function(widgetClient) {
+            var c,d;
+            for (d in this.dependencyRegister) {
+                if (this.dependencyRegister.hasOwnProperty(d)) {
+                    if (!(this.dependencyRegister[d].loaded)) {
+                        for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
+                            if (this.dependencyRegister[d].clients[c] === widgetClient) {
+                                return false;
+                            }
                         }
                     }
                     else {
-                        this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
-                        // initiate load
-                        var loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
-                        _('loading dependency: '  + name + ', ' + loadPath);
-                        this.getScript(loadPath, function(){});
-                    }
-                }
-            },
-            
-            getDependencyRegister: function() {
-                return this.dependencyRegister;
-            },
-            
-            /**
-             * Review all dependencies
-             * @return {Boolean} true if all dependencies satisfied
-             */
-            checkDependencies: function(widgetClient) {
-                var c,d;
-                for (d in this.dependencyRegister) {
-                    if (this.dependencyRegister.hasOwnProperty(d)) {
-                        if (!(this.dependencyRegister[d].loaded)) {
-                            for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
-                                if (this.dependencyRegister[d].clients[c] === widgetClient) {
+                        for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
+                            if (this.dependencyRegister[d].clients[c] === widgetClient) {
+                                if (typeof widgetClient.plugins[this.dependencyRegister[d].name] === 'undefined') {
                                     return false;
                                 }
                             }
-                        }
-                        else {
-                            for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
-                                if (this.dependencyRegister[d].clients[c] === widgetClient) {
-                                    if (typeof widgetClient.plugins[this.dependencyRegister[d].name] === 'undefined') {
-                                        return false;
-                                    }
-                                }
-                            }                            
-                        }
+                        }                            
                     }
                 }
-                return true;
-            },
-            
-            /**
-             * Called by plugins to register themselves.   Plugins can show up here before appearing 
-             * in a list of dependencies, so need to allow this to add a dependency record
-             * @param {String} name the namespace name for this thing
-             * @param {Object} module the module constructor. Call to create an object of this type
-             * @param {String} version the version of this plugin 
-             *
-             */
-             
-            plugin: function(name, module, version) {
-                var dep = this.dependencyRegister[name],
-                    i, clients;
-                if (typeof(dep) === 'undefined') {
-                    // add a new entry for this plugin, not requested yet but already loaded
-                    // which isn't a problem
-                    this.dependencyRegister[name] = {
-                        name: name,
-                        module: module,
-                        loaded : true,
-                        version : version,
-                        clients : [],
-                        config : {}
-                    };
-                }
-                else {
-                    dep.name =  name;
-                    dep.module = module;
-                    dep.loaded = true;
-                    dep.version = version;
-                    jQuery.each(dep.clients, function(i,client) {
-                        client.setPlugin(name, module, dep.config);
-                    });
-                }
-            },
-            
-
-            runAll: function() {
-                jQuery.each(this.widgetTemplates, function(wt, template) {
-                    template.runAll();
-                });
-            },
-
-            /**
-             * Locate and start widgets in this page. Typically called by Sqwidget.ready() function
-             */
-            startWidgets: function() {
-                var _ = Sqwidget._;
-
-
-                    // get widgets in the page as Widget objects
-                    var widgets = Sqwidget.widgetsInDom();
-
-                    _('found ' + widgets.length.toString() +' widget divs:');
-
-                    _('initing widgets...');
-                    // load templates as needed
-                    jQuery.each(widgets, function(w,widget) {
-                        _('init for w: ' + widgets[w].toString());
-                        widget.init();
-                    });    
-                    jQuery.each(widgets, function(w,widget) {
-                        _('checkrun for w: ' + widgets[w].toString());
-                        widget.checkRun();
-                    });
             }
-        };
-        /////
+            return true;
+        },
+        
+        /**
+         * Called by plugins to register themselves.   Plugins can show up here before appearing 
+         * in a list of dependencies, so need to allow this to add a dependency record
+         * @param {String} name the namespace name for this thing
+         * @param {Object} module the module constructor. Call to create an object of this type
+         * @param {String} version the version of this plugin 
+         *
+         */
+         
+        plugin: function(name, module, version) {
+            var dep = this.dependencyRegister[name],
+                i, clients;
+            if (typeof(dep) === 'undefined') {
+                // add a new entry for this plugin, not requested yet but already loaded
+                // which isn't a problem
+                this.dependencyRegister[name] = {
+                    name: name,
+                    module: module,
+                    loaded : true,
+                    version : version,
+                    clients : [],
+                    config : {}
+                };
+            }
+            else {
+                dep.name =  name;
+                dep.module = module;
+                dep.loaded = true;
+                dep.version = version;
+                jQuery.each(dep.clients, function(i,client) {
+                    client.setPlugin(name, module, dep.config);
+                });
+            }
+        },
+        
+
+        runAll: function() {
+            jQuery.each(this.widgetTemplates, function(wt, template) {
+                template.runAll();
+            });
+        },
+
+        /**
+         * Locate and start widgets in this page. Typically called by Sqwidget.ready() function
+         */
+        startWidgets: function() {
+            var _ = Sqwidget._;
+
+
+                // get widgets in the page as Widget objects
+                var widgets = Sqwidget.widgetsInDom();
+
+                _('found ' + widgets.length.toString() +' widget divs:');
+
+                _('initing widgets...');
+                // load templates as needed
+                jQuery.each(widgets, function(w,widget) {
+                    _('init for w: ' + widgets[w].toString());
+                    widget.init();
+                });    
+                jQuery.each(widgets, function(w,widget) {
+                    _('checkrun for w: ' + widgets[w].toString());
+                    widget.checkRun();
+                });
+        }
+    };
+    /////
 
 
 // Sqwidget - extend Sqwidget once jQuery is loaded, and assign to Sqwidget
