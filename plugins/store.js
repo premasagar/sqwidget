@@ -27,7 +27,7 @@
      * copyrighted 2005 by Bob Ippolito.
      */
 
-    (function($) {
+    function jQueryJSON($) {
         var _escapeable = /["\\\x00-\x1f\x7f-\x9f]/g,
             _meta = {
             '\b': '\\b',
@@ -232,7 +232,7 @@
             }
             return '"' + string + '"';
         };
-    }(jQuery));
+    }
 
 
     // locally load jStorage into jQuery if not already there
@@ -639,9 +639,13 @@
             
             defaultOptions = {},
             
-        // per-template storage
-        store_key = 'sqwidget-' + (widget.getConfig('name') || 'anon'),
+            // per-template storage
+            store_key = 'sqwidget-' + (widget.getConfig('name') || 'anon'),
+            jStorage, options;
         
+        // init jQuery JSON
+        jQueryJSON(jQuery);
+
         // per-template storage object
         jStorage = jStorageService(jQuery, store_key);
         

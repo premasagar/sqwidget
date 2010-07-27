@@ -533,8 +533,8 @@ var Sqwidget;
                 //src: 'jquery.js',
                 // Set noConflict properties to true to avoid global '$' and/or 'jQuery' variables in the global namespace. If '$' is false, then 'jQuery' is assumed to be false.
                 noConflict: {
-                    $: false,
-                    jQuery: false
+                    $: true,
+                    jQuery: true
                 }
             },
             development: false,
@@ -733,14 +733,12 @@ var Sqwidget;
                         callbacks = this.onjQueryReady.callbacks = [];
                         // load jQuery
                         this.getScript(jQuerySettings.src, function () {
-                            var
-                                jQ = window.jQuery,
-                                $ = jQ;
-                                jQuery= jQ;
+                            $ = window.jQuery;
+                            jQuery = $;
                             
                             // Hide or expose global '$' and 'jQuery' vars, depending on settings
                             if (jQuerySettings.noConflict.$) {
-                                jQ.noConflict(jQuerySettings.noConflict.jQuery);
+                                $.noConflict(jQuerySettings.noConflict.jQuery);
                             }
                             
                             // once loaded, pass jQuery to each stored callback
