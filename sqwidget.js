@@ -2,6 +2,7 @@
 
 /*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: true, immed: true, nomen: false */
 
+
 /*!!
 * Sqwidget
 *   github.com/premasagar/sqwidget
@@ -47,6 +48,7 @@ var Sqwidget;
         splitdoc,
         ready,
         $,
+        jQuery,
         window = this,
         document = window.document;
         
@@ -624,23 +626,19 @@ var Sqwidget;
             extension = jQuery.trim(extension);
             // check for absolutes
             function isAbsolute(s) {
-                return s.search(/^[a-z]+:\/\//)===0 || s.search(/^\//)===0;
+                return (s.search(/^[a-z]+:\/\//) === 0) || (s.search(/^\//) === 0);
             }
             // if item is absolute, then just return it.
             if (isAbsolute(item)) { 
                 return item; 
             }
-            if (extension.length > 0 && item.lastIndexOf('.'+extension) !== (item.length - extension.length -1) ) {
+            if (extension.length > 0 && item.lastIndexOf('.' + extension) !== (item.length - extension.length - 1)) {
                 item += '.' + extension;
             }
-            // check for item extension and add if needed
-            //if (extension.length>0 && !item.match(new RegExp('\\\.' + extension  + '$'))) {
-            //    item += extension;
-            //}
             if (isAbsolute(sub)) {
                 return sub + item;
             }
-            if (base.length>0 && !base.match(/\/$/)) {
+            if (base.length > 0 && !base.match(/\/$/)) {
                 base += '/';
             }
             return base + sub + item;                
@@ -664,29 +662,29 @@ var Sqwidget;
          * @returns -1 (a<b), 0 (a==b) or 1 (b>a)
          * TODO: Treat '1.4.0' the same as '1.4'
          */
-        compareVersion: function (a, b){
+        compareVersion: function (a, b) {
             var i, n = Number;
-                a = a.split('.');
-                b = b.split('.');
+            a = a.split('.');
+            b = b.split('.');
  
-                for (i=0; i<a.length; i++){
-                        if (typeof b[i] === 'undefined'){
-                                return -1;
-                        }
-                        else if (n(a[i]) === n(b[i])){
-                                continue;
-                        }
-                        return (n(a[i]) > n(b[i])) ? -1 : 1;
+            for (i = 0; i < a.length; i += 1) {
+                if (typeof b[i] === 'undefined') {
+                    return -1;
                 }
-                return (b.length > a.length) ? 1 : 0;
+                else if (n(a[i]) === n(b[i])) {
+                    continue;
+                }
+                return (n(a[i]) > n(b[i])) ? -1 : 1;
+            }
+            return (b.length > a.length) ? 1 : 0;
         },
         
         /**
          * Test if a version string is at least as high as the minimum version required
          * @returns boolean true or false
          */
-        hasMinVersion: function (testVersion, minVersion){
-            return this.compareVersion(minVersion, testVersion) >= 0;
+        hasMinVersion: function (testVersion, minVersion) {
+            return (this.compareVersion(minVersion, testVersion) >= 0);
         },
         
         
@@ -695,12 +693,13 @@ var Sqwidget;
           * @param {String} minVersion
           * @returns jQuery object or false
           */
-        jQueryIsLoaded: function (minVersion){
-            if (!$){
-                var jQuery = window.jQuery;
-                if (jQuery && jQuery.fn && jQuery.fn.jquery &&
-                    this.hasMinVersion(jQuery.fn.jquery, minVersion || this.settings.jQuery.minVersion)){
-                    $ = jQuery;
+        jQueryIsLoaded: function (minVersion) {
+            if (!$) {
+                var jQ = window.jQuery;
+                if (jQ && jQ.fn && jQ.fn.jquery &&
+                    this.hasMinVersion(jQ.fn.jquery, minVersion || this.settings.jQuery.minVersion)) {
+                    $ = jQ;
+                    jQuery = jQ;
                 }
             }
             return $;
@@ -713,15 +712,16 @@ var Sqwidget;
          *
          * TODO: allow optional priority of execution, as with WordPress filters
          */
-        onjQueryReady: function (callback){
+        onjQueryReady: function (callback) {
             _('Sqwidget.onjQueryReady');
-            var jQuery, jQuerySettings, callbacks;      
+            var jQ, jQuerySettings, callbacks;      
             
-            if (!$){
-                jQuery = this.jQueryIsLoaded();
-                if (jQuery){
+            if (!$) {
+                jQ = this.jQueryIsLoaded();
+                if (jQ) {
                     _('jQuery found');
-                    $ = jQuery;
+                    $ = jQ;
+                    jQuery = jQ;
                 }
                 else {
                     _('jQuery not found');
@@ -729,21 +729,22 @@ var Sqwidget;
                     
                     // If this called for the first time, create array to store callbacks
                     callbacks = this.onjQueryReady.callbacks;
-                    if (!callbacks){
+                    if (!callbacks) {
                         callbacks = this.onjQueryReady.callbacks = [];
                         // load jQuery
-                        this.getScript(jQuerySettings.src, function(){
+                        this.getScript(jQuerySettings.src, function () {
                             var
-                                jQuery = window.jQuery,
-                                $ = jQuery;
+                                jQ = window.jQuery,
+                                $ = jQ;
+                                jQuery= jQ;
                             
                             // Hide or expose global '$' and 'jQuery' vars, depending on settings
-                            if (jQuerySettings.noConflict.$){
-                                jQuery.noConflict(jQuerySettings.noConflict.jQuery);
+                            if (jQuerySettings.noConflict.$) {
+                                jQ.noConflict(jQuerySettings.noConflict.jQuery);
                             }
                             
                             // once loaded, pass jQuery to each stored callback
-                            $.each(callbacks, function(){
+                            $.each(callbacks, function () {
                                 callbacks.shift()($);
                             });
                         });
@@ -758,15 +759,15 @@ var Sqwidget;
         
         // Sqwidget ready
         // TODO this requires DOM ready and jquery and dependencies ready
-        ready: function (callback){
-            this.onjQueryReady(function() {
+        ready: function (callback) {
+            this.onjQueryReady(function () {
                 Sqwidget.domReady(callback);
             });
         },
 
         
         // Document DOM ready
-        domReady: function (callback){
+        domReady: function (callback) {
             jQuery().ready(callback);
         },
         /**
@@ -774,8 +775,8 @@ var Sqwidget;
          * as an array of SqwidgetWidget objects:
          *
          */
-        widgetsInDom: function (){
-            function trim(str){
+        widgetsInDom: function () {
+            function trim(str) {
                 return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, '');
             }
             
@@ -788,12 +789,12 @@ var Sqwidget;
              * ';' separates key:value pairs
              * Use \; to include a ';' in a value
              */
-            function settings(str){
-                if (!str){
+            function settings(str) {
+                if (!str) {
                     return {};
                 }
-                function reverse (s) {
-                        return s.split('').reverse().join('');
+                function reverse(s) {
+                    return s.split('').reverse().join('');
                 }
 
                 var
@@ -802,11 +803,11 @@ var Sqwidget;
                     widgetSettings = {},
                     keyval, i, pos;
                     
-                for (i = len; i; i--){
+                for (i = len; i; i -= 1) {
                     keyval = reverse(keyvalPairs[i-1]);
                     keyval = keyval.replace('\\;', ';');
                     pos = keyval.indexOf(':');
-                    if (pos !== -1){
+                    if (pos !== -1) {
                          widgetSettings[trim(keyval.slice(0,pos))] = trim(keyval.slice(pos+1));
                     }
                 }
@@ -1905,7 +1906,7 @@ var Sqwidget;
 
 Sqwidget.ready(function() {
     if (Sqwidget.settings.automatic) {
-        _('sqwidget (on automatic) loading and starting widgets ');
+        Sqwidget._('sqwidget (on automatic) loading and starting widgets');
         Sqwidget.startWidgets();
     }
 });
