@@ -232,14 +232,15 @@ var Sqwidget;
                 checkIfComplete, i;
         
             // Check if all scripts have loaded
-            checkIfComplete = function(){
-                if (++loaded === length){
+            checkIfComplete = function () {
+                loaded += 1;
+                if (loaded === length) {
                     callback.call(options.targetWindow);
                 }
             };
         
             // Doesn't call callback until after all scripts have loaded
-            for (i = 0; i < length; i++){
+            for (i = 0; i < length; i += 1) {
                 single(srcs[i], checkIfComplete, options);
             }
         }
@@ -251,14 +252,14 @@ var Sqwidget;
             method = (typeof srcs === 'string') ? single : multiple;
     
         options = options || {};
-        if (!options.charset){
+        if (!options.charset) {
             options.charset = 'utf-8';
         }
-        if (!options.targetWindow){
+        if (!options.targetWindow) {
             options.targetWindow = window;
         }
     
-        callback = callback || function(){};        
+        callback = callback || function () {};        
         return method.call(this, srcs, callback, options);
     }
 
@@ -271,14 +272,14 @@ var Sqwidget;
     *   github.com/premasagar/mishmash/tree/master/splitdoc/
     *
     */
-    var splitdoc = (function(){
+    var splitdoc = (function () {
         var exports = exports || {};
     
-        function trim(str){
+        function trim(str) {
             return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, ''); // match the full set of whitespace characters
         }
     
-        function Splitdoc(raw, options){
+        function Splitdoc(raw, options) {
             var
                 // cast raw to string
                 html = typeof raw !== 'undefined' && raw !== null ? raw + '' : '',
@@ -329,11 +330,11 @@ var Sqwidget;
                             html // if not, then assume the whole HTML string is to be the contents of the body
                 );
         
-            if (!titleMatch){
+            if (!titleMatch) {
                 headContents = '<title>' + titleDefault + '</title>' + headContents;
             }
-            if (!charsetMatch){
-                headContents = charsetTag + headContents ;
+            if (!charsetMatch) {
+                headContents = charsetTag + headContents;
             }
         
             // document reference object
@@ -353,25 +354,25 @@ var Sqwidget;
         // Prototype
         Splitdoc.prototype = {
             // construct <head> markup
-            head: function(){
+            head: function () {
                 return '<head' + this.headAttr + '>' + this.headContents + '</head>';
             },
             // construct <body> markup
-            body: function(){
+            body: function () {
                 return '<body' + this.bodyAttr + '>' + this.bodyContents + '</body>';
             },
             // construct <html> markup
-            html: function(){
+            html: function () {
                 return '<html' + this.htmlAttr + '>' + this.head() + this.body() + '</html>';
             },
             // construct html document source code
             // enhance the object's string representation, by overriding Object prototype's toString function
-            toString: function(){
+            toString: function () {
                 return this.doctype + this.html();
             }
         };
     
-        function splitdoc(html, options){
+        function splitdoc(html, options) {
             return new Splitdoc(html, options);
         }
     
@@ -396,7 +397,7 @@ var Sqwidget;
 
     */
 
-    var ready = (function(){
+    var ready = (function () {
         var
             window = this,
             doc = window.document,
@@ -415,7 +416,7 @@ var Sqwidget;
             if (ready) { return; }
             ready = true;
         
-            for (var i = 0, l = readyFns.length; i < l; i++) {
+            for (var i = 0, l = readyFns.length; i < l; i += 1) {
                 readyFns[i]();
             }
         
