@@ -50,7 +50,9 @@ var Sqwidget;
         $,
         jQuery,
         window = this,
-        document = window.document;
+        document = window.document,
+        Template,
+        Widget;
         
 
 // **
@@ -802,11 +804,11 @@ var Sqwidget;
                     keyval, i, pos;
                     
                 for (i = len; i; i -= 1) {
-                    keyval = reverse(keyvalPairs[i-1]);
+                    keyval = reverse(keyvalPairs[i - 1]);
                     keyval = keyval.replace('\\;', ';');
                     pos = keyval.indexOf(':');
                     if (pos !== -1) {
-                         widgetSettings[trim(keyval.slice(0,pos))] = trim(keyval.slice(pos+1));
+                        widgetSettings[trim(keyval.slice(0, pos))] = trim(keyval.slice(pos + 1));
                     }
                 }
                 return widgetSettings;
@@ -819,12 +821,12 @@ var Sqwidget;
                 widgets = [],
                 div, dataSqwidgetSettings, dataSqwidget, widgetType, i;
             
-            for (i = 0; i<divs.length; i++){
+            for (i = 0; i < divs.length; i += 1) {
                 div = divs[i];
                 dataSqwidget = div.getAttribute('data-sqwidget');
                 dataSqwidgetSettings = div.getAttribute('data-sqwidget-settings');
                 
-                if (dataSqwidget){
+                if (dataSqwidget) {
                     dataSqwidget = settings(dataSqwidget);
                     dataSqwidgetSettings = settings(dataSqwidgetSettings);
                     widgetType = type(dataSqwidget.src || 'generic');
@@ -841,11 +843,12 @@ var Sqwidget;
          * similar.
          * @return {SqwidgetTemplate} the template
          */
-        getTemplate: function(templateFilename, widget) {
+        getTemplate: function (templateFilename, widget) {
             // check to see if already loaded, if so, return instance.
             var 
                 filename = jQuery.trim(templateFilename),
-                fullName;
+                fullName, t;
+                
             if (filename.lastIndexOf('.js') === filename.length - 3) {
                 // compile js template, so load as script
                 fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'js');
@@ -853,7 +856,7 @@ var Sqwidget;
             else {
                 fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'html');
             }
-            var t = this.widgetTemplates[fullName];
+            t = this.widgetTemplates[fullName];
             if (!t) {
                 t = Template(this, fullName, widget);
                 this.widgetTemplates[fullName] = t;
@@ -865,7 +868,7 @@ var Sqwidget;
          * Retrieve widget template by name (to do something like call a listener/callback
          * with JSONP data for example)
          */
-        getTemplateByName: function(templateName) {
+        getTemplateByName: function (templateName) {
             return this.widgetTemplatesByName[templateName];
         },
         
@@ -873,7 +876,7 @@ var Sqwidget;
          *  Set name for the given template.
          *  Note, if a widget is reconfigured, it will get registered against a second name
          */
-        setTemplateName: function(template, name) {
+        setTemplateName: function (template, name) {
             this.widgetTemplatesByName[name] = template;
         },
         
@@ -885,13 +888,14 @@ var Sqwidget;
          *
          */
 
-        addDependency: function(widget,dependency) {  
+        addDependency: function (widget, dependency) {  
             var 
                 name = null,
                 minVersion = null,
                 depConfig = {},
                 basePath = widget.getConfig('basePath', this.getConfig('basePath')),
-                pluginPath = widget.getConfig('pluginPath', this.getConfig('pluginPath'));
+                pluginPath = widget.getConfig('pluginPath', this.getConfig('pluginPath')),
+                existing, loadPath;
 
             if (!dependency) {
                 name = null;
@@ -915,7 +919,7 @@ var Sqwidget;
                 name = null;
             }
             if (name && name.length > 0) {
-                var existing = this.dependencyRegister[name];
+                existing = this.dependencyRegister[name];
                 if (existing) {
                     _('adding dependency (already exists): ' + name);
                     //TODO version comparison
@@ -929,16 +933,16 @@ var Sqwidget;
                     }
                 }
                 else {
-                    this.dependencyRegister[name] = {name:name, version:minVersion, loaded: false, module:null, clients:[widget], config:depConfig};
+                    this.dependencyRegister[name] = {name: name, version: minVersion, loaded: false, module: null, clients: [widget], config: depConfig};
                     // initiate load
-                    var loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
+                    loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
                     _('loading dependency: '  + name + ', ' + loadPath);
-                    this.getScript(loadPath, function(){});
+                    this.getScript(loadPath, function () {});
                 }
             }
         },
         
-        getDependencyRegister: function() {
+        getDependencyRegister: function () {
             return this.dependencyRegister;
         },
         
@@ -946,19 +950,19 @@ var Sqwidget;
          * Review all dependencies
          * @return {Boolean} true if all dependencies satisfied
          */
-        checkDependencies: function(widgetClient) {
-            var c,d;
+        checkDependencies: function (widgetClient) {
+            var c, d;
             for (d in this.dependencyRegister) {
                 if (this.dependencyRegister.hasOwnProperty(d)) {
                     if (!(this.dependencyRegister[d].loaded)) {
-                        for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
+                        for (c = 0; c < this.dependencyRegister[d].clients.length; c += 1) {
                             if (this.dependencyRegister[d].clients[c] === widgetClient) {
                                 return false;
                             }
                         }
                     }
                     else {
-                        for (c=0; c<this.dependencyRegister[d].clients.length; c++) {
+                        for (c = 0; c < this.dependencyRegister[d].clients.length; c += 1) {
                             if (this.dependencyRegister[d].clients[c] === widgetClient) {
                                 if (typeof widgetClient.plugins[this.dependencyRegister[d].name] === 'undefined') {
                                     return false;
@@ -980,7 +984,7 @@ var Sqwidget;
          *
          */
          
-        plugin: function(name, module, version) {
+        plugin: function (name, module, version) {
             var dep = this.dependencyRegister[name],
                 i, clients;
             if (typeof(dep) === 'undefined') {
@@ -1007,7 +1011,7 @@ var Sqwidget;
         },
         
 
-        runAll: function() {
+        runAll: function () {
             jQuery.each(this.widgetTemplates, function(wt, template) {
                 template.runAll();
             });
@@ -1016,7 +1020,7 @@ var Sqwidget;
         /**
          * Locate and start widgets in this page. Typically called by Sqwidget.ready() function
          */
-        startWidgets: function() {
+        startWidgets: function () {
             var _ = Sqwidget._;
 
 
@@ -1042,7 +1046,7 @@ var Sqwidget;
 
 // Sqwidget - extend Sqwidget once jQuery is loaded, and assign to Sqwidget
 // *********
-    Sqwidget.onjQueryReady(function(jQuery){
+    Sqwidget.onjQueryReady(function (jQuery) {
         var $ = jQuery,
             namespace = 'sqwidget';
         
@@ -1269,7 +1273,7 @@ var Sqwidget;
      * @return a SqwigetTemplate object
         */
     
-    var Template = function(s, t, widget) {
+    Template = function(s, t, widget) {
         var self = {}; //neoclassical
         var sqwidget = s;
         var templateName = t;
@@ -1546,7 +1550,7 @@ var Sqwidget;
      * @param div ref to DOM element (TODO what object is passed in here)
      * TODO make Widget and Template
      */
-    var Widget = function (sqwidget, type, div, dataSqwidget, dataSqwidgetSettings) {
+    Widget = function (sqwidget, type, div, dataSqwidget, dataSqwidgetSettings) {
         var 
             self = {},
             sqwidget = sqwidget,
