@@ -1,5 +1,7 @@
 'use strict';
 
+/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true, nomen: false */
+
 /*!!
 * Sqwidget
 *   github.com/premasagar/sqwidget
@@ -36,11 +38,12 @@ var Sqwidget;
 /**
 * SQWIDGET CORE
 **/
-(function(){
+(function () {
 
     // console logging placeholder function
-    var _ = function(){},
-    sqwidgetConsole;
+    var 
+        _ = function () {},
+        sqwidgetConsole;
 
 // **
 // NATIVE JAVASCRIPT DEPENDENCIES
@@ -75,414 +78,419 @@ var Sqwidget;
 
 /* This function may be safely removed, if console logging is not required for debugging */
         
-sqwidgetConsole = (function(){
-    var
-        window = this,
-        ua = window.navigator.userAgent,
-        console = window.console,
-        opera = window.opera,
-        debug;
+    sqwidgetConsole = (function () {
+        var
+            window = this,
+            ua = window.navigator.userAgent,
+            console = window.console,
+            opera = window.opera,
+            debug;
     
-    // Doesn't support console API
-    if (!console){
-        // Opera 
-        return (opera && opera.postError) ?
-             function(){
-                 var i, argLen, log = opera.postError, args = arguments, arg, subArgs, prop;
-                 log(args);
+        // Doesn't support console API
+        if (!console) {
+            // Opera 
+            return (opera && opera.postError) ?
+                function () {
+                    var 
+                        i, argLen, 
+                        log = opera.postError, 
+                        args = arguments, 
+                        arg, subArgs, prop;
+                    
+                    log(args);
                  
-                 argLen = args.length;
-	             for (i=0; i < argLen; i++){
-	                 arg = args[i];
-	                 if (typeof arg === 'object' && arg !== null){
-	                    subArgs = [];
-	                    for (prop in arg){
-	                        try {
-	                            if (arg.hasOwnProperty(prop)){
-	                                subArgs.push(prop + ': ' + arg[prop]);
-	                            }
-	                        }
-	                        catch(e){}
-	                    }
-	                    log('----subArgs: ' + subArgs);
-	                 }
-	             }
-             } :
-             function(){};
-    }
-    // Temporary for WebKit, while its console has a bug in calling debug directly or log.apply
-    else if (/webkit/i.test(ua)){	    
-        return function(){
-            var i, argLen, args = arguments, indent = '';
-            argLen = args.length;
-	        for (i=0; i < argLen; i++){
-	            if (typeof args[i] === 'object' && JSON && JSON.stringify){
-                    try {
-	                    args[i] = JSON.stringify(args[i]);
-	                }
-	                catch (err) {
-	                    args[i] = '[circular reference in object, can not stringify]';
-	                }
-	            }
-		        console.log(indent + args[i]);
-                indent = '---- ';
-	        }
-        };
-    }
-    else {
-        debug = console.debug;
-        return debug ? // FF Firebug
-	        debug :
-	        function(){
-		        var i, argLen, log = console.log, args = arguments, indent = '';
-		        if (log){ // WebKit
-			        if (typeof log.apply === 'function'){
-				        log.apply(console, args);
-			        }
-			        else { // IE8
-				        argLen = args.length;
-				        for (i=0; i < argLen; i++){
-					        log(indent + args[i]);
-                            indent = '---- ';
-				        }
-			        }
-		        }
-	        };
-	}
-}());
+                    argLen = args.length;
+                    for (i = 0; i < argLen; i += 1) {
+                        arg = args[i];
+                        if (typeof arg === 'object' && arg !== null) {
+                            subArgs = [];
+                            for (prop in arg) {
+                                try {
+                                    if (arg.hasOwnProperty(prop)) {
+                                        subArgs.push(prop + ': ' + arg[prop]);
+                                    }
+                                }
+                                catch (e) {}
+                            }
+                            log('----subArgs: ' + subArgs);
+                        }
+                    }
+                } :
+                function () {};
+        }
+        // Temporary for WebKit, while its console has a bug in calling debug directly or log.apply
+        else if (/webkit/i.test(ua)) {      
+            return function () {
+                var i, argLen, args = arguments, indent = '';
+                argLen = args.length;
+                for (i = 0; i < argLen; i += 1) {
+                    if (typeof args[i] === 'object' && JSON && JSON.stringify) {
+                        try {
+                            args[i] = JSON.stringify(args[i]);
+                        }
+                        catch (err) {
+                            args[i] = '[circular reference in object, can not stringify]';
+                        }
+                    }
+                    console.log(indent + args[i]);
+                    indent = '---- ';
+                }
+            };
+        }
+        else {
+            debug = console.debug;
+            return debug ? // FF Firebug
+                debug :
+                function () {
+                    var i, argLen, log = console.log, args = arguments, indent = '';
+                    if (log) { // WebKit
+                        if (typeof log.apply === 'function') {
+                            log.apply(console, args);
+                        }
+                        else { // IE8
+                            argLen = args.length;
+                            for (i = 0; i < argLen; i += 1) {
+                                log(indent + args[i]);
+                                indent = '---- ';
+                            }
+                        }
+                    }
+                };
+        }
+    }());
 /* end console logging */
 
 
-/////////////////////////
+    /////////////////////////
 
 
-// Determine if console logging is required
-if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole){
-    this.sqwidgetDebug = true;
-    _ = sqwidgetConsole;
-}
+    // Determine if console logging is required
+    if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole) {
+        this.sqwidgetDebug = true;
+        _ = sqwidgetConsole;
+    }
 
 
 
 
 
-/////////////////////////
+    /////////////////////////
 
 
-/*
-* getScript
-*   github.com/premasagar/mishmash/tree/master/getscript/
-*
-*/
-function getScript(srcs, callback, options){
-    /**
-     * Load a script into a <script> element
-     * @param {String} src The source url for the script to load
-     * @param {Function} callback Called when the script has loaded
-     */
-    function single(src, callback, options){
-        var
-            charset = options.charset,
-            targetWindow = options.targetWindow,
-            document = targetWindow.document,
-            head = document.getElementsByTagName('head')[0],
-            script = document.createElement('script'),
-            loaded;
+    /*
+    * getScript
+    *   github.com/premasagar/mishmash/tree/master/getscript/
+    *
+    */
+    function getScript(srcs, callback, options) {
+        /**
+         * Load a script into a <script> element
+         * @param {String} src The source url for the script to load
+         * @param {Function} callback Called when the script has loaded
+         */
+        function single(src, callback, options) {
+            var
+                charset = options.charset,
+                targetWindow = options.targetWindow,
+                document = targetWindow.document,
+                head = document.getElementsByTagName('head')[0],
+                script = document.createElement('script'),
+                loaded;
             
-        script.src = src;
-        script.type = 'text/javascript'; // Needed for some gitchy browsers, outside of HTML5
-        script.charset = charset;
-        script.onload = script.onreadystatechange = function(){
-            var state = this.readyState;
-            if (!loaded && (!state || state === 'complete' || state === 'loaded')){
-                // Handle memory leak in IE
-                script.onload = script.onreadystatechange = null;
-                // head.removeChild(script); // Worth removing script element once loaded?
+            script.src = src;
+            script.type = 'text/javascript'; // Needed for some gitchy browsers, outside of HTML5
+            script.charset = charset;
+            script.onload = script.onreadystatechange = function () {
+                var state = this.readyState;
+                if (!loaded && (!state || state === 'complete' || state === 'loaded')) {
+                    // Handle memory leak in IE
+                    script.onload = script.onreadystatechange = null;
+                    // head.removeChild(script); // Worth removing script element once loaded?
                 
-                loaded = true;
-                callback.call(targetWindow);
-            }
-        };
-        head.appendChild(script);
-    }
-
-    // **
-
-    /**
-     * Load array of scripts into script elements.  
-     *
-     * Note, there is only one callback function here, called after each is loaded
-     *
-     * @param {Array} srcs array of source files to load
-     * @param {Function} callback
-     */
-
-    function multiple(srcs, callback, options){
-        var
-            length = srcs.length,
-            loaded = 0,
-            checkIfComplete, i;
-        
-        // Check if all scripts have loaded
-        checkIfComplete = function(){
-            if (++loaded === length){
-                callback.call(options.targetWindow);
-            }
-        };
-        
-        // Doesn't call callback until after all scripts have loaded
-        for (i = 0; i < length; i++){
-            single(srcs[i], checkIfComplete, options);
-        }
-    }
-
-    // **
-    
-    var
-        window = this,
-        method = (typeof srcs === 'string') ? single : multiple;
-    
-    options = options || {};
-    if (!options.charset){
-        options.charset = 'utf-8';
-    }
-    if (!options.targetWindow){
-        options.targetWindow = window;
-    }
-    
-    callback = callback || function(){};        
-    return method.call(this, srcs, callback, options);
-}
-
-
-/////////////////////////
-
-
-/*
-* splitdoc
-*   github.com/premasagar/mishmash/tree/master/splitdoc/
-*
-*/
-var splitdoc = (function(){
-    var exports = exports || {};
-    
-    function trim(str){
-        return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, ''); // match the full set of whitespace characters
-    }
-    
-    function Splitdoc(raw, options){
-        var
-            // cast raw to string
-            html = typeof raw !== 'undefined' && raw !== null ? raw + '' : '',
-        
-            // options - most of these set the default values for components of the HTML document
-            doctypeDefault = options && typeof options.doctype !== 'undefined' ? options.doctype : '<!doctype html>',
-            charsetDefault = options && typeof options.charset !== 'undefined' ? options.charset : 'utf-8',
-            charsetMetaDefault = options && typeof options.charsetmeta !== 'undefined' ? options.charsetmeta : '<meta charset=' + charsetDefault + '>',
-            titleDefault = options && typeof options.title !== 'undefined' ? options.title : '',
-            bodyDefault = options && typeof options.body !== 'undefined' ? options.body : '',
-            
-            // regular expressions to match supplied document
-            doctypeRegex = /<!doctype html[^>]*>/i,
-            htmlAttrRegex = /<html([^>]*)>/i,
-            headRegex = /<head([^>]*)>([\w\W]*?)<\/head>/i, // <head> and the first available </head>, with backrefs: 1) head attributes 2) contents
-            // TODO: Improve robustness of the charset regex
-            charsetRegex = /<meta charset=([\w\-]+)\s*\/?>|<meta http-equiv=["']Content-Type["'] content=["']text\/html;\s*charset=([\w\-]+)["']\s*\/?>/,
-            titleRegex = /<title([^>]*)>([\w\W]*?)<\/title>/i,
-            bodyRegex = /<body([^>]*)>([\w\W]*?)<\/body>/i, // <body> and the first available </body>, with backrefs: 1) body attributes 2) contents
-        
-            // match the supplied document
-            doctypeMatch = html.match(doctypeRegex),
-            htmlAttrMatch = html.match(htmlAttrRegex),
-            headMatch = html.match(headRegex),
-            bodyMatch = html.match(bodyRegex),
-            
-            // grab attributes and contents of components
-            // NOTE: attributes are deliberately left untrimmed
-            doctype = doctypeMatch ? doctypeMatch[0] : doctypeDefault,
-            htmlAttr = htmlAttrMatch ? htmlAttrMatch[1] : '',
-            
-            headAttr = headMatch ? headMatch[1] : '',
-            headContents = headMatch ? trim(headMatch[2]) : '',
-            
-            charsetMatch = headContents.match(charsetRegex),
-            charsetTag = charsetMatch ? trim(charsetMatch[0]) : charsetMetaDefault,
-            charset = charsetMatch ? (charsetMatch[1] || charsetMatch[2]) : charsetDefault, // Is it a bad idea to have a default charset?
-            
-            titleMatch = headContents.match(titleRegex),
-            title = trim(titleMatch ? titleMatch[2] : titleDefault),
-            
-            bodyAttr = bodyMatch ? bodyMatch[1] : '',
-            bodyContents =  trim(
-                bodyMatch ?
-                    bodyMatch[2] : // supplied body contents
-                    doctypeMatch || headMatch ? // if there's already a doctype or a head section
-                        bodyDefault || '' : // then bodyContents is set to default value or blank
-                        html // if not, then assume the whole HTML string is to be the contents of the body
-            );
-        
-        if (!titleMatch){
-            headContents = '<title>' + titleDefault + '</title>' + headContents;
-        }
-        if (!charsetMatch){
-            headContents = charsetTag + headContents ;
-        }
-        
-        // document reference object
-        this.doctype = doctype;
-        this.htmlAttr = htmlAttr;
-        
-        this.headAttr = headAttr;
-        this.headContents = headContents;
-        
-        this.charset = charset;
-        this.title = title;
-        
-        this.bodyAttr = bodyAttr;
-        this.bodyContents = bodyContents;
-    }
-    
-    // Prototype
-    Splitdoc.prototype = {
-        // construct <head> markup
-        head: function(){
-            return '<head' + this.headAttr + '>' + this.headContents + '</head>';
-        },
-        // construct <body> markup
-        body: function(){
-            return '<body' + this.bodyAttr + '>' + this.bodyContents + '</body>';
-        },
-        // construct <html> markup
-        html: function(){
-            return '<html' + this.htmlAttr + '>' + this.head() + this.body() + '</html>';
-        },
-        // construct html document source code
-        // enhance the object's string representation, by overriding Object prototype's toString function
-        toString: function(){
-            return this.doctype + this.html();
-        }
-    };
-    
-    function splitdoc(html, options){
-        return new Splitdoc(html, options);
-    }
-    
-    return (exports.splitdoc = splitdoc);
-}());
-
-
-/////////////////////////
-
-
-/*!
-* Ready
-*   github.com/premasagar/mishmash/tree/master/ready/
-*
-*//*
-    onDocumentReady abstraction, adapted from jQuery 1.4 by James Padolsey <james.padolsey.com>
-
-    license
-        opensource.org/licenses/mit-license.php
-        
-    v0.1
-
-*/
-
-var ready = (function(){
-    var
-        window = this,
-        doc = window.document,
-        docEl = doc.documentElement,
-        addEventListener = doc.addEventListener,
-        attachEvent = doc.attachEvent,
-        readyFns = [],
-        ready,
-        bound,
-        dcl = 'DOMContentLoaded',
-        orsc = 'onreadystatechange',
-        atTopLevel;
-    
-    function fireReady() {
-        
-        if (ready) { return; }
-        ready = true;
-        
-        for (var i = 0, l = readyFns.length; i < l; i++) {
-            readyFns[i]();
-        }
-        
-    }
-    
-    function scrollCheck() {
-        
-        if (ready) { return; }
-        
-        try {
-            // http://javascript.nwbox.com/IEContentLoaded/
-            docEl.doScroll("left");
-        } catch(e) {
-            setTimeout(scrollCheck, 1);
-            return;
-        }
-        
-        // DOM ready
-        fireReady();
-        
-    }
-    
-    function DOMContentLoaded() {
-        
-        if ( addEventListener ) {
-            doc.removeEventListener(dcl, DOMContentLoaded, false);
-            fireReady();
-        } else {
-            if ( attachEvent && doc.readyState === 'complete' ) {
-                doc.detachEvent(orsc, DOMContentLoaded);
-                fireReady();
-            }
-        }
-        
-    }
-        
-    function onReady(fn) {
-        
-        readyFns.push(fn);
-        
-        if ( ready ) { return fn(); }
-        if ( bound ) { return; }
-        
-        bound = true;
-        
-        if ( addEventListener ) {
-            doc.addEventListener(dcl, DOMContentLoaded, false);
-            window.addEventListener('load', fireReady, false); // fallback to window.onload
-        } else {
-            if ( attachEvent ) {
-                
-                // IE Event model
-                
-                doc.attachEvent(orsc, DOMContentLoaded);
-                window.attachEvent('onload', fireReady); // fallback to window.onload
-                
-                try {
-                    atTopLevel = !window.frameElement;
-                } catch(e) {}
-                
-                if ( docEl.doScroll && atTopLevel ) {
-                    scrollCheck();
+                    loaded = true;
+                    callback.call(targetWindow);
                 }
-                
+            };
+            head.appendChild(script);
+        }
+
+        // **
+
+        /**
+         * Load array of scripts into script elements.  
+         *
+         * Note, there is only one callback function here, called after each is loaded
+         *
+         * @param {Array} srcs array of source files to load
+         * @param {Function} callback
+         */
+
+        function multiple(srcs, callback, options) {
+            var
+                length = srcs.length,
+                loaded = 0,
+                checkIfComplete, i;
+        
+            // Check if all scripts have loaded
+            checkIfComplete = function(){
+                if (++loaded === length){
+                    callback.call(options.targetWindow);
+                }
+            };
+        
+            // Doesn't call callback until after all scripts have loaded
+            for (i = 0; i < length; i++){
+                single(srcs[i], checkIfComplete, options);
             }
         }
-        
+
+        // **
+    
+        var
+            window = this,
+            method = (typeof srcs === 'string') ? single : multiple;
+    
+        options = options || {};
+        if (!options.charset){
+            options.charset = 'utf-8';
+        }
+        if (!options.targetWindow){
+            options.targetWindow = window;
+        }
+    
+        callback = callback || function(){};        
+        return method.call(this, srcs, callback, options);
     }
-    
-    return onReady;
-    
-}());
 
 
-/////////////////////////
+    /////////////////////////
+
+
+    /*
+    * splitdoc
+    *   github.com/premasagar/mishmash/tree/master/splitdoc/
+    *
+    */
+    var splitdoc = (function(){
+        var exports = exports || {};
+    
+        function trim(str){
+            return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, ''); // match the full set of whitespace characters
+        }
+    
+        function Splitdoc(raw, options){
+            var
+                // cast raw to string
+                html = typeof raw !== 'undefined' && raw !== null ? raw + '' : '',
+        
+                // options - most of these set the default values for components of the HTML document
+                doctypeDefault = options && typeof options.doctype !== 'undefined' ? options.doctype : '<!doctype html>',
+                charsetDefault = options && typeof options.charset !== 'undefined' ? options.charset : 'utf-8',
+                charsetMetaDefault = options && typeof options.charsetmeta !== 'undefined' ? options.charsetmeta : '<meta charset=' + charsetDefault + '>',
+                titleDefault = options && typeof options.title !== 'undefined' ? options.title : '',
+                bodyDefault = options && typeof options.body !== 'undefined' ? options.body : '',
+            
+                // regular expressions to match supplied document
+                doctypeRegex = /<!doctype html[^>]*>/i,
+                htmlAttrRegex = /<html([^>]*)>/i,
+                headRegex = /<head([^>]*)>([\w\W]*?)<\/head>/i, // <head> and the first available </head>, with backrefs: 1) head attributes 2) contents
+                // TODO: Improve robustness of the charset regex
+                charsetRegex = /<meta charset=([\w\-]+)\s*\/?>|<meta http-equiv=["']Content-Type["'] content=["']text\/html;\s*charset=([\w\-]+)["']\s*\/?>/,
+                titleRegex = /<title([^>]*)>([\w\W]*?)<\/title>/i,
+                bodyRegex = /<body([^>]*)>([\w\W]*?)<\/body>/i, // <body> and the first available </body>, with backrefs: 1) body attributes 2) contents
+        
+                // match the supplied document
+                doctypeMatch = html.match(doctypeRegex),
+                htmlAttrMatch = html.match(htmlAttrRegex),
+                headMatch = html.match(headRegex),
+                bodyMatch = html.match(bodyRegex),
+            
+                // grab attributes and contents of components
+                // NOTE: attributes are deliberately left untrimmed
+                doctype = doctypeMatch ? doctypeMatch[0] : doctypeDefault,
+                htmlAttr = htmlAttrMatch ? htmlAttrMatch[1] : '',
+            
+                headAttr = headMatch ? headMatch[1] : '',
+                headContents = headMatch ? trim(headMatch[2]) : '',
+            
+                charsetMatch = headContents.match(charsetRegex),
+                charsetTag = charsetMatch ? trim(charsetMatch[0]) : charsetMetaDefault,
+                charset = charsetMatch ? (charsetMatch[1] || charsetMatch[2]) : charsetDefault, // Is it a bad idea to have a default charset?
+            
+                titleMatch = headContents.match(titleRegex),
+                title = trim(titleMatch ? titleMatch[2] : titleDefault),
+            
+                bodyAttr = bodyMatch ? bodyMatch[1] : '',
+                bodyContents =  trim(
+                    bodyMatch ?
+                        bodyMatch[2] : // supplied body contents
+                        doctypeMatch || headMatch ? // if there's already a doctype or a head section
+                            bodyDefault || '' : // then bodyContents is set to default value or blank
+                            html // if not, then assume the whole HTML string is to be the contents of the body
+                );
+        
+            if (!titleMatch){
+                headContents = '<title>' + titleDefault + '</title>' + headContents;
+            }
+            if (!charsetMatch){
+                headContents = charsetTag + headContents ;
+            }
+        
+            // document reference object
+            this.doctype = doctype;
+            this.htmlAttr = htmlAttr;
+        
+            this.headAttr = headAttr;
+            this.headContents = headContents;
+        
+            this.charset = charset;
+            this.title = title;
+        
+            this.bodyAttr = bodyAttr;
+            this.bodyContents = bodyContents;
+        }
+    
+        // Prototype
+        Splitdoc.prototype = {
+            // construct <head> markup
+            head: function(){
+                return '<head' + this.headAttr + '>' + this.headContents + '</head>';
+            },
+            // construct <body> markup
+            body: function(){
+                return '<body' + this.bodyAttr + '>' + this.bodyContents + '</body>';
+            },
+            // construct <html> markup
+            html: function(){
+                return '<html' + this.htmlAttr + '>' + this.head() + this.body() + '</html>';
+            },
+            // construct html document source code
+            // enhance the object's string representation, by overriding Object prototype's toString function
+            toString: function(){
+                return this.doctype + this.html();
+            }
+        };
+    
+        function splitdoc(html, options){
+            return new Splitdoc(html, options);
+        }
+    
+        return (exports.splitdoc = splitdoc);
+    }());
+
+
+    /////////////////////////
+
+
+    /*!
+    * Ready
+    *   github.com/premasagar/mishmash/tree/master/ready/
+    *
+    *//*
+        onDocumentReady abstraction, adapted from jQuery 1.4 by James Padolsey <james.padolsey.com>
+
+        license
+            opensource.org/licenses/mit-license.php
+        
+        v0.1
+
+    */
+
+    var ready = (function(){
+        var
+            window = this,
+            doc = window.document,
+            docEl = doc.documentElement,
+            addEventListener = doc.addEventListener,
+            attachEvent = doc.attachEvent,
+            readyFns = [],
+            ready,
+            bound,
+            dcl = 'DOMContentLoaded',
+            orsc = 'onreadystatechange',
+            atTopLevel;
+    
+        function fireReady() {
+        
+            if (ready) { return; }
+            ready = true;
+        
+            for (var i = 0, l = readyFns.length; i < l; i++) {
+                readyFns[i]();
+            }
+        
+        }
+    
+        function scrollCheck() {
+        
+            if (ready) { return; }
+        
+            try {
+                // http://javascript.nwbox.com/IEContentLoaded/
+                docEl.doScroll("left");
+            } catch(e) {
+                setTimeout(scrollCheck, 1);
+                return;
+            }
+        
+            // DOM ready
+            fireReady();
+        
+        }
+    
+        function DOMContentLoaded() {
+        
+            if ( addEventListener ) {
+                doc.removeEventListener(dcl, DOMContentLoaded, false);
+                fireReady();
+            } else {
+                if ( attachEvent && doc.readyState === 'complete' ) {
+                    doc.detachEvent(orsc, DOMContentLoaded);
+                    fireReady();
+                }
+            }
+        
+        }
+        
+        function onReady(fn) {
+        
+            readyFns.push(fn);
+        
+            if ( ready ) { return fn(); }
+            if ( bound ) { return; }
+        
+            bound = true;
+        
+            if ( addEventListener ) {
+                doc.addEventListener(dcl, DOMContentLoaded, false);
+                window.addEventListener('load', fireReady, false); // fallback to window.onload
+            } else {
+                if ( attachEvent ) {
+                
+                    // IE Event model
+                
+                    doc.attachEvent(orsc, DOMContentLoaded);
+                    window.attachEvent('onload', fireReady); // fallback to window.onload
+                
+                    try {
+                        atTopLevel = !window.frameElement;
+                    } catch(e) {}
+                
+                    if ( docEl.doScroll && atTopLevel ) {
+                        scrollCheck();
+                    }
+                
+                }
+            }
+        
+        }
+    
+        return onReady;
+    
+    }());
+
+
+    /////////////////////////
 
 
 
@@ -572,12 +580,12 @@ var ready = (function(){
                 var scripts = document.getElementsByTagName("script");
                 return scripts[scripts.length - 1];
             },
-			
-			// Wrapper around getScript, allowing cacheUrl for development
-			getScript: function(srcs, callback, options){
-			    var i, length;
-			    
-			    // Development mode: cache JavaScript files
+            
+            // Wrapper around getScript, allowing cacheUrl for development
+            getScript: function(srcs, callback, options){
+                var i, length;
+                
+                // Development mode: cache JavaScript files
                 if (this.getConfig('development')){
                     if (typeof srcs === 'string'){
                         srcs = [srcs];
@@ -586,7 +594,7 @@ var ready = (function(){
                         srcs[i] = this.cacheUrl(srcs, 1); // cache for 1ms
                     }
                 }
-			    getScript(srcs, callback, options);
+                getScript(srcs, callback, options);
             },
             
             /**
@@ -775,7 +783,7 @@ var ready = (function(){
                         return {};
                     }
                     function reverse (s) {
-                        	return s.split('').reverse().join('');
+                            return s.split('').reverse().join('');
                     }
 
                     var
@@ -1892,4 +1900,4 @@ Sqwidget.ready(function() {
     }
 });
  
-/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
+
