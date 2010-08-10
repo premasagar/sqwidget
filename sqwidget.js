@@ -88,7 +88,7 @@ var Sqwidget;
 
 /* This function may be safely removed, if console logging is not required for debugging */
         
-    sqwidgetConsole = (function () {
+    sqwidgetConsole = this.sqwidgetConsole || (function () {
         var
             window = this,
             ua = window.navigator.userAgent,
@@ -177,11 +177,10 @@ var Sqwidget;
     // Determine if console logging is required
     if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole) {
         this.sqwidgetDebug = true;
+    }
+    if (this.sqwidgetDebug){
         _ = sqwidgetConsole;
     }
-
-
-
 
 
     /////////////////////////
@@ -1021,10 +1020,7 @@ var Sqwidget;
          * Locate and start widgets in this page. Typically called by Sqwidget.ready() function
          */
         startWidgets: function () {
-            var 
-                _ = Sqwidget._,
-                // get widgets in the page as Widget objects
-                widgets = Sqwidget.widgetsInDom();
+            var widgets = Sqwidget.widgetsInDom(); // get widgets in the page as Widget objects
 
             _('found ' + widgets.length.toString() + ' widget divs:');
 
@@ -1032,6 +1028,8 @@ var Sqwidget;
             // load templates as needed
             jQuery.each(widgets, function (w, widget) {
                 _('init for w: ' + widgets[w].toString());
+                _('widget', widget);
+                _('widget.init', widget.init.toString());
                 widget.init();
             });    
             jQuery.each(widgets, function (w, widget) {
