@@ -733,7 +733,7 @@ var Sqwidget;
                     if (!callbacks) {
                         callbacks = this.onjQueryReady.callbacks = [];
                         // load jQuery
-                        this.getScript(jQuerySettings.src, function () {
+                        getScript(jQuerySettings.src, function () {
                             $ = window.jQuery;
                             jQuery = $;
                             
@@ -934,9 +934,10 @@ var Sqwidget;
                 else {
                     this.dependencyRegister[name] = {name: name, version: minVersion, loaded: false, module: null, clients: [widget], config: depConfig};
                     // initiate load
+                    _(basePath, pluginPath);
                     loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
                     _('loading dependency: '  + name + ', ' + loadPath);
-                    this.getScript(loadPath, function () {});
+                    getScript(loadPath);
                 }
             }
         },
@@ -984,6 +985,7 @@ var Sqwidget;
          */
          
         plugin: function (name, module, version) {
+            _('plugin registration: ', name, version);
             var dep = this.dependencyRegister[name],
                 i, clients;
             if (typeof(dep) === 'undefined') {
@@ -1028,8 +1030,6 @@ var Sqwidget;
             // load templates as needed
             jQuery.each(widgets, function (w, widget) {
                 _('init for w: ' + widgets[w].toString());
-                _('widget', widget);
-                _('widget.init', widget.init.toString());
                 widget.init();
             });    
             jQuery.each(widgets, function (w, widget) {
@@ -1414,7 +1414,7 @@ var Sqwidget;
             
             //path to the base 
             if (templateName.lastIndexOf(".js") === templateName.length - 3) {
-                jQuery.getScript(templateName); //loading to continue on callback
+                getScript(templateName); // this will call the Sqwidget.templateText method
             }
             else {
             
