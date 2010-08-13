@@ -513,7 +513,7 @@ var Sqwidget;
 
     /*
     == tim.js ==
-        A teeny micro-templating function for JavaScript.
+        A tiny JavaScript micro-templating script.
         http://gist.github.com/521352
     */
     tim = (function(){
@@ -771,7 +771,7 @@ var Sqwidget;
                     if (!callbacks) {
                         callbacks = this.onjQueryReady.callbacks = [];
                         // load jQuery
-                        getScript(jQuerySettings.src, function () {
+                        Sqwidget.getScript(jQuerySettings.src, function () {
                             $ = window.jQuery;
                             jQuery = $;
                             
@@ -975,7 +975,7 @@ var Sqwidget;
                     _(basePath, pluginPath);
                     loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
                     _('loading dependency: '  + name + ', ' + loadPath);
-                    getScript(loadPath);
+                    Sqwidget.getScript(loadPath);
                 }
             }
         },
@@ -1430,7 +1430,7 @@ var Sqwidget;
             
             //path to the base 
             if (templateName.lastIndexOf(".js") === templateName.length - 3) {
-                getScript(templateName); // this will call the Sqwidget.templateText method
+                Sqwidget.getScript(templateName); // this will call the Sqwidget.templateText method
             }
             else {
             

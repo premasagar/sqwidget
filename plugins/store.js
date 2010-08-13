@@ -3,7 +3,7 @@
 /**
  * Offline store - wrapper for offline storage.  Basically a wrapper
  * around jStorage including generating nice ids to store stuff, but 
- * later to handle full offline widets.  Later.
+ * later to handle full offline widgets.
  * @author Graeme Sutherland
  */
  
@@ -668,8 +668,8 @@
         
         self.set = function(key, value){
             var wrap = {
-                    t: new Date().getTime(), // timestamp
-                    v: value                 // value being stored
+                    t: (new Date()).getTime(), // timestamp
+                    v: value                   // value being stored
                 },
                 k = self.widgetStoreKey(key),
                 storageType = self.type(),
