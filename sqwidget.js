@@ -511,6 +511,45 @@ var Sqwidget;
     /////////////////////////
 
 
+    /*
+    == tim.js ==
+        A teeny micro-templating function for JavaScript.
+        http://gist.github.com/521352
+    */
+    tim = (function(){
+        var starts  = "{{",
+            ends    = "}}",
+            path    = "[a-z0-9_][\\.a-z0-9_]*", // e.g. config.person.name
+            pattern = new RegExp(starts + "("+ path +")" + ends, "gim"),
+            length  = "length",
+            undef;
+        
+        return function(template, data){
+            return template.replace(pattern, function(tag){
+                var ref = tag.slice(starts[length], 0 - ends[length]),
+                    path = ref.split("."),
+                    len = path[length],
+                    lookup = data,
+                    i = 0;
+
+                for (; i < len; i++){
+                    if (lookup === undef){
+                        break;
+                    }
+                    lookup = lookup[path[i]];
+                    
+                    if (i === len - 1){
+                        return lookup;
+                    }
+                }
+            });
+        };
+    }());
+
+
+    /////////////////////////
+
+
 
 // **
 // SETUP SQWIDGET
@@ -1840,42 +1879,14 @@ var Sqwidget;
         };
 
        /**
-        * safetmpl
+        * tim.js
         * http://gist.github.com/521352
         * A simple, safe and secure JavaScript micro-templating function.
         * It doesn't use eval or (new Function), so it cannot execute malicious code.
         * @param {String} template data to have template tag matching performed on
         * @param {Object} data Data to render into template as keyed values
         */
-        self.renderTemplate = (function(){
-            var starts  = "{{",
-                ends    = "}}",
-                path    = "[a-z][\\.a-z0-9_]*", // e.g. config.person.name
-                pattern = new RegExp(starts + "("+ path +")" + ends, "gim"),
-                length  = "length",
-                undef;
-            
-            return function(template, data){
-                return template.replace(pattern, function(tag){
-                    var ref = tag.slice(starts[length], 0 - ends[length]),
-                        path = ref.split("."),
-                        len = path[length],
-                        lookup = data,
-                        i = 0;
-
-                    for (; i < len; i++){
-                        if (lookup === undef){
-                            break;
-                        }
-                        lookup = lookup[path[i]];
-                        
-                        if (i === len - 1){
-                            return lookup;
-                        }
-                    }
-                });
-            };
-        }());
+        self.renderTemplate = tim;
         
         /**
          * Run the script controller
