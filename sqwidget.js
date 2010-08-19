@@ -568,7 +568,7 @@ var Sqwidget;
          */
         settings: { // TODO: Some props (e.g. 'lightbox') would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
             jQuery: {
-                minVersion: '1.4', // minimum version of jQuery to allow, if already in DOM
+                minVersion: '1.4.2', // minimum version of jQuery to allow, if already in DOM
                 src: 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
                 //src: 'jquery.js',
                 // Set noConflict properties to true to avoid global '$' and/or 'jQuery' variables in the global namespace. If '$' is false, then 'jQuery' is assumed to be false.
@@ -1677,18 +1677,7 @@ var Sqwidget;
             //TODO check all plugins loaded
             // TODO: merge this block with .checkRun() method below
             if (allPluginsLoaded()) {
-                if (!readyRun) {
-                    readyRun = true;
-                    if (readyFn) {
-                        var widget = self;
-                        _('calling widget.ready(): ' + container.id);
-                        readyFn.call(self);
-                    }
-                    else {
-                        //TODO decide what extra contents will be displayed here
-                        self.setTemplate('default', {}, null);
-                    }
-                }
+                self.checkRun();
             }
             sqwidget.runAll();
         };
@@ -1698,9 +1687,13 @@ var Sqwidget;
                 if (!readyRun) {
                     readyRun = true;
                     if (readyFn) {
-                        var widget = self;
+                        var widget = self,
+                            widgetWrapper = jQuery(widget);
+                            
                         _('calling widget.ready(): ' + container.id);
+                        widgetWrapper.trigger('readyStart');
                         readyFn.call(self);
+                        widgetWrapper.trigger('readyEnd');
                     }
                     else {
                         //TODO decide what extra contents will be displayed here
