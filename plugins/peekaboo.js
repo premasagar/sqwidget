@@ -16,8 +16,10 @@
 */
 
 
-(function($){
-
+(function(){
+    
+function peekabooInit($) {
+    
 /////////////////////////////////////////
 
 // outer variables so that we can expose methods to manipulate them
@@ -140,10 +142,11 @@ peekaboo.remoteControl = function(underControl){
 
 
 /////////////////////////////////////////
-
-
-Sqwidget.plugin('peekaboo', function(){
     return peekaboo;
+}
+
+Sqwidget.plugin('peekaboo', function(sqwidget, widget, jQuery, options){
+    return peekabooInit(jQuery);
 }, '0.1.0', ['jquery']);
 
-}(jQuery));
+}());
