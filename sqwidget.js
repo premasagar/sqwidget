@@ -511,6 +511,45 @@ var Sqwidget;
     /////////////////////////
 
 
+    /*
+    == tim.js ==
+        A tiny JavaScript micro-templating script.
+        http://gist.github.com/521352
+    */
+    tim = (function(){
+        var starts  = "{{",
+            ends    = "}}",
+            path    = "[a-z0-9_][\\.a-z0-9_]*", // e.g. config.person.name
+            pattern = new RegExp(starts + "("+ path +")" + ends, "gim"),
+            length  = "length",
+            undef;
+        
+        return function(template, data){
+            return template.replace(pattern, function(tag){
+                var ref = tag.slice(starts[length], 0 - ends[length]),
+                    path = ref.split("."),
+                    len = path[length],
+                    lookup = data,
+                    i = 0;
+
+                for (; i < len; i++){
+                    if (lookup === undef){
+                        break;
+                    }
+                    lookup = lookup[path[i]];
+                    
+                    if (i === len - 1){
+                        return lookup;
+                    }
+                }
+            });
+        };
+    }());
+
+
+    /////////////////////////
+
+
 
 // **
 // SETUP SQWIDGET
@@ -661,7 +700,6 @@ var Sqwidget;
         /**
          * Compare a version string with another, e.g. '1.2.6' with '1.3.2'
          * @returns -1 (a<b), 0 (a==b) or 1 (b>a)
-         * TODO: Treat '1.4.0' the same as '1.4'
          */
         compareVersion: function (a, b) {
             var i, n = Number;
@@ -733,7 +771,7 @@ var Sqwidget;
                     if (!callbacks) {
                         callbacks = this.onjQueryReady.callbacks = [];
                         // load jQuery
-                        getScript(jQuerySettings.src, function () {
+                        Sqwidget.getScript(jQuerySettings.src, function () {
                             $ = window.jQuery;
                             jQuery = $;
                             
@@ -937,7 +975,7 @@ var Sqwidget;
                     _(basePath, pluginPath);
                     loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
                     _('loading dependency: '  + name + ', ' + loadPath);
-                    getScript(loadPath);
+                    Sqwidget.getScript(loadPath);
                 }
             }
         },
@@ -1158,14 +1196,14 @@ var Sqwidget;
                 // ================
 
                 // Instance methods
-                prototype: $.extend( // TODO: Decide if a number of these prototype methods should be moved to static functions on the Sqwidget object
-                    function () {},
+                // TODO: A number of these methods should be moved to static functions on the Sqwidget object
+                prototype: $.extend(
+                    function(){},
                     {
-
                         // Insert widget HTML, DOM node or jQuery object into the DOM, afer the <script> element that originally created the widget instance. This position is cached, for later retri  .
                         // Optional args: insertPosition to override last in body; verb to use for adding content - default 'after' (could use 'before', 'append', 'prepend', etc)
                         // TODO: clarify how this is connected with method to replace DOM contents (e.g. as .html(newContents))
-                        // TODO: Does this really need to store the insertPosition? In fact, is this method even required?
+                        // TODO: Does this really need to store the insertPosition? In fact, is this method even required?!
                         insert: function (contents, insertPosition, verb) {
                             var $context = this.insertPosition = $(insertPosition || this.insertPosition || this.thisDomScript());
                             if (!$context) {
@@ -1231,37 +1269,15 @@ var Sqwidget;
                             function isCss(str) {
                                 return (/@|\{/m).test(str);
                             }
-                            $('head')
-                                .append(isCss(css) ? 
+                            $('head').append(
+                                isCss(css) ? 
                                     '<style type="text/css">' + css + '</style>' :
                                     '<link type="text/css" rel="stylesheet" href="' + (cacheTime ? this.cacheUrl(css, cacheTime) : css) + '" />'
-                                );
-                        },
-    
-                        // Modified from John Resig's http://ejohn.org/blog/javascript-micro-templating
-                        // TODO make this pluggable
-                        tmpl: function tmpl(str, data) {
-                            var fn = new Function("obj",
-                                "var p=[],print=function(){p.push.apply(p,arguments);};" +
-                                // Introduce the data as local variables using with(){}
-                                "with(obj){p.push('" +
-                                // Convert the template into pure JavaScript
-                                str
-                                    .replace(/[\r\t\n]/g, " ")
-                                    .split("<%").join("\t")
-                                    .replace(/((^|%>)[^\t]*)'/g, "$1\r")
-                                    .replace(/\t=(.*?)%>/g, "',$1,'")
-                                    .split("\t").join("');")
-                                    .split("%>").join("p.push('")
-                                    .split("\r").join("\\'") +
-                                "');}return p.join('');");
-                            
-                            // Apply function to data, with this widget accessible via 'this' or 'that' variables
-                            return fn.call(this, $.extend(true, {$: $, sqwidget: this}, data));
+                            );
                         }
                     }
                 )
-                }
+            }
         );
     });
     
@@ -1414,7 +1430,7 @@ var Sqwidget;
             
             //path to the base 
             if (templateName.lastIndexOf(".js") === templateName.length - 3) {
-                getScript(templateName); // this will call the Sqwidget.templateText method
+                Sqwidget.getScript(templateName); // this will call the Sqwidget.templateText method
             }
             else {
             
@@ -1863,28 +1879,14 @@ var Sqwidget;
         };
 
        /**
-        * Modified from John Resig's http://ejohn.org/blog/javascript-micro-templating
-        * @param {String} str data to have template tag matching performed on
+        * tim.js
+        * http://gist.github.com/521352
+        * A simple, safe and secure JavaScript micro-templating function.
+        * It doesn't use eval or (new Function), so it cannot execute malicious code.
+        * @param {String} template data to have template tag matching performed on
         * @param {Object} data Data to render into template as keyed values
         */
-        self.renderTemplate =  function (str, data) {
-            var fn = new Function("obj",
-                "var p=[],print=function(){p.push.apply(p,arguments);};" +
-                // Introduce the data as local variables using with(){}
-                "with(obj){p.push('" +
-                // Convert the template into pure JavaScript
-                str
-                    .replace(/[\r\t\n]/g, " ")
-                    .split("{{").join("\t")
-                    .replace(/((^|\}\})[^\t]*)'/g, "$1\r")
-                    .replace(/\t(.*?)\}\}/g, "',$1,'")
-                    .split("\t").join("');")
-                    .split("}}").join("p.push('")
-                    .split("\r").join("\\'") +
-                        "');}return p.join('');");
-            
-            return fn.call(this, jQuery.extend(true, {jQuery: jQuery, sqwidget: sqwidget, widget: self}, data));
-        };
+        self.renderTemplate = tim;
         
         /**
          * Run the script controller

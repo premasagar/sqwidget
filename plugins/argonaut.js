@@ -26,7 +26,6 @@
     Sqwidget.plugin('argonaut', function (sqwidget, widget, jQuery, newConfig) {
         var 
             self = {},
-            //TODO   _ = sqwidget._ || (window._ && window._.console || function () {};
             _ = sqwidget._,
             endpointName = 'jsonp',
             config = {
