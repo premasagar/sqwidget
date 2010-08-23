@@ -5,7 +5,7 @@
 */
 
 
-(function($){
+(function(){
 
 
     Sqwidget.plugin('important', function(sqwidget, widget, jQuery, options){
@@ -316,4 +316,4 @@
     return jQuery.important;
     }, '0.1.0', ['jquery']);
 
-}(jQuery));
+}());

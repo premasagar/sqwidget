@@ -1,4 +1,6 @@
-(function($){
+(function() {
+
+function pngfix_old_init($) {
     var self=this;
 /////////////////////////////////////////
 
@@ -351,11 +353,12 @@ self.pngfix.applyVmlOffsets = function(selectorOrElement){
     });
 };
 
+return self;
 /////////////////////////////////////////
+}
 
-
-Sqwidget.plugin('pngfix_old', function(){
-    return self;
+Sqwidget.plugin('pngfix_old', function(sqwidget, widget, jQuery, options){
+    return pngfix_old_init(jQuery);
 }, '0.0.7', ['jquery']);
 
-}(jQuery));
+}());
