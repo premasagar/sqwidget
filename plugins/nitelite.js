@@ -376,18 +376,23 @@ Sqwidget.plugin('nitelite', function (sqwidget, widget, jQuery, options) {
 			                    return this;
 			                },
 			                
-			                close: function(handler, eventType){
+			                close: function(delegate, eventType){
 			                    var lb = this;
-			                    showFlash();
+			                    
+			                    function closeHandler(){
+			                        lb.close();
+			                    }
 			                    
 			                    // Assign a handler element (some kind of jQuery collection) to trigger.close()
-			                    if (typeof handler === 'object'){
-			                        handler.bind(eventType || 'click', function(){
-			                            lb.close();
-			                        });
+			                    if (typeof delegate !== 'undefined'){
+			                        if (typeof delegate === 'string'){
+			                            delegate = jQuery(delegate, lb.container);
+			                        }
+			                        jQuery(delegate).bind(eventType || 'click', closeHandler);
 			                    }
 			                    else {
-				                    this.overlay.remove();
+			                        showFlash();
+                                    this.overlay.remove();
 				                    this.container
 				                        .empty()
 				                        .remove();
