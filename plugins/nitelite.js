@@ -388,7 +388,10 @@ Sqwidget.plugin('nitelite', function (sqwidget, widget, jQuery, options) {
 			                        if (typeof delegate === 'string'){
 			                            delegate = jQuery(delegate, lb.container);
 			                        }
-			                        jQuery(delegate).bind(eventType || 'click', closeHandler);
+	                                else {
+	                                    delegate = jQuery(delegate);
+	                                }
+	                                delegate.bind(eventType || 'click', closeHandler);
 			                    }
 			                    else {
 			                        showFlash();
