@@ -698,32 +698,11 @@ var Sqwidget;
         },
         
         /**
-         * Compare a version string with another, e.g. '1.2.6' with '1.3.2'
-         * @returns -1 (a<b), 0 (a==b) or 1 (b>a)
-         */
-        compareVersion: function (a, b) {
-            var i, n = Number;
-            a = a.split('.');
-            b = b.split('.');
- 
-            for (i = 0; i < a.length; i += 1) {
-                if (typeof b[i] === 'undefined') {
-                    return -1;
-                }
-                else if (n(a[i]) === n(b[i])) {
-                    continue;
-                }
-                return (n(a[i]) > n(b[i])) ? -1 : 1;
-            }
-            return (b.length > a.length) ? 1 : 0;
-        },
-        
-        /**
          * Test if a version string is at least as high as the minimum version required
          * @returns boolean true or false
          */
         hasMinVersion: function (testVersion, minVersion) {
-            return (this.compareVersion(minVersion, testVersion) >= 0);
+            return testVersion >= minVersion;
         },
         
         
@@ -1899,6 +1878,11 @@ var Sqwidget;
         self.toString = function () {
             return 'type: ' + widgetType + ' container id: ' + div.id + ' dataSqwidget: ' + props(dataSqwidget) + ' dataSqwidgetSettings: ' + props(settings);
         };
+        
+        // TEMP: jQuery has a bug that is to be released in v1.4.3 - in the meantime, jQuery errors on unbinding custom events from a plain native JavaScript object: http://forum.jquery.com/topic/javascript-error-when-unbinding-a-custom-event-using-jquery-1-4-2
+        if (!Sqwidget.hasMinVersion(jQuery.fn.jquery, '1.4.3')){
+            self.addEventListener = self.removeEventListener = function(){};
+        }
         
         return self;
     };
