@@ -41,7 +41,7 @@
         /* init transport services */
         transportService = {
             getJSON: jQuery.getJSON,
-            getScript: jQuery.getScript            
+            getScript: Sqwidget.getScript            
         };
 
         /**
