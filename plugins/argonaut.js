@@ -18,7 +18,9 @@
         /** simple in-memory cache */
         cache = {},
         /** storage service */
-        storeService = null;
+        storeService = null,
+        /** getJSONService */
+        transportService = {};
         
     //expose in Sqwidget namespace for debugging
     Sqwidget.keystore = keystore;
@@ -32,9 +34,15 @@
                 cacheOptions: {cache: true, store: true, expiry: 30 * 60 }
             };
         
-        
-        /* init config from supplied*/
+         
+        /* init config from supplied */
         jQuery.extend(true, config, newConfig);
+
+        /* init transport services */
+        transportService = {
+            getJSON: jQuery.getJSON,
+            getScript: jQuery.getScript            
+        };
 
         /**
          * Set up jsonp endpoint -- globally for Sqwidget, to redirect to appropriate argonaut instance
@@ -58,6 +66,18 @@
                 }
             };
         }
+        
+        self.addCacheEntry = function (key, data, opts) {
+            _('argonaut: adding to cache ' + key);
+            data.storeTime = (new Date()).getTime();
+            if (opts.store && storeService) {
+                storeService.set(key, data);
+            }
+            else {
+                cache[key] = data;
+            }
+        };
+            
             
         /**
          * Get JSON from remote url and call callback with decoded object
@@ -66,16 +86,37 @@
          * @param {Function} callback Callback function on success (or any condition, so it seems)
          * @param {object} options map of options, currently not used
          * TODO:  or provide a global function object that will receive the call and get it into here ?? plan for this?
-         * TODO: timeout error handling?
+         * TODO: refit with cache model as well
          */
         self.getJSON = function (url, data, callback, options) {
+            var 
+                opts = {},
+                fullKey = widget.getConfig('name', 'sqwidgetwidget') + '-' + url,
+                cacheEntry;
 
-            _('argonaut: get request: ' + url);
-            jQuery.get(url, data, function (d, textStatus) {
-                //TODO improve error handling here, trap exception and use a widget error handler
-                var dj = jQuery.parseJSON(d);
-                callback(dj, textStatus);
-            });
+            _('argonaut: get JSON request: ' + url);
+            _('argonaut: full key is: ' + fullKey);
+            
+            jQuery.extend(opts, config.cacheOptions, options);
+            // check if already cached
+            cacheEntry = self.getCacheEntry(fullKey, opts);
+            if (cacheEntry) {
+                _('argonaut: returning cached entry for ' + fullKey);
+                callback(cacheEntry.data);
+            }
+            else {    
+                // TODO abstract this call   
+                transportService.getJSON(url, function (rawData, textStatus) {
+                    var 
+                        data = {data: rawData};
+                        
+                    if (opts && (opts.cache || opts.store)) {
+                        self.addCacheEntry(fullKey, data, opts);
+                    }
+                    callback(data.data, textStatus);
+                });
+            }
+            
         };
     
         /**
@@ -108,7 +149,7 @@
                 else {
                     keystore[fullKey] = [[self, callback, options]];
                 }
-                jQuery.getScript(url);
+                transportService.getScript(url);
             }
         };
 
@@ -117,14 +158,7 @@
          */
         self.jsonpHandler = function (callback, jsonpValue, fullKey, options) {
             if (options && (options.cache || options.store)) {
-                _('argonaut: caching ' + fullKey);
-                jsonpValue.storeTime = (new Date()).getTime();
-                if (options.store && storeService) {
-                    storeService.set(fullKey, jsonpValue);
-                }
-                else {
-                    cache[fullKey] = jsonpValue;
-                }
+                self.addCacheEntry(fullKey, jsonpValue, options);
             }
             callback(jsonpValue.data);
         };
@@ -135,6 +169,14 @@
          */
         self.setStoreService = function (ss) {
             storeService = ss;
+        };
+        
+        /**
+         * Set transport services as needed
+         * @param object An object providing methods for transports
+         */
+        self.setTransportService = function (newTransportService) {
+            jQuery.extend(true, transportService, newTransportService);
         };
     
         self.getCacheEntry = function (key, options) {
