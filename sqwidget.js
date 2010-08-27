@@ -624,7 +624,7 @@ var Sqwidget;
         },
         
         getConfig: function (key) {
-            return this.settings[key];
+            return Sqwidget.settings[key];
         },
         
         
@@ -636,14 +636,14 @@ var Sqwidget;
         // Wrapper around getScript, allowing cacheUrl for development
         getScript: function (srcs, callback, options) {
             var i, length;
-            
             // Development mode: cache JavaScript files
-            if (this.getConfig('development')) {
+            if (Sqwidget.getConfig('development')) {
                 if (typeof srcs === 'string') {
                     srcs = [srcs];
                 }
-                for (i = 0; i < length; i += 1) {
-                    srcs[i] = this.cacheUrl(srcs, 1); // cache for 1ms
+                for (i = 0; i < srcs.length; i += 1) {
+                    srcs[i] = Sqwidget.cacheUrl(srcs[i], 0); // never cache
+                    _('getScript: cache url: ' + srcs[i]);
                 }
             }
             getScript(srcs, callback, options);
@@ -1157,7 +1157,12 @@ var Sqwidget;
                     msInADay = 24 * 60 * 60 * 1000;
                     interval = intervalDays * msInADay;
                     now = new Date().getTime();
-                    chunk = now - (now % Math.round(interval)); // Math.round used to avoid JavaScript float point error
+                    if (!intervalDays) {
+                        return now;
+                    } 
+                    else {
+                        chunk = now - (now % Math.round(interval)); // Math.round used to avoid JavaScript float point error
+                    }
                     return Number(((chunk - baseline) / msInADay).toFixed(decimalPlaces)) || 0;
                 },
                 

@@ -41,8 +41,8 @@
         /* init transport services */
         transportService = {
             getJSON: jQuery.getJSON,
-            getScript: sqwidget.getScript            
-        };
+            getScript: Sqwidget.getScript
+        };            
 
         /**
          * Set up jsonp endpoint -- globally for Sqwidget, to redirect to appropriate argonaut instance
