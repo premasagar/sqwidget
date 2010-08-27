@@ -107,12 +107,13 @@
             else {    
                 // TODO abstract this call   
                 transportService.getJSON(url, function (rawData, textStatus) {
-                    var 
-                        data = {data: rawData};
-                        
-                    if (opts && (opts.cache || opts.store)) {
+                    var data;
+
+                    if (opts && (opts.cache || opts.store) && rawData !== undefined) {
                         self.addCacheEntry(fullKey, data, opts);
                     }
+
+                    data = {data: rawData};
                     callback(data.data, textStatus);
                 });
             }
