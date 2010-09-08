@@ -640,7 +640,7 @@
             defaultOptions = {},
             
             // per-template storage
-            store_key = 'sqwidget-' + (widget.getConfig('name') || 'anon'),
+            store_key = 'sqwidget-' + (widget.getConfig('type') || 'anon'),
             jStorage, options;
         
         // init jQuery JSON

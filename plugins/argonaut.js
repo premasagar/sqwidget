@@ -91,7 +91,7 @@
         self.getJSON = function (url, data, callback, options) {
             var 
                 opts = {},
-                fullKey = widget.getConfig('name', 'sqwidgetwidget') + '-' + url,
+                fullKey = widget.getConfig('type', 'sqwidgetwidget') + '-' + url,
                 cacheEntry;
 
             _('argonaut: get JSON request: ' + url);
@@ -127,7 +127,7 @@
             // keep the key
             var 
                 opts = {},
-                fullKey = widget.getConfig('name', 'sqwidgetwidget') + '-' + key,
+                fullKey = widget.getConfig('type', 'sqwidgetwidget') + '-' + key,
                 cacheEntry;
 
             jQuery.extend(opts, config.cacheOptions, options);

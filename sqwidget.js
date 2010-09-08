@@ -894,6 +894,7 @@ var Sqwidget;
          */
         setTemplateType: function (template, type) {
             this.widgetTemplatesByType[type] = template;
+            template.config.type = type;
         },
         
          /**
@@ -1411,6 +1412,8 @@ var Sqwidget;
             }
             _('template type is ' + type);
             sqwidget.widgetTemplatesByType[type] = self;
+            templateConfig.type = type;
+            
             
             //path to the base 
             if (templateType.lastIndexOf(".js") === templateType.length - 3) {
