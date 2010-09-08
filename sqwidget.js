@@ -52,7 +52,8 @@ var Sqwidget;
         window = this,
         document = window.document,
         Template,
-        Widget;
+        Widget,
+        tim;
         
 
 // **
@@ -178,7 +179,7 @@ var Sqwidget;
     if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole) {
         this.sqwidgetDebug = true;
     }
-    if (this.sqwidgetDebug){
+    if (this.sqwidgetDebug) {
         _ = sqwidgetConsole;
     }
 
@@ -516,29 +517,29 @@ var Sqwidget;
         A tiny JavaScript micro-templating script.
         http://gist.github.com/521352
     */
-    tim = (function(){
+    tim = (function () {
         var starts  = "{{",
             ends    = "}}",
             path    = "[a-z0-9_][\\.a-z0-9_]*", // e.g. config.person.name
-            pattern = new RegExp(starts + "("+ path +")" + ends, "gim"),
+            pattern = new RegExp(starts + "(" + path + ")" + ends, "gim"),
             length  = "length",
             undef;
         
-        return function(template, data){
-            return template.replace(pattern, function(tag){
+        return function (template, data) {
+            return template.replace(pattern, function (tag) {
                 var ref = tag.slice(starts[length], 0 - ends[length]),
                     path = ref.split("."),
                     len = path[length],
                     lookup = data,
                     i = 0;
 
-                for (; i < len; i++){
-                    if (lookup === undef){
+                for (; i < len; i += 1) {
+                    if (lookup === undef) {
                         break;
                     }
                     lookup = lookup[path[i]];
                     
-                    if (i === len - 1){
+                    if (i === len - 1) {
                         return lookup;
                     }
                 }
@@ -1183,7 +1184,7 @@ var Sqwidget;
                 // Instance methods
                 // TODO: A number of these methods should be moved to static functions on the Sqwidget object
                 prototype: $.extend(
-                    function(){},
+                    function () {},
                     {
                         // Insert widget HTML, DOM node or jQuery object into the DOM, afer the <script> element that originally created the widget instance. This position is cached, for later retri  .
                         // Optional args: insertPosition to override last in body; verb to use for adding content - default 'after' (could use 'before', 'append', 'prepend', etc)
@@ -1262,7 +1263,7 @@ var Sqwidget;
                         }
                     }
                 )
-            }
+                }
         );
     });
     
@@ -1888,8 +1889,8 @@ var Sqwidget;
         };
         
         // TEMP: jQuery has a bug that is to be released in v1.4.3 - in the meantime, jQuery errors on unbinding custom events from a plain native JavaScript object: http://forum.jquery.com/topic/javascript-error-when-unbinding-a-custom-event-using-jquery-1-4-2
-        if (!Sqwidget.hasMinVersion(jQuery.fn.jquery, '1.4.3')){
-            self.addEventListener = self.removeEventListener = function(){};
+        if (!Sqwidget.hasMinVersion(jQuery.fn.jquery, '1.4.3')) {
+            self.addEventListener = self.removeEventListener = function () {};
         }
         
         return self;
