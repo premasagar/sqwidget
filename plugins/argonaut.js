@@ -52,10 +52,10 @@
         if (!Sqwidget[endpointName]) {
             Sqwidget[endpointName] = function (jsonpValue) {
                 var 
-                    templateName = jsonpValue.type,
-                    fullKey = templateName + '-' + jsonpValue.key,
+                    templateType = jsonpValue.type,
+                    fullKey = templateType + '-' + jsonpValue.key,
                     arr = null;
-                _('got data for ' + templateName + ' full key ' + fullKey);
+                _('got data for ' + templateType + ' full key ' + fullKey);
                 // call callbacks and remove when called
                 if (keystore[fullKey]) {
                     while (keystore[fullKey].length > 0) {

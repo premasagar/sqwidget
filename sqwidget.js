@@ -603,7 +603,7 @@ var Sqwidget;
          * Sqwidget widget templates by self-declared names
          * TODO still needed
          */
-        widgetTemplatesByName: {},
+        widgetTemplatesByType: {},
         
         /**
          * Set global configuration (config)
@@ -687,8 +687,8 @@ var Sqwidget;
         templateText: function (jsonData) {
             var myTemplate;
             _('Sqwidget.template text called');
-            if (jsonData && jsonData.name) {
-                myTemplate = this.widgetTemplatesByName[jsonData.name];
+            if (jsonData && jsonData.type) {
+                myTemplate = this.widgetTemplatesByType[jsonData.type];
                 if (myTemplate) {
                     _('running Template.templateText');
                     myTemplate.templateText(jsonData.template);
@@ -884,16 +884,16 @@ var Sqwidget;
          * Retrieve widget template by name (to do something like call a listener/callback
          * with JSONP data for example)
          */
-        getTemplateByName: function (templateName) {
-            return this.widgetTemplatesByName[templateName];
+        getTemplateByType: function (templateType) {
+            return this.widgetTemplatesByType[templateType];
         },
         
         /**
-         *  Set name for the given template.
-         *  Note, if a widget is reconfigured, it will get registered against a second name
+         *  Set type for the given template.
+         *  Note, if a widget is reconfigured, it will get registered against a second type
          */
-        setTemplateName: function (template, name) {
-            this.widgetTemplatesByName[name] = template;
+        setTemplateType: function (template, type) {
+            this.widgetTemplatesByType[type] = template;
         },
         
          /**
@@ -1277,7 +1277,7 @@ var Sqwidget;
         var 
             self = {}, //neoclassical
             sqwidget = s,
-            templateName = t,
+            templateType = t,
             /** set of widgets (instances on the page) for this template */
             widgets = [],
             templates = {},
@@ -1313,7 +1313,7 @@ var Sqwidget;
         // PRIVATE methods
         
         function parseTemplateFile(template) {
-            _('parsing template file for ' + templateName);
+            _('parsing template file for ' + templateType);
             // TODO document type detection (doctype tells us it is HTML or similar)
             // For now: default body html stored -- and activated immediately
             var 
@@ -1329,7 +1329,7 @@ var Sqwidget;
             else {
                 templateStr = template;
             }
-            _('template: ' + templateName, {head: head, body: body});
+            _('template: ' + templateType, {head: head, body: body});
             if (body !== null) {
                 templates['default'] = body;
             }
@@ -1394,37 +1394,37 @@ var Sqwidget;
                 return '{' + r.join(' ') + '}';
             }
             
-            var name, tn;
-            _('template full name is ' + templateName);
+            var type, tn;
+            _('template full name is ' + templateType);
             // extract name and save it for later
             try {
                 // annoying regex issue to be sorted out sometime
                 // filename match doesn't work unless pathed so adding './' to keep things happy
-                tn = templateName;
+                tn = templateType;
                 if (tn.indexOf('/') === -1) {
                     tn = './' + tn;
                 }
-                name = tn.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
+                type = tn.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
             }
             catch (e) {
-                name = templateName;
+                type = templateType;
             }
-            _('template name is ' + name);
-            sqwidget.widgetTemplatesByName[name] = self;
+            _('template type is ' + type);
+            sqwidget.widgetTemplatesByType[type] = self;
             
             //path to the base 
-            if (templateName.lastIndexOf(".js") === templateName.length - 3) {
-                Sqwidget.getScript(templateName); // this will call the Sqwidget.templateText method
+            if (templateType.lastIndexOf(".js") === templateType.length - 3) {
+                Sqwidget.getScript(templateType); // this will call the Sqwidget.templateText method
             }
             else {
             
-                jQuery.get(templateName, function (data, textStatus, request) {
+                jQuery.get(templateType, function (data, textStatus, request) {
                     // on template loaded
                     _('template data: ' + data);
                     _('template text status: ' + textStatus);
                     if (data.length === 0 || textStatus !== 'success') {
                         // template load failed
-                        errors.push('loading of template ' + templateName + ' failed.');
+                        errors.push('loading of template ' + templateType + ' failed.');
                     }
                     else {
                         _('template loaded');                
@@ -1507,7 +1507,7 @@ var Sqwidget;
                         templateConfig[key] = dict[key];
                     }
                 }
-                sqwidget.setTemplateName(self, templateConfig.name);
+                sqwidget.setTemplateType(self, templateConfig.name);
             }
             return templateConfig;
         };
@@ -1848,8 +1848,8 @@ var Sqwidget;
         * @param {jQuery} place The place to render into [optional]. Otherwise, 
         * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
         */        
-        self.setTemplate = function (name, contents, place) {
-            var d = template.getTemplate(name);
+        self.setTemplate = function (type, contents, place) {
+            var d = template.getTemplate(type);
             if (d) {
                 self.render(d, contents, place);
             }
