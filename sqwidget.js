@@ -1641,8 +1641,8 @@ var Sqwidget;
          */
         // TODO use the template name if not available in the container
         self.getId = function () {
-            if (settings.hasOwnProperty('id')) {
-                return settings.id;
+            if (dataSqwidget.hasOwnProperty('id')) {
+                return dataSqwidget.id;
             }
             else {
                 return container.id;
