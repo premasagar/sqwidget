@@ -364,12 +364,13 @@ Sqwidget.plugin('nitelite', function (sqwidget, widget, jQuery, options) {
 		                        lb.overlay.fillScreen();
 		                        
 		                        // track click of 'Esc' key
-		                        $(document).bind('keydown', function bindEsc(ev){
+		                        function bindEsc(ev) {
                                     if (ev.which === 27){ // ESC key
                                         $(this).unbind('keydown', bindEsc);
                                         lb.close();
                                     }
-                                });
+                                }
+		                        $(document).bind('keydown', bindEsc);
 		                        
 			                    $(lb).triggerHandler('open'); // TODO: The 'open' and 'close' events will fire before the overlay has finished fading in. Is that OK? Should triggerHandler() be called before overlay.add(); Is it better to have an 'openstart' and 'open' event, plus 'closestart' and 'close'?
 			                    lb.center();
