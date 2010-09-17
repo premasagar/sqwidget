@@ -38,6 +38,15 @@ Sqwidget is under rapid development at the moment. An initial release is anticip
 
 h2. Plugins and complementary projects
 
+h3. Tim
+
+"http://github.com/premasagar/tim":http://github.com/premasagar/tim
+
+A tiny, secure JavaScript micro-templating script. Tim lets you write simple templates that uses JavaScript's familiar dot notation. You pass in a JavaScript object that contains all the relevant strings, and they are then substited into the template.
+
+*Status*: Stable. Used in production.
+
+
 h3. Sandie
 
 "http://github.com/premasagar/sandie":http://github.com/premasagar/sandie
@@ -62,7 +71,7 @@ h3. CleanSlate
 
 CleanSlate sandboxes a widget from CSS in the host page, via the use of a reset stylesheet comprised solely of @!important@ rules. This resets all CSS properties, for all HTML elements, back to sensible defaults.
 
-*Status*: Almost complete (requires small tweaks for IE6 and IE7). Modified from the @!important@-based stylesheet used in the "BBC World Service widget":http://dharmafly.com/bbc-world-service-widget.
+*Status*: Beta. Would benefit from improvement in convenience for IE6 and IE7. Modified from the @!important@-based stylesheet used in the "BBC World Service widget":http://dharmafly.com/bbc-world-service-widget.
 
 
 h3. Important
@@ -73,7 +82,7 @@ JavaScript jQuery plugin to manipulate !important rules for HTML elements in the
 
 Combined with CleanSlate, this allows CSS manipulation that is sandboxed from styling in the host document.
 
-*Status*: Stable. Methods for converting external stylesheets still to come.
+*Status*: Stable. Methods for converting external stylesheets are still to come.
 
 
 h3. Nitelite
