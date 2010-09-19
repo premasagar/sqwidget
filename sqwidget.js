@@ -512,34 +512,56 @@ var Sqwidget;
     /////////////////////////
 
 
-    /*
-    == tim.js ==
-        A tiny JavaScript micro-templating script.
-        http://gist.github.com/521352
+    /*!
+    * Tim
+    *   github.com/premasagar/tim
+    *
+    *//*
+        A tiny, secure JavaScript micro-templating script.
+
+        by Premasagar Rose
+            dharmafly.com
+
+        license
+            opensource.org/licenses/mit-license.php
+
+        **
+
+        creates global object
+            tim
+
+        **
+            
+        v0.2.1
+            
     */
-    tim = (function () {
+
+    tim = (function(){
         var starts  = "{{",
             ends    = "}}",
             path    = "[a-z0-9_][\\.a-z0-9_]*", // e.g. config.person.name
-            pattern = new RegExp(starts + "(" + path + ")" + ends, "gim"),
-            length  = "length",
+            pattern = new RegExp(starts + "("+ path +")" + ends, "gi"),
             undef;
         
-        return function (template, data) {
-            return template.replace(pattern, function (tag) {
-                var ref = tag.slice(starts[length], 0 - ends[length]),
-                    path = ref.split("."),
-                    len = path[length],
+        return function(template, data){
+            // Merge the data into the template string
+            return template.replace(pattern, function(tag, ref){
+                var path = ref.split("."),
+                    len = path.length,
                     lookup = data,
                     i = 0;
 
-                for (; i < len; i += 1) {
-                    if (lookup === undef) {
-                        break;
-                    }
+                for (; i < len; i++){
                     lookup = lookup[path[i]];
                     
-                    if (i === len - 1) {
+                    // Error handling for when the property is not found
+                    if (lookup === undef){
+                        // Throw error
+                        throw "tim: '" + path[i] + "' not found in " + tag;
+                    }
+                    
+                    // Success! Return the required value
+                    if (i === len - 1){
                         return lookup;
                     }
                 }
@@ -1861,9 +1883,8 @@ var Sqwidget;
 
        /**
         * tim.js
-        * http://gist.github.com/521352
-        * A simple, safe and secure JavaScript micro-templating function.
-        * It doesn't use eval or (new Function), so it cannot execute malicious code.
+        * http://github.com/premasagar/tim
+        * A tiny, secure JavaScript micro-templating script.
         * @param {String} template data to have template tag matching performed on
         * @param {Object} data Data to render into template as keyed values
         */
