@@ -187,40 +187,54 @@ var Sqwidget;
     /////////////////////////
 
 
-    /*
+    /*!
     * getScript
     *   github.com/premasagar/mishmash/tree/master/getscript/
     *
+    *//*
+        load single or multiple JavaScript files, with callbacks and optional settings
     */
-    function getScript(srcs, callback, options) {
+    
+    function getScript(srcs, callback, options){
         /**
          * Load a script into a <script> element
          * @param {String} src The source url for the script to load
          * @param {Function} callback Called when the script has loaded
          */
-        function single(src, callback, options) {
+        function single(src, callback, options){
             var
                 charset = options.charset,
-                targetWindow = options.targetWindow,
-                document = targetWindow.document,
+                keep = options.keep,
+                target = options.target,
+                document = target.document,
                 head = document.getElementsByTagName('head')[0],
                 script = document.createElement('script'),
                 loaded;
             
-            script.src = src;
             script.type = 'text/javascript'; // Needed for some gitchy browsers, outside of HTML5
             script.charset = charset;
-            script.onload = script.onreadystatechange = function () {
+            script.onload = script.onreadystatechange = function(){
                 var state = this.readyState;
-                if (!loaded && (!state || state === 'complete' || state === 'loaded')) {
+                if (!loaded && (!state || state === 'complete' || state === 'loaded')){
                     // Handle memory leak in IE
                     script.onload = script.onreadystatechange = null;
-                    // head.removeChild(script); // Worth removing script element once loaded?
-                
+                    
+                    // Remove script element once loaded
+                    if (!keep){
+                        head.removeChild(script); 
+                    }
+                    
                     loaded = true;
-                    callback.call(targetWindow);
+                    callback.call(target);
                 }
             };
+            // Async loading (extra hinting for compliant browsers)
+            script.async = true;
+            
+            // Apply the src
+            script.src = src;
+            
+            // And go...
             head.appendChild(script);
         }
 
@@ -235,41 +249,39 @@ var Sqwidget;
          * @param {Function} callback
          */
 
-        function multiple(srcs, callback, options) {
+        function multiple(srcs, callback, options){
             var
                 length = srcs.length,
                 loaded = 0,
                 checkIfComplete, i;
-        
+            
             // Check if all scripts have loaded
-            checkIfComplete = function () {
-                loaded += 1;
-                if (loaded === length) {
-                    callback.call(options.targetWindow);
+            checkIfComplete = function(){
+                if (++loaded === length){
+                    callback.call(options.target);
                 }
             };
-        
+            
             // Doesn't call callback until after all scripts have loaded
-            for (i = 0; i < length; i += 1) {
+            for (i = 0; i < length; i++){
                 single(srcs[i], checkIfComplete, options);
             }
         }
 
         // **
-    
-        var
-            window = this,
+        
+        var window = this,
             method = (typeof srcs === 'string') ? single : multiple;
-    
+        
         options = options || {};
-        if (!options.charset) {
+        if (!options.charset){
             options.charset = 'utf-8';
         }
-        if (!options.targetWindow) {
-            options.targetWindow = window;
+        if (!options.target){
+            options.target = window;
         }
-    
-        callback = callback || function () {};        
+        
+        callback = callback || function(){};        
         return method.call(this, srcs, callback, options);
     }
 
@@ -399,12 +411,7 @@ var Sqwidget;
     *
     *//*
         onDocumentReady abstraction, adapted from jQuery 1.4 by James Padolsey <james.padolsey.com>
-
-        license
-            opensource.org/licenses/mit-license.php
         
-        v0.1
-
     */
 
     ready = (function () {
@@ -517,23 +524,7 @@ var Sqwidget;
     *   github.com/premasagar/tim
     *
     *//*
-        A tiny, secure JavaScript micro-templating script.
-
-        by Premasagar Rose
-            dharmafly.com
-
-        license
-            opensource.org/licenses/mit-license.php
-
-        **
-
-        creates global object
-            tim
-
-        **
-            
-        v0.2.1
-            
+        A tiny, secure JavaScript micro-templating script.            
     */
 
     tim = (function(){
