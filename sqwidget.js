@@ -700,7 +700,7 @@ var Sqwidget;
         
         templateText: function (jsonData) {
             var myTemplate;
-            _('Sqwidget.template text called');
+            _('Sqwidget.template text called', jsonData.type);
             if (jsonData && jsonData.type) {
                 myTemplate = this.widgetTemplatesByType[jsonData.type];
                 if (myTemplate) {
