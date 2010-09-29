@@ -327,7 +327,7 @@
             json_encode = $.toJSON || Object.toJSON || (window.JSON && (JSON.encode || JSON.stringify)),
 
             /* function to decode objects from JSON strings */
-            json_decode = $.evalJSON || (window.JSON && (JSON.decode || JSON.parse)) || function(str){
+            json_decode = (window.JSON && (JSON.decode || JSON.parse)) || function(str){
                 return String(str).secureEvalJSON();
             },
 
@@ -805,7 +805,7 @@
                     var json = self.cookie.getWrapper(key);
                     
                     return (typeof json !== 'undefined') ?
-                        jQuery.evalJSON(json) :
+                        jQuery.secureEvalJSON(json) :
                         defaultValue;
                 },
                 
