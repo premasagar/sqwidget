@@ -96,7 +96,7 @@ A low-level "lightbox" plugin, for the display of UI components, overlaid on top
 
 h3. Sqweeze
 
-"http://github.com/premasagar/sqwidget-builder":http://github.com/premasagar/sqweeze
+"http://github.com/premasagar/sweeze":http://github.com/premasagar/sqweeze
 
 A command-line Ruby tool for merging and minifying all the HTML, CSS, JavaScript and images used in developing a widget, to produce a single, compressed HTML file. This reduces the number of HTTP requests required to render a widget (potentially to just one request), and reduces the bandwidth transmitted over the wire to the bare minimum.
 
