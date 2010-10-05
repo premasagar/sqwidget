@@ -54,13 +54,15 @@
                 var 
                     templateType = jsonpValue.type,
                     fullKey = templateType + '-' + jsonpValue.key,
-                    arr = null;
+                    arr = null,
+                    storedKey;
                 _('got data for ' + templateType + ' full key ' + fullKey);
                 // call callbacks and remove when called
-                if (keystore[fullKey]) {
-                    while (keystore[fullKey].length > 0) {
+                if (keystore[fullKey] || Sqwidget.keystore[fullKey]) {
+                    storedKey = keystore[fullKey] || Sqwidget.keystore[fullKey];
+                    while (storedKey.length > 0) {
                         // pull out key and remove it
-                        arr = keystore[fullKey].shift();
+                        arr = storedKey.shift();
                         arr[0].jsonpHandler(arr[1], jsonpValue, fullKey, arr[2]);
                     }
                 }
