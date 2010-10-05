@@ -57,7 +57,7 @@
                     arr = null,
                     storedKey;
                 _('got data for ' + templateType + ' full key ' + fullKey);
-                // call callbacks and remove when called
+                // call callbacks and remove when called - NOTE: additional check for Sqwidget.keystore is included to work around a bug when used within Windows Sidebar
                 if (keystore[fullKey] || Sqwidget.keystore[fullKey]) {
                     storedKey = keystore[fullKey] || Sqwidget.keystore[fullKey];
                     while (storedKey.length > 0) {
