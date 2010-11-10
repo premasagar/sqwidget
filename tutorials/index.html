@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang=en>
+    <head>
+        <meta charset=utf-8>
+        <title>Sqwidget demo</title>
+        <style>
+            h2 {
+                border-top:1px solid #ccc;
+                margin-top:1em;
+                padding-top:1em;
+            }
+        </style>
+
+        <!-- jQuery included here for convenience; not required -->
+        <script src="jquery.js"></script>
+    </head>
+
+    <body>
+        <h1>Sqwidget demo</h1>
+
+        <h2>#1: Plain text</h2>
+        <div data-sqwidget="src:helloworld.html"></div>
+
+
+        <h2>#2: Simple HTML fragments</h2>
+        <div data-sqwidget="src:hellohtml.html"></div>
+
+
+        <h2>#3: Full HTML documents</h2>
+        <div data-sqwidget="src:fullhtml.html"></div>
+
+
+        <!-- Sqwidget js can be included anywhere in the document -->
+        <script src="../sqwidget.js"></script>
+    </body>
+</html>
