@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #cwidget {
+                font-size:1.2em;
+                font-family:sans-serif;
+                color:#336;
+            }
+            #cwidget li {
+                padding:0.5em;
+                list-style:none;
+                width:10em;
+            }
+            #cwidget .r {background-color:#fcc;}
+            #cwidget .g {background-color:#cfc;}
+            #cwidget .b {background-color:#ccf;}
+            #cwidget .black {background-color:#333; color:#fff;}
+        </style>
+
+        <script type="text/javascript">
+            widget.ready( function () {
+                // render the default template (body is the 'default') into the widget container
+                widget.setTemplate('default', {});
+                jQuery('.colours', container).append("<li class='black'>black</li>");                
+            });
+        </script>
+    </head>
+    
+    <body>
+        <div id=cwidget>
+            <strong>Colours</strong>
+            <ul class=colours>
+                <li class=r>red</li>
+                <li class=g>green</li>
+                <li class=b>blue</li>
+            </ul>
+        </div>
+        
+
+    </body>
+</html>
