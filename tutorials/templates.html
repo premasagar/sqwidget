@@ -15,14 +15,16 @@
             #cwidget .r {background-color:#fcc;}
             #cwidget .g {background-color:#cfc;}
             #cwidget .b {background-color:#ccf;}
-            #cwidget .black {background-color:#333; color:#fff;}
+            #cwidget .blk {background-color:#333; color:#fff;}
         </style>
 
         <script type="text/javascript">
             widget.ready( function () {
-                // render the default template (body is the 'default') into the widget container
-                widget.setTemplate('default', {});
-                jQuery('.colours', container).append("<li class='black'>black</li>");                
+                // use a template: the document's body is the 'default'
+                widget.setTemplate('default', {
+                    className: "blk",
+                    colour: "black"
+                });
             });
         </script>
     </head>
@@ -34,9 +36,8 @@
                 <li class=r>red</li>
                 <li class=g>green</li>
                 <li class=b>blue</li>
+                <li class={{className}}>{{colour}}</li>
             </ul>
         </div>
-        
-
     </body>
 </html>
