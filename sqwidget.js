@@ -3,7 +3,7 @@
 /*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: false, immed: true, nomen: false, evil: true*/
 
 
-/*!!
+/*!
 * Sqwidget
 *   github.com/premasagar/sqwidget
 *
@@ -42,14 +42,13 @@ var Sqwidget;
 (function () {
 
     // console logging placeholder function
-    var 
-        _ = function () {},
+    var _ = function(){},
         sqwidgetConsole,
         splitdoc,
         ready,
         $,
         jQuery,
-        window = this,
+        window = self,
         document = window.document,
         Template,
         Widget,
@@ -70,7 +69,7 @@ var Sqwidget;
     To activate console logging, add "?sqwidgetDebug" or "&sqwidgetDebug" to the URL in the browser address bar.
 */
 
-/*!
+/*
 * Console
 *   github.com/premasagar/mishmash/tree/master/console/
 *
@@ -89,10 +88,8 @@ var Sqwidget;
 
 /* This function may be safely removed, if console logging is not required for debugging */
         
-    sqwidgetConsole = this.sqwidgetConsole || (function () {
-        var
-            window = this,
-            ua = window.navigator.userAgent,
+    sqwidgetConsole = window.sqwidgetConsole || (function () {
+        var ua = window.navigator.userAgent,
             console = window.console,
             opera = window.opera,
             debug;
@@ -176,10 +173,10 @@ var Sqwidget;
 
 
     // Determine if console logging is required
-    if (this.location && this.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole) {
-        this.sqwidgetDebug = true;
+    if (window.location && window.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole) {
+        window.sqwidgetDebug = true;
     }
-    if (this.sqwidgetDebug) {
+    if (window.sqwidgetDebug) {
         _ = sqwidgetConsole;
     }
 
@@ -187,7 +184,7 @@ var Sqwidget;
     /////////////////////////
 
 
-    /*!
+    /*
     * getScript
     *   github.com/premasagar/mishmash/tree/master/getscript/
     *
@@ -270,7 +267,7 @@ var Sqwidget;
 
         // **
         
-        var window = this,
+        var window = self,
             method = (typeof srcs === 'string') ? single : multiple;
         
         options = options || {};
@@ -282,7 +279,7 @@ var Sqwidget;
         }
         
         callback = callback || function(){};        
-        return method.call(this, srcs, callback, options);
+        return method.call(window, srcs, callback, options);
     }
 
 
@@ -405,7 +402,7 @@ var Sqwidget;
     /////////////////////////
 
 
-    /*!
+    /*
     * Ready
     *   github.com/premasagar/mishmash/tree/master/ready/
     *
@@ -415,8 +412,7 @@ var Sqwidget;
     */
 
     ready = (function () {
-        var
-            window = this,
+        var window = self,
             doc = window.document,
             docEl = doc.documentElement,
             addEventListener = doc.addEventListener,
@@ -519,7 +515,7 @@ var Sqwidget;
     /////////////////////////
 
 
-    /*!
+    /*
     * Tim
     *   github.com/premasagar/tim
     *
@@ -650,12 +646,15 @@ var Sqwidget;
         // Wrapper around getScript, allowing cacheUrl for development
         getScript: function (srcs, callback, options) {
             var i, length;
+            
             // Development mode: cache JavaScript files
             if (Sqwidget.getConfig('development')) {
                 if (typeof srcs === 'string') {
                     srcs = [srcs];
                 }
-                for (i = 0; i < srcs.length; i += 1) {
+                length = srcs.length;
+                
+                for (i = 0; i < length; i += 1) {
                     srcs[i] = Sqwidget.cacheUrl(srcs[i], 0); // never cache
                     _('getScript: cache url: ' + srcs[i]);
                 }
@@ -806,12 +805,19 @@ var Sqwidget;
          *
          */
         widgetsInDom: function () {
+            var regexWhitespaceAtEnd = /^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g,
+                regexWidgetType = /^.*\/([\w]+)(?:\.[^\/]+)?$|^([\w]+)(?:\..*)?$/,
+                widgets = [],
+                divs = document.getElementsByTagName('div'),
+                length = divs.length,
+                div, dataSqwidgetSettings, dataSqwidget, widgetType, i;
+        
             function trim(str) {
-                return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, '');
+                return str.replace(regexWhitespaceAtEnd, '');
             }
             
             function type(templateUrl) {
-                return templateUrl.replace(/^.*\/([\w]+)(?:\.[^\/]+)?$|^([\w]+)(?:\..*)?$/, '$1$2');
+                return templateUrl.replace(regexWidgetType, '$1$2');
             }
 
             /**
@@ -827,13 +833,12 @@ var Sqwidget;
                     return s.split('').reverse().join('');
                 }
 
-                var
-                    keyvalPairs = reverse(str).split(/;(?!\\)/),
-                    len = keyvalPairs.length,
+                var keyvalPairs = reverse(str).split(/;(?!\\)/),
+                    i = keyvalPairs.length,
                     widgetSettings = {},
-                    keyval, i, pos;
+                    keyval, pos;
                     
-                for (i = len; i; i -= 1) {
+                for (; i; i -= 1) {
                     keyval = reverse(keyvalPairs[i - 1]);
                     keyval = keyval.replace('\\;', ';');
                     pos = keyval.indexOf(':');
@@ -844,14 +849,8 @@ var Sqwidget;
                 return widgetSettings;
             }
         
-            // Find 'div[data-sqwidget]'                    
-            var
-                divs = document.getElementsByTagName('div'),
-                len = divs.length,
-                widgets = [],
-                div, dataSqwidgetSettings, dataSqwidget, widgetType, i;
-            
-            for (i = 0; i < divs.length; i += 1) {
+            // Find 'div[data-sqwidget]'
+            for (i = 0; i < length; i += 1) {
                 div = divs[i];
                 dataSqwidget = div.getAttribute('data-sqwidget');
                 dataSqwidgetSettings = div.getAttribute('data-sqwidget-settings');
@@ -875,8 +874,7 @@ var Sqwidget;
          */
         getTemplate: function (templateFilename, widget) {
             // check to see if already loaded, if so, return instance.
-            var 
-                filename = jQuery.trim(templateFilename),
+            var filename = jQuery.trim(templateFilename),
                 fullName, t;
                 
             if (filename.lastIndexOf('.js') === filename.length - 3) {
@@ -1018,8 +1016,8 @@ var Sqwidget;
          
         plugin: function (name, module, version) {
             _('plugin registration: ', name, version);
-            var dep = this.dependencyRegister[name],
-                i, clients;
+            var dep = this.dependencyRegister[name];
+                
             if (typeof(dep) === 'undefined') {
                 // add a new entry for this plugin, not requested yet but already loaded
                 // which isn't a problem
@@ -1076,7 +1074,7 @@ var Sqwidget;
 // Sqwidget - extend Sqwidget once jQuery is loaded, and assign to Sqwidget
 // *********
     Sqwidget.onjQueryReady(function (jQuery) {
-        var $ = jQuery,
+        var $ = jQuery, // TODO: use 'jQuery' rather than '$', as elsewhere in script
             namespace = 'sqwidget';
         
         function ns(props, delimiter) {
@@ -1093,7 +1091,7 @@ var Sqwidget;
         }
         
         // EXTEND SQWIDGET WITH JQUERY-DEPENDENT PROPS
-        this.Sqwidget = Sqwidget = $.extend(
+        window.Sqwidget = Sqwidget = $.extend(
             // Original Sqwidget object
             Sqwidget,
             {
@@ -1188,7 +1186,7 @@ var Sqwidget;
                 // preload images - argument is either string or array of strings
                 preload: function (srcs) {
                     $.each($.isArray(srcs) ? srcs : [srcs], function (i, src) {
-                        var img = $('<img src="' + src + '" />');
+                        $('<img src="' + src + '" />');
                     });
                 },
 
@@ -1289,8 +1287,7 @@ var Sqwidget;
         */
     
     Template = function (s, t, widget) {
-        var 
-            self = {}, //neoclassical
+        var self = {}, //neoclassical
             sqwidget = s,
             templateType = t,
             /** set of widgets (instances on the page) for this template */
@@ -1302,7 +1299,6 @@ var Sqwidget;
             plugins = {},
             templateText = '',
             loaded = false,
-            dependenciesLoaded = false,
             /** errors noted on template load */
             errors = [],
             /** template config. default values here */
@@ -1315,10 +1311,8 @@ var Sqwidget;
                 "ui" : "hostpage",
                 "basePath" : null,
                 "pluginPath" : null,
-                "dependencies": {
-                },
-                "settings": {                 
-                }
+                "dependencies": {},
+                "settings": {}
             };
         
         if (widget) {
@@ -1467,14 +1461,16 @@ var Sqwidget;
         }
         
         
+        /* TODO: required?
         function setLoading() {
             jQuery.each(widgets, function (w, widget) {
                 widget.showLoading();
             });
         }
+        */
         
 
-        
+        /////
 
         
         
@@ -1580,8 +1576,7 @@ var Sqwidget;
      * TODO make Widget and Template
      */
     Widget = function (sq, type, div, dataSq, dataSqSet) {
-        var 
-            self = {},
+        var widget = {},
             sqwidget = sq,
             widgetType = type,
             container = div,
@@ -1601,8 +1596,7 @@ var Sqwidget;
          * @return {undefined}
          */
         function evalScript(script) {
-            _('eval script', {source: script});
-            var widget = self;
+            _('eval script', {source: script});            
             //TODO minimise context for controller functions
             eval(script.toString());
         }
@@ -1612,7 +1606,7 @@ var Sqwidget;
          * Check we have all plugins namespaced, er how do we know
          */
         function allPluginsLoaded() {
-            return (dependenciesRequested && sqwidget.checkDependencies(self));
+            return (dependenciesRequested && sqwidget.checkDependencies(widget));
         }
         
         function props(a) {
@@ -1625,26 +1619,26 @@ var Sqwidget;
             return '{' + r.join(' ') + '}';
         }
          
-        self.plugins = plugins;
-        self.allPluginsLoaded = allPluginsLoaded;
+        widget.plugins = plugins;
+        widget.allPluginsLoaded = allPluginsLoaded;
         
         /**
          * set template config dict
          * This used to allow widget.config({..}); in intial embed
          */
-        self.config = function (dict) {
+        widget.config = function (dict) {
             template.config(dict);
         };
         
-        self.getContainer = function () {
+        widget.getContainer = function () {
             return container;
         };
         
-        self.getReadyFn = function () { 
+        widget.getReadyFn = function () { 
             return readyFn;
         };
 
-        self.getReadyRun = function () { 
+        widget.getReadyRun = function () { 
             return readyRun;
         };
         
@@ -1653,7 +1647,7 @@ var Sqwidget;
          * the id of the widget container div.
          */
         // TODO use the template name if not available in the container
-        self.getId = function () {
+        widget.getId = function () {
             if (dataSqwidget.hasOwnProperty('id')) {
                 return dataSqwidget.id;
             }
@@ -1662,43 +1656,44 @@ var Sqwidget;
             }
         };
         
-        self.onTemplateLoaded = function (t) {
+        widget.onTemplateLoaded = function (t) {
             templateLoaded = true;
             template = t;
-            self.runController(template.getScripts());
-            self.showLoading(); 
-            template.loadDependencies(self);
+            widget.runController(template.getScripts());
+            widget.showLoading(); 
+            template.loadDependencies(widget);
             dependenciesRequested = true;
-            self.checkRun();
+            widget.checkRun();
         };
         
-        self.setPlugin = function (name, module, config) {
-            _('setting up plugin: ' + name + ' for widget ' + self.getId());
-            plugins[name] = module(sqwidget, self, jQuery, config);
+        widget.setPlugin = function (name, module, config) {
+            _('setting up plugin: ' + name + ' for widget ' + widget.getId());
+            plugins[name] = module(sqwidget, widget, jQuery, config);
             //TODO check all plugins loaded
             // TODO: merge this block with .checkRun() method below
             if (allPluginsLoaded()) {
-                self.checkRun();
+                widget.checkRun();
             }
             sqwidget.runAll();
         };
         
-        self.checkRun = function () {
+        widget.checkRun = function () {
+            var widgetWrapper;
+        
             if (allPluginsLoaded()) {
                 if (!readyRun) {
                     readyRun = true;
                     if (readyFn) {
-                        var widget = self,
-                            widgetWrapper = jQuery(widget);
+                        widgetWrapper = jQuery(widget);
                             
                         _('calling widget.ready(): ' + container.id);
                         widgetWrapper.trigger('readyStart');
-                        readyFn.call(self);
+                        readyFn.call(widget);
                         widgetWrapper.trigger('readyEnd');
                     }
                     else {
                         //TODO decide what extra contents will be displayed here
-                        self.setTemplate('default', {}, null);
+                        widget.setTemplate('default', {}, null);
                     }
                 }
             }            
@@ -1710,9 +1705,9 @@ var Sqwidget;
          * For later:  security here?
          *
          */
-        self.getBodyElement = function (idSuffix) {
+        widget.getBodyElement = function (idSuffix) {
             var 
-                elId = self.getId() + '_' + idSuffix,
+                elId = widget.getId() + '_' + idSuffix,
                 el = jQuery('#' + elId),
                 div;
             if (el.length) {
@@ -1727,7 +1722,7 @@ var Sqwidget;
         
         
         //TODO fit this into the proper place
-        self.ui = {
+        widget.ui = {
             head: function (content) {
                 $('head').append(content);
             },
@@ -1741,24 +1736,24 @@ var Sqwidget;
          *
          */
          
-        self.ready = function (fn) {
+        widget.ready = function (fn) {
             readyFn = fn;
         };
         
-        self.loading = function (fn) {
+        widget.loading = function (fn) {
             loadingFn = fn;
         };
         
-        self.error = function (fn) {
+        widget.error = function (fn) {
             errorFn = fn;
         };
         
-        self.getReadyFn = function () {
+        widget.getReadyFn = function () {
             return readyFn;
         };
         
-        self.callReady = function () {
-            return readyFn.call(self);
+        widget.callReady = function () {
+            return readyFn.call(widget);
         };
         
         /*
@@ -1785,13 +1780,13 @@ var Sqwidget;
         /**
          * Get this widget up and running
          */
-        self.init = function () {
+        widget.init = function () {
             //attach ourselves to template -- this also loads the template if that hasn't happened before
             _('  getting template');
-            var sqTemplate = sqwidget.getTemplate(dataSqwidget.src, self);
+            var sqTemplate = sqwidget.getTemplate(dataSqwidget.src, widget);
             template = sqTemplate;
             _('  registering widget');
-            sqTemplate.register(self);
+            sqTemplate.register(widget);
             _('   widget registered');            
         };
                 
@@ -1802,7 +1797,7 @@ var Sqwidget;
          * @returns {Object} settings or config value
          * Hierarchy here is data-sqwidget-settings, template config settings
          */
-        self.getSetting = function (key, defaultValue) {
+        widget.getSetting = function (key, defaultValue) {
             return settings[key] || template.getSetting(key) || defaultValue;
         };
 
@@ -1813,7 +1808,7 @@ var Sqwidget;
          * @returns {Object} settings or config value
          * Hierarchy here is data-sqwidget, template config
          */        
-        self.getConfig = function (key, defaultValue) {
+        widget.getConfig = function (key, defaultValue) {
             return dataSqwidget[key] || template.getConfig(key) || sqwidget.getConfig(key) || defaultValue;
         };
         
@@ -1824,28 +1819,27 @@ var Sqwidget;
          * @param {jQuery} place The place to render into [optional]. Otherwise, 
          * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
          */ 
-        self.render = function (html, contents, place) {
-            var 
-                s = self.renderTemplate(html, contents),
+        widget.render = function (html, contents, place) {
+            var s = widget.renderTemplate(html, contents),
                 p = place || container;
+                
             jQuery(p).html(s);
         };
        
        /**
         * Show the loading template.  But don't if a placeholder is present
         */
-        self.showLoading = function () {
-            var 
-                widget = self,
-                t;
+        widget.showLoading = function () {
+            var t;
+                
             if (jQuery('.sqwidget-placeholder', container).length === 0) {
                 if (loadingFn) {
-                    loadingFn.call(self);
+                    loadingFn.call(widget);
                 }
                 else {
                     t = template.getTemplate('loading');
                     if (t) {
-                        self.render(t);
+                        widget.render(t);
                     }
                 }
             }
@@ -1855,9 +1849,9 @@ var Sqwidget;
         * Render contents with named template
         * TODO complete docs here 
         */
-        self.renderWithTemplate = function (name, contents) {
+        widget.renderWithTemplate = function (name, contents) {
             var d = template.getTemplate(name);
-            return self.renderTemplate(d, contents); 
+            return widget.renderTemplate(d, contents); 
         };
        /**
         * Render html into this widget
@@ -1865,10 +1859,10 @@ var Sqwidget;
         * @param {jQuery} place The place to render into [optional]. Otherwise, 
         * TODO: cache, keep existing content to pop out etc -- page management kind of stuff
         */        
-        self.setTemplate = function (type, contents, place) {
+        widget.setTemplate = function (type, contents, place) {
             var d = template.getTemplate(type);
             if (d) {
-                self.render(d, contents, place);
+                widget.render(d, contents, place);
             }
         };
 
@@ -1879,12 +1873,12 @@ var Sqwidget;
         * @param {String} template data to have template tag matching performed on
         * @param {Object} data Data to render into template as keyed values
         */
-        self.renderTemplate = tim;
+        widget.renderTemplate = tim;
         
         /**
          * Run the script controller
          */
-        self.runController = function (scripts) {
+        widget.runController = function (scripts) {
             _('  running controller scripts..');
             jQuery.each(scripts, function (s, script) {
                 evalScript(scripts[s]);
@@ -1896,25 +1890,17 @@ var Sqwidget;
          * @return {String}
          */
          
-        self.toString = function () {
+        widget.toString = function () {
             return 'type: ' + widgetType + ' container id: ' + div.id + ' dataSqwidget: ' + props(dataSqwidget) + ' dataSqwidgetSettings: ' + props(settings);
         };
         
         // TEMP: jQuery has a bug that is to be released in v1.4.3 - in the meantime, jQuery errors on unbinding custom events from a plain native JavaScript object: http://forum.jquery.com/topic/javascript-error-when-unbinding-a-custom-event-using-jquery-1-4-2
         if (!Sqwidget.hasMinVersion(jQuery.fn.jquery, '1.4.3')) {
-            self.addEventListener = self.removeEventListener = function () {};
+            widget.addEventListener = widget.removeEventListener = function () {};
         }
         
-        return self;
+        return widget;
     };
-    
-    // TEMP global exposure to play with classes
-
-    window.SqwidgetTemplate = Template;
-    window.SqwidgetWidget = Widget;
-
-        
-
     
 }());
 
@@ -1929,5 +1915,3 @@ Sqwidget.ready(function () {
         Sqwidget.startWidgets();
     }
 });
- 
-
