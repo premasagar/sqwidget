@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: false, immed: true, nomen: false, evil: true*/
 
@@ -88,82 +88,85 @@ var Sqwidget;
 
 /* This function may be safely removed, if console logging is not required for debugging */
         
-    sqwidgetConsole = window.sqwidgetConsole || (function () {
-        var ua = window.navigator.userAgent,
+    sqwidgetConsole = window.sqwidgetConsole || (function(){
+        var window = self,
+            ua = window.navigator.userAgent,
             console = window.console,
             opera = window.opera,
-            debug;
-    
+            debug, log;
+        
         // Doesn't support console API
-        if (!console) {
+        if (!console){
             // Opera 
             return (opera && opera.postError) ?
-                function () {
-                    var 
-                        i, argLen, 
-                        log = opera.postError, 
-                        args = arguments, 
-                        arg, subArgs, prop;
-                    
-                    log(args);
-                 
-                    argLen = args.length;
-                    for (i = 0; i < argLen; i += 1) {
-                        arg = args[i];
-                        if (typeof arg === 'object' && arg !== null) {
+                 function(){
+                     var i, argLen, log = opera.postError, args = arguments, arg, subArgs, prop;
+                     log(args);
+                     
+                     argLen = args.length;
+                     for (i=0; i < argLen; i++){
+                         arg = args[i];
+                         if (typeof arg === "object" && arg !== null){
                             subArgs = [];
-                            for (prop in arg) {
-                                if (arg.hasOwnProperty(prop)) {
-                                    try {
-                                            subArgs.push(prop + ': ' + arg[prop]);
-                                        }
-                                    catch (e) {}
+                            for (prop in arg){
+                                try {
+                                    if (arg.hasOwnProperty(prop)){
+                                        subArgs.push(prop + ": " + arg[prop]);
+                                    }
                                 }
+                                catch(e){}
                             }
-                            log('----subArgs: ' + subArgs);
-                        }
-                    }
-                } :
-                function () {};
-        }
-        // Temporary for WebKit, while its console has a bug in calling debug directly or log.apply
-        else if (/webkit/i.test(ua)) {      
-            return function () {
-                var i, argLen, args = arguments, indent = '';
-                argLen = args.length;
-                for (i = 0; i < argLen; i += 1) {
-                    if (typeof args[i] === 'object' && JSON && JSON.stringify) {
-                        try {
-                            args[i] = JSON.stringify(args[i]);
-                        }
-                        catch (err) {
-                            args[i] = '[circular reference in object, can not stringify]';
-                        }
-                    }
-                    console.log(indent + args[i]);
-                    indent = '---- ';
-                }
-            };
+                            log("----subArgs: " + subArgs);
+                         }
+                     }
+                 } :
+                 function(){};
         }
         else {
             debug = console.debug;
-            return debug ? // FF Firebug
-                debug :
-                function () {
-                    var i, argLen, log = console.log, args = arguments, indent = '';
-                    if (log) { // WebKit
-                        if (typeof log.apply === 'function') {
-                            log.apply(console, args);
+            
+            if (debug){
+                // WebKit complains if console's debug function is called on its own
+                if (/webkit/i.test(ua)){
+                    return function(){
+                        var i = 0,
+                            args = arguments,
+                            len = args.length,
+                            arr = [];
+                        
+                        if (len === 1){
+                            console.debug(args[i]);
                         }
-                        else { // IE8
-                            argLen = args.length;
-                            for (i = 0; i < argLen; i += 1) {
-                                log(indent + args[i]);
-                                indent = '---- ';
+                        else if (len > 1){
+                            for (; i < len; i++){
+                                arr.push(args[i]);
                             }
+                            console.debug(arr);
                         }
-                    }
-                };
+                    };
+                }
+                return debug;
+            }
+            if (log){ // old WebKit
+                if (typeof log.apply === "function"){
+                    return function(){
+                        log.apply(console, arguments);
+                    };
+                }
+                else { // IE8
+                    return function(){
+                        var args = arguments,
+                            len = arguments.length,
+                            indent = "",
+                            i;
+                            
+                        for (i=0; i < len; i++){
+                            log(indent + args[i]);
+                            indent = "---- ";
+                        }
+                    };
+                }
+            }
         }
     }());
 /* end console logging */
