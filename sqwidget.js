@@ -40,19 +40,16 @@ var Sqwidget;
 * SQWIDGET CORE
 **/
 (function () {
-
-    // console logging placeholder function
-    var _ = function(){},
-        sqwidgetConsole,
-        splitdoc,
-        ready,
-        $,
-        jQuery,
-        window = self,
+    
+    var window = self,
         document = window.document,
+        _ = function(){}, // console logging placeholder function
+        tim,
+        ready,
+        splitdoc,
+        jQuery, $,
         Template,
-        Widget,
-        tim;
+        Widget;
         
 
 // **
@@ -86,9 +83,9 @@ var Sqwidget;
 
 */
 
-/* This function may be safely removed, if console logging is not required for debugging */
+/* The block below may be safely removed, if console logging is not required for debugging */
         
-    sqwidgetConsole = window.sqwidgetConsole || (function(){
+    _ = (function(){
         var window = self,
             ua = window.navigator.userAgent,
             console = window.console,
@@ -124,6 +121,7 @@ var Sqwidget;
         }
         else {
             debug = console.debug;
+            log = console.log;
             
             if (debug){
                 // WebKit complains if console's debug function is called on its own
@@ -169,6 +167,7 @@ var Sqwidget;
             }
         }
     }());
+    
 /* end console logging */
 
 
@@ -176,13 +175,10 @@ var Sqwidget;
 
 
     // Determine if console logging is required
-    if (window.location && window.location.search.indexOf('sqwidgetDebug') !== -1 && sqwidgetConsole) {
+    if (window.location && window.location.search.indexOf("sqwidgetDebug") !== -1) {
         window.sqwidgetDebug = true;
     }
-    if (window.sqwidgetDebug) {
-        _ = sqwidgetConsole;
-    }
-
+    
 
     /////////////////////////
 
@@ -202,20 +198,20 @@ var Sqwidget;
          * @param {Function} callback Called when the script has loaded
          */
         function single(src, callback, options){
-            var
-                charset = options.charset,
+            var charset = options.charset,
                 keep = options.keep,
                 target = options.target,
                 document = target.document,
-                head = document.getElementsByTagName('head')[0],
-                script = document.createElement('script'),
+                head = document.getElementsByTagName("head")[0],
+                script = document.createElement("script"),
                 loaded;
             
-            script.type = 'text/javascript'; // Needed for some gitchy browsers, outside of HTML5
+            script.type = "text/javascript"; // Needed for some gitchy browsers, outside of HTML5
             script.charset = charset;
             script.onload = script.onreadystatechange = function(){
                 var state = this.readyState;
-                if (!loaded && (!state || state === 'complete' || state === 'loaded')){
+                
+                if (!loaded && (!state || state === "complete" || state === "loaded")){
                     // Handle memory leak in IE
                     script.onload = script.onreadystatechange = null;
                     
@@ -250,8 +246,7 @@ var Sqwidget;
          */
 
         function multiple(srcs, callback, options){
-            var
-                length = srcs.length,
+            var length = srcs.length,
                 loaded = 0,
                 checkIfComplete, i;
             
@@ -271,11 +266,11 @@ var Sqwidget;
         // **
         
         var window = self,
-            method = (typeof srcs === 'string') ? single : multiple;
+            method = (typeof srcs === "string") ? single : multiple;
         
         options = options || {};
         if (!options.charset){
-            options.charset = 'utf-8';
+            options.charset = "utf-8";
         }
         if (!options.target){
             options.target = window;
@@ -294,25 +289,25 @@ var Sqwidget;
     *   github.com/premasagar/mishmash/tree/master/splitdoc/
     *
     */
-    splitdoc = (function () {
+    splitdoc = (function(){
         var exports = exports || {};
-    
-        function trim(str) {
-            return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, ''); // match the full set of whitespace characters
+        
+        function trim(str){
+            return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, ""); // match the full set of whitespace characters
         }
-    
-        function Splitdoc(raw, options) {
+        
+        function Splitdoc(raw, options){
             var
                 // cast raw to string
-                html = typeof raw !== 'undefined' && raw !== null ? raw + '' : '',
-        
-                // options - most of these set the default values for components of the HTML document
-                doctypeDefault = options && typeof options.doctype !== 'undefined' ? options.doctype : '<!doctype html>',
-                charsetDefault = options && typeof options.charset !== 'undefined' ? options.charset : 'utf-8',
-                charsetMetaDefault = options && typeof options.charsetmeta !== 'undefined' ? options.charsetmeta : '<meta charset=' + charsetDefault + '>',
-                titleDefault = options && typeof options.title !== 'undefined' ? options.title : '',
-                bodyDefault = options && typeof options.body !== 'undefined' ? options.body : '',
+                html = typeof raw !== "undefined" && raw !== null ? raw + "" : "",
             
+                // options - most of these set the default values for components of the HTML document
+                doctypeDefault = options && typeof options.doctype !== "undefined" ? options.doctype : "<!doctype html>",
+                charsetDefault = options && typeof options.charset !== "undefined" ? options.charset : "utf-8",
+                charsetMetaDefault = options && typeof options.charsetmeta !== "undefined" ? options.charsetmeta : "<meta charset=" + charsetDefault + ">",
+                titleDefault = options && typeof options.title !== "undefined" ? options.title : "",
+                bodyDefault = options && typeof options.body !== "undefined" ? options.body : "",
+                
                 // regular expressions to match supplied document
                 doctypeRegex = /<!doctype html[^>]*>/i,
                 htmlAttrRegex = /<html([^>]*)>/i,
@@ -321,83 +316,83 @@ var Sqwidget;
                 charsetRegex = /<meta charset=([\w\-]+)\s*\/?>|<meta http-equiv=["']Content-Type["'] content=["']text\/html;\s*charset=([\w\-]+)["']\s*\/?>/,
                 titleRegex = /<title([^>]*)>([\w\W]*?)<\/title>/i,
                 bodyRegex = /<body([^>]*)>([\w\W]*?)<\/body>/i, // <body> and the first available </body>, with backrefs: 1) body attributes 2) contents
-        
+            
                 // match the supplied document
                 doctypeMatch = html.match(doctypeRegex),
                 htmlAttrMatch = html.match(htmlAttrRegex),
                 headMatch = html.match(headRegex),
                 bodyMatch = html.match(bodyRegex),
-            
+                
                 // grab attributes and contents of components
                 // NOTE: attributes are deliberately left untrimmed
                 doctype = doctypeMatch ? doctypeMatch[0] : doctypeDefault,
-                htmlAttr = htmlAttrMatch ? htmlAttrMatch[1] : '',
-            
-                headAttr = headMatch ? headMatch[1] : '',
-                headContents = headMatch ? trim(headMatch[2]) : '',
-            
+                htmlAttr = htmlAttrMatch ? htmlAttrMatch[1] : "",
+                
+                headAttr = headMatch ? headMatch[1] : "",
+                headContents = headMatch ? trim(headMatch[2]) : "",
+                
                 charsetMatch = headContents.match(charsetRegex),
                 charsetTag = charsetMatch ? trim(charsetMatch[0]) : charsetMetaDefault,
                 charset = charsetMatch ? (charsetMatch[1] || charsetMatch[2]) : charsetDefault, // Is it a bad idea to have a default charset?
-            
+                
                 titleMatch = headContents.match(titleRegex),
                 title = trim(titleMatch ? titleMatch[2] : titleDefault),
-            
-                bodyAttr = bodyMatch ? bodyMatch[1] : '',
+                
+                bodyAttr = bodyMatch ? bodyMatch[1] : "",
                 bodyContents =  trim(
                     bodyMatch ?
                         bodyMatch[2] : // supplied body contents
                         doctypeMatch || headMatch ? // if there's already a doctype or a head section
-                            bodyDefault || '' : // then bodyContents is set to default value or blank
+                            bodyDefault || "" : // then bodyContents is set to default value or blank
                             html // if not, then assume the whole HTML string is to be the contents of the body
                 );
-        
-            if (!titleMatch) {
-                headContents = '<title>' + titleDefault + '</title>' + headContents;
+            
+            if (!titleMatch){
+                headContents = "<title>" + titleDefault + "</title>" + headContents;
             }
-            if (!charsetMatch) {
-                headContents = charsetTag + headContents;
+            if (!charsetMatch){
+                headContents = charsetTag + headContents ;
             }
-        
+            
             // document reference object
             this.doctype = doctype;
             this.htmlAttr = htmlAttr;
-        
+            
             this.headAttr = headAttr;
             this.headContents = headContents;
-        
+            
             this.charset = charset;
             this.title = title;
-        
+            
             this.bodyAttr = bodyAttr;
             this.bodyContents = bodyContents;
         }
-    
+        
         // Prototype
         Splitdoc.prototype = {
             // construct <head> markup
-            head: function () {
-                return '<head' + this.headAttr + '>' + this.headContents + '</head>';
+            head: function(){
+                return "<head" + this.headAttr + ">" + this.headContents + "</head>";
             },
             // construct <body> markup
-            body: function () {
-                return '<body' + this.bodyAttr + '>' + this.bodyContents + '</body>';
+            body: function(){
+                return "<body" + this.bodyAttr + ">" + this.bodyContents + "</body>";
             },
             // construct <html> markup
-            html: function () {
-                return '<html' + this.htmlAttr + '>' + this.head() + this.body() + '</html>';
+            html: function(){
+                return "<html" + this.htmlAttr + ">" + this.head() + this.body() + "</html>";
             },
             // construct html document source code
             // enhance the object's string representation, by overriding Object prototype's toString function
-            toString: function () {
+            toString: function(){
                 return this.doctype + this.html();
             }
         };
-    
-        function splitdoc(html, options) {
+        
+        function splitdoc(html, options){
             return new Splitdoc(html, options);
         }
-    
+        
         return (exports.splitdoc = splitdoc);
     }());
 
@@ -410,10 +405,8 @@ var Sqwidget;
     *   github.com/premasagar/mishmash/tree/master/ready/
     *
     *//*
-        onDocumentReady abstraction, adapted from jQuery 1.4 by James Padolsey <james.padolsey.com>
-        
+        onDocumentReady abstraction
     */
-
     ready = (function () {
         var window = self,
             doc = window.document,
@@ -423,12 +416,11 @@ var Sqwidget;
             readyFns = [],
             ready,
             bound,
-            dcl = 'DOMContentLoaded',
-            orsc = 'onreadystatechange',
+            dcl = "DOMContentLoaded",
+            orsc = "onreadystatechange",
             atTopLevel;
-    
+
         function fireReady() {
-        
             if (ready) { 
                 return; 
             }
@@ -437,11 +429,9 @@ var Sqwidget;
             for (var i = 0, l = readyFns.length; i < l; i += 1) {
                 readyFns[i]();
             }
-        
         }
-    
+
         function scrollCheck() {
-        
             if (ready) { 
                 return; 
             }
@@ -456,25 +446,22 @@ var Sqwidget;
         
             // DOM ready
             fireReady();
-        
         }
-    
+
         function DOMContentLoaded() {
-        
             if (addEventListener) {
                 doc.removeEventListener(dcl, DOMContentLoaded, false);
                 fireReady();
-            } else {
-                if (attachEvent && doc.readyState === 'complete') {
+            }
+            else {
+                if (attachEvent && doc.readyState === "complete") {
                     doc.detachEvent(orsc, DOMContentLoaded);
                     fireReady();
                 }
             }
-        
         }
         
         function onReady(fn) {
-        
             readyFns.push(fn);
         
             if (ready) { 
@@ -488,30 +475,25 @@ var Sqwidget;
         
             if (addEventListener) {
                 doc.addEventListener(dcl, DOMContentLoaded, false);
-                window.addEventListener('load', fireReady, false); // fallback to window.onload
-            } else {
-                if (attachEvent) {
-                
-                    // IE Event model
-                
-                    doc.attachEvent(orsc, DOMContentLoaded);
-                    window.attachEvent('onload', fireReady); // fallback to window.onload
-                
-                    try {
-                        atTopLevel = !window.frameElement;
-                    } catch (e) {}
-                
-                    if (docEl.doScroll && atTopLevel) {
-                        scrollCheck();
-                    }
-                
+                window.addEventListener("load", fireReady, false); // fallback to window.onload
+            }
+            
+            else if (attachEvent) {
+                doc.attachEvent(orsc, DOMContentLoaded);
+                window.attachEvent("onload", fireReady); // fallback to window.onload
+            
+                try {
+                    atTopLevel = !window.frameElement;
+                }
+                catch(e){}
+            
+                if (docEl.doScroll && atTopLevel) {
+                    scrollCheck();
                 }
             }
-        
         }
-    
+
         return onReady;
-    
     }());
 
 
@@ -567,11 +549,11 @@ var Sqwidget;
 // **
 // SETUP SQWIDGET
 
-    _('started console logging in sqwidget');
+    _("started console logging in sqwidget");
     // SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
     // TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
-    this.Sqwidget = Sqwidget = {
-        version: '0.21a',            
+    window.Sqwidget = Sqwidget = {
+        version: "0.3.0",            
         _: _, // console logger
         
         /** 
@@ -579,12 +561,11 @@ var Sqwidget;
          * All global settings need to be given an initial
          * default value here so they can be set from the globalConfig method 
          */
-        settings: { // TODO: Some props (e.g. 'lightbox') would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
+        settings: { // TODO: Some props (e.g. "lightbox") would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
             jQuery: {
-                minVersion: '1.4.2', // minimum version of jQuery to allow, if already in DOM
-                src: 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
-                //src: 'jquery.js',
-                // Set noConflict properties to true to avoid global '$' and/or 'jQuery' variables in the global namespace. If '$' is false, then 'jQuery' is assumed to be false.
+                minVersion: "1.4.2", // minimum version of jQuery to allow, if already in DOM
+                src: "http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js",
+                // Set noConflict properties to true to avoid global "$" and/or "jQuery" variables in the global namespace. If "$" is false, then "jQuery" is assumed to be false.
                 noConflict: {
                     $: true,
                     jQuery: true
@@ -593,9 +574,9 @@ var Sqwidget;
             development: false,
             experimental: false,
             automatic: true,
-            charset: 'utf-8',
-            basePath: '',
-            pluginPath: 'plugins/'
+            charset: "utf-8",
+            basePath: "",
+            pluginPath: "plugins/"
         },
         /** Sqwidget's own dependencies. TODO not currently used:  Use it or lose it*/
         dependencies: {
@@ -604,7 +585,7 @@ var Sqwidget;
         /** 
          * global register of dependencies, keyed by name, containing objects
          * like:
-         * {name:'thename', version:'the version', loaded: false, ref:<reference to loaded module>, clients: [] array of client widgets}
+         * {name:"thename", version:"the version", loaded: false, ref:<reference to loaded module>, clients: [] array of client widgets}
          * */
         dependencyRegister: {
         }, 
@@ -651,15 +632,15 @@ var Sqwidget;
             var i, length;
             
             // Development mode: cache JavaScript files
-            if (Sqwidget.getConfig('development')) {
-                if (typeof srcs === 'string') {
+            if (Sqwidget.getConfig("development")) {
+                if (typeof srcs === "string") {
                     srcs = [srcs];
                 }
                 length = srcs.length;
                 
                 for (i = 0; i < length; i += 1) {
                     srcs[i] = Sqwidget.cacheUrl(srcs[i], 0); // never cache
-                    _('getScript: cache url: ' + srcs[i]);
+                    _("getScript: cache url: " + srcs[i]);
                 }
             }
             getScript(srcs, callback, options);
@@ -669,7 +650,7 @@ var Sqwidget;
          * Build a resource path, sqwidget style, with a base, another bit and
          * a name of something to load.
          * as in basePath + subPath (like pluginPath) + item where any of these can be base or absolute
-         * @param {String} base The base, usually going to be settings.basePath.  A '/' path separator will be added to the end of this if missing
+         * @param {String} base The base, usually going to be settings.basePath.  A "/" path separator will be added to the end of this if missing
          * @param {String} sub The sub path element, like plugins or css or similar.
          * @param {String} item The item name itself (with or without extension)
          * @param {String} extension File extension to be added to item if it doesn't already have one on the end.  This is **without the dot**
@@ -688,25 +669,25 @@ var Sqwidget;
             if (isAbsolute(item)) { 
                 return item; 
             }
-            if (extension.length > 0 && item.lastIndexOf('.' + extension) !== (item.length - extension.length - 1)) {
-                item += '.' + extension;
+            if (extension.length > 0 && item.lastIndexOf("." + extension) !== (item.length - extension.length - 1)) {
+                item += "." + extension;
             }
             if (isAbsolute(sub)) {
                 return sub + item;
             }
             if (base.length > 0 && !base.match(/\/$/)) {
-                base += '/';
+                base += "/";
             }
             return base + sub + item;                
         },
         
         templateText: function (jsonData) {
             var myTemplate;
-            _('Sqwidget.template text called', jsonData.type);
+            _("Sqwidget.template text called", jsonData.type);
             if (jsonData && jsonData.type) {
                 myTemplate = this.widgetTemplatesByType[jsonData.type];
                 if (myTemplate) {
-                    _('running Template.templateText');
+                    _("running Template.templateText");
                     myTemplate.templateText(jsonData.template);
                 }
             }
@@ -747,18 +728,18 @@ var Sqwidget;
          * TODO: allow optional priority of execution, as with WordPress filters
          */
         onjQueryReady: function (callback) {
-            _('Sqwidget.onjQueryReady');
+            _("Sqwidget.onjQueryReady");
             var jQ, jQuerySettings, callbacks;      
             
             if (!$) {
                 jQ = this.jQueryIsLoaded();
                 if (jQ) {
-                    _('jQuery found');
+                    _("jQuery found");
                     $ = jQ;
                     jQuery = jQ;
                 }
                 else {
-                    _('jQuery not found');
+                    _("jQuery not found");
                     jQuerySettings = this.settings.jQuery;
                     
                     // If this called for the first time, create array to store callbacks
@@ -770,7 +751,7 @@ var Sqwidget;
                             $ = window.jQuery;
                             jQuery = $;
                             
-                            // Hide or expose global '$' and 'jQuery' vars, depending on settings
+                            // Hide or expose global "$" and "jQuery" vars, depending on settings
                             if (jQuerySettings.noConflict.$) {
                                 $.noConflict(jQuerySettings.noConflict.jQuery);
                             }
@@ -811,29 +792,29 @@ var Sqwidget;
             var regexWhitespaceAtEnd = /^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g,
                 regexWidgetType = /^.*\/([\w]+)(?:\.[^\/]+)?$|^([\w]+)(?:\..*)?$/,
                 widgets = [],
-                divs = document.getElementsByTagName('div'),
+                divs = document.getElementsByTagName("div"),
                 length = divs.length,
                 div, dataSqwidgetSettings, dataSqwidget, widgetType, i;
         
             function trim(str) {
-                return str.replace(regexWhitespaceAtEnd, '');
+                return str.replace(regexWhitespaceAtEnd, "");
             }
             
             function type(templateUrl) {
-                return templateUrl.replace(regexWidgetType, '$1$2');
+                return templateUrl.replace(regexWidgetType, "$1$2");
             }
 
             /**
              * Get settings from an attribute:
-             * ';' separates key:value pairs
-             * Use \; to include a ';' in a value
+             * ";" separates key:value pairs
+             * Use \; to include a ";" in a value
              */
             function settings(str) {
                 if (!str) {
                     return {};
                 }
                 function reverse(s) {
-                    return s.split('').reverse().join('');
+                    return s.split("").reverse().join("");
                 }
 
                 var keyvalPairs = reverse(str).split(/;(?!\\)/),
@@ -843,8 +824,8 @@ var Sqwidget;
                     
                 for (; i; i -= 1) {
                     keyval = reverse(keyvalPairs[i - 1]);
-                    keyval = keyval.replace('\\;', ';');
-                    pos = keyval.indexOf(':');
+                    keyval = keyval.replace("\\;", ";");
+                    pos = keyval.indexOf(":");
                     if (pos !== -1) {
                         widgetSettings[trim(keyval.slice(0, pos))] = trim(keyval.slice(pos + 1));
                     }
@@ -852,16 +833,16 @@ var Sqwidget;
                 return widgetSettings;
             }
         
-            // Find 'div[data-sqwidget]'
+            // Find "div[data-sqwidget]"
             for (i = 0; i < length; i += 1) {
                 div = divs[i];
-                dataSqwidget = div.getAttribute('data-sqwidget');
-                dataSqwidgetSettings = div.getAttribute('data-sqwidget-settings');
+                dataSqwidget = div.getAttribute("data-sqwidget");
+                dataSqwidgetSettings = div.getAttribute("data-sqwidget-settings");
                 
                 if (dataSqwidget) {
                     dataSqwidget = settings(dataSqwidget);
                     dataSqwidgetSettings = settings(dataSqwidgetSettings);
-                    widgetType = type(dataSqwidget.src || 'generic');
+                    widgetType = type(dataSqwidget.src || "generic");
                     
                     widgets.push(Widget(this, widgetType, div, dataSqwidget, dataSqwidgetSettings));
                 }
@@ -880,12 +861,12 @@ var Sqwidget;
             var filename = jQuery.trim(templateFilename),
                 fullName, t;
                 
-            if (filename.lastIndexOf('.js') === filename.length - 3) {
+            if (filename.lastIndexOf(".js") === filename.length - 3) {
                 // compile js template, so load as script
-                fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'js');
+                fullName = this.buildResourcePath(this.settings.basePath, "", filename, "js");
             }
             else {
-                fullName = this.buildResourcePath(this.settings.basePath, '', filename, 'html');
+                fullName = this.buildResourcePath(this.settings.basePath, "", filename, "html");
             }
             t = this.widgetTemplates[fullName];
             if (!t) {
@@ -916,7 +897,7 @@ var Sqwidget;
          * Load dependencies (check that versions are satisfied, and issue script loading instructions
          * as needed)
          * @param {Object:Template} template object that wants this dependency
-         * @param {Object} dependency a dependency in the form ['name', 'version'] or simply 'name'
+         * @param {Object} dependency a dependency in the form ["name", "version"] or simply "name"
          *
          */
 
@@ -925,25 +906,25 @@ var Sqwidget;
                 name = null,
                 minVersion = null,
                 depConfig = {},
-                basePath = widget.getConfig('basePath', this.getConfig('basePath')),
-                pluginPath = widget.getConfig('pluginPath', this.getConfig('pluginPath')),
+                basePath = widget.getConfig("basePath", this.getConfig("basePath")),
+                pluginPath = widget.getConfig("pluginPath", this.getConfig("pluginPath")),
                 existing, loadPath;
 
             if (!dependency) {
                 name = null;
             }
-            else if (typeof(dependency) === 'string') {
+            else if (typeof(dependency) === "string") {
                 name = dependency;
             }
-            else if (typeof(dependency === 'object')) {
+            else if (typeof(dependency === "object")) {
                 name = dependency[0];
-                if (typeof(dependency[1]) === 'object') {
+                if (typeof(dependency[1]) === "object") {
                     depConfig = dependency[1];
                 }
                 else {
                     minVersion = dependency[1];
                 }
-                if (typeof(dependency[2]) === 'object') {
+                if (typeof(dependency[2]) === "object") {
                     depConfig = dependency[2];
                 }
             }
@@ -953,23 +934,23 @@ var Sqwidget;
             if (name && name.length > 0) {
                 existing = this.dependencyRegister[name];
                 if (existing) {
-                    _('adding dependency (already exists): ' + name);
+                    _("adding dependency (already exists): " + name);
                     //TODO version comparison
                     existing.clients.push(widget);
                     if (existing.loaded) {
-                        _('setting plugin (already loaded): ' + name);
+                        _("setting plugin (already loaded): " + name);
                         widget.setPlugin(existing.name, existing.module, depConfig);
                     }
                     else {
-                        _('waiting for plugin load: ' + name);
+                        _("waiting for plugin load: " + name);
                     }
                 }
                 else {
                     this.dependencyRegister[name] = {name: name, version: minVersion, loaded: false, module: null, clients: [widget], config: depConfig};
                     // initiate load
                     _(basePath, pluginPath);
-                    loadPath = this.buildResourcePath(basePath, pluginPath, name, 'js');
-                    _('loading dependency: '  + name + ', ' + loadPath);
+                    loadPath = this.buildResourcePath(basePath, pluginPath, name, "js");
+                    _("loading dependency: "  + name + ", " + loadPath);
                     Sqwidget.getScript(loadPath);
                 }
             }
@@ -997,7 +978,7 @@ var Sqwidget;
                     else {
                         for (c = 0; c < this.dependencyRegister[d].clients.length; c += 1) {
                             if (this.dependencyRegister[d].clients[c] === widgetClient) {
-                                if (typeof widgetClient.plugins[this.dependencyRegister[d].name] === 'undefined') {
+                                if (typeof widgetClient.plugins[this.dependencyRegister[d].name] === "undefined") {
                                     return false;
                                 }
                             }
@@ -1018,10 +999,10 @@ var Sqwidget;
          */
          
         plugin: function (name, module, version) {
-            _('plugin registration: ', name, version);
+            _("plugin registration: ", name, version);
             var dep = this.dependencyRegister[name];
                 
-            if (typeof(dep) === 'undefined') {
+            if (typeof(dep) === "undefined") {
                 // add a new entry for this plugin, not requested yet but already loaded
                 // which isn't a problem
                 this.dependencyRegister[name] = {
@@ -1057,16 +1038,16 @@ var Sqwidget;
         startWidgets: function () {
             var widgets = Sqwidget.widgetsInDom(); // get widgets in the page as Widget objects
 
-            _('found ' + widgets.length.toString() + ' widget divs:');
+            _("found " + widgets.length.toString() + " widget divs:");
 
-            _('initing widgets...');
+            _("initing widgets...");
             // load templates as needed
             jQuery.each(widgets, function (w, widget) {
-                _('init for w: ' + widgets[w].toString());
+                _("init for w: " + widgets[w].toString());
                 widget.init();
             });    
             jQuery.each(widgets, function (w, widget) {
-                _('checkrun for w: ' + widgets[w].toString());
+                _("checkrun for w: " + widgets[w].toString());
                 widget.checkRun();
             });
         }
@@ -1077,15 +1058,15 @@ var Sqwidget;
 // Sqwidget - extend Sqwidget once jQuery is loaded, and assign to Sqwidget
 // *********
     Sqwidget.onjQueryReady(function (jQuery) {
-        var $ = jQuery, // TODO: use 'jQuery' rather than '$', as elsewhere in script
-            namespace = 'sqwidget';
+        var $ = jQuery, // TODO: use "jQuery" rather than "$", as elsewhere in script
+            namespace = "sqwidget";
         
         function ns(props, delimiter) {
-            delimiter = delimiter || '-';
+            delimiter = delimiter || "-";
             if (!props) {
                 return namespace;
             }
-            else if (typeof props === 'string') {
+            else if (typeof props === "string") {
                 return namespace + delimiter + props;
             }
             else {
@@ -1135,33 +1116,33 @@ var Sqwidget;
                 
                 // Notify the global window object about desired internal events of a Sqwidget object
                     // E.g. bind listener to window:
-                    //   $(window).bind('sqwidget', function(jQueryEventObject, sqwidgetEvent){
-                    //     if (sqwidgetEvent.type === 'overlay.add'){
+                    //   $(window).bind("sqwidget", function(jQueryEventObject, sqwidgetEvent){
+                    //     if (sqwidgetEvent.type === "overlay.add"){
                     //       doStuff(sqwidgetEvent.origin);
                     //     }
                     //   });
                 notifyGlobalWindow: function (origin, eventTypes, namespace) { 
                     // origin is originating object (e.g. Overlay instance), eventTypes is array
-                    // (e.g. ['add', 'remove']), namespace is optional - if not provided, the 
-                    // origin must have a 'type' property (e.g. 'overlay')
+                    // (e.g. ["add", "remove"]), namespace is optional - if not provided, the 
+                    // origin must have a "type" property (e.g. "overlay")
                     
                     $.each(eventTypes, function (i, type) {
                         try {
                             $(origin)
                                 .bind(type, function () {
-                                    $(window).trigger(ns(), {type: (namespace || origin.type) + '.' + type, origin: this});
+                                    $(window).trigger(ns(), {type: (namespace || origin.type) + "." + type, origin: this});
                                 });
                         }
                         catch (e) {
-                            _('catch', $);
+                            _("catch", $);
                         }
                     });
                 },
                 
-                // Setter: Add a query string parameter to a url. E.g. addUrlParam('http://example.com?v=1', 'this', 'that');
+                // Setter: Add a query string parameter to a url. E.g. addUrlParam('http://example.com?v=1", "this", "that");
                 // TODO: Getter: if no value supplied, then get param value
                 urlParam: function (url, param, value) {
-                    return url + (!/\?/.test(url) ? '?' : '&') + param + '=' + value;
+                    return url + (!/\?/.test(url) ? "?" : "&") + param + "=" + value;
                 },
                 
                 // Return a fixed number (which may be considered arbitrary) when passed an interval of time (in days; may be decimal part of day, e.g. 1/24 for 1 hour)
@@ -1183,13 +1164,13 @@ var Sqwidget;
                 },
                 
                 cacheUrl: function (url, intervalDays) {
-                    return this.urlParam(url, 'cache', this.timeChunk(intervalDays));
+                    return this.urlParam(url, "cache", this.timeChunk(intervalDays));
                 },
                 
                 // preload images - argument is either string or array of strings
                 preload: function (srcs) {
                     $.each($.isArray(srcs) ? srcs : [srcs], function (i, src) {
-                        $('<img src="' + src + '" />');
+                        $("<img src='" + src + "' />");
                     });
                 },
 
@@ -1201,7 +1182,7 @@ var Sqwidget;
                     function () {},
                     {
                         // Insert widget HTML, DOM node or jQuery object into the DOM, afer the <script> element that originally created the widget instance. This position is cached, for later retri  .
-                        // Optional args: insertPosition to override last in body; verb to use for adding content - default 'after' (could use 'before', 'append', 'prepend', etc)
+                        // Optional args: insertPosition to override last in body; verb to use for adding content - default "after" (could use "before", "append", "prepend", etc)
                         // TODO: clarify how this is connected with method to replace DOM contents (e.g. as .html(newContents))
                         // TODO: Does this really need to store the insertPosition? In fact, is this method even required?!
                         insert: function (contents, insertPosition, verb) {
@@ -1213,33 +1194,33 @@ var Sqwidget;
                             if (!contents) {
                                 return $context;
                             }
-                            $context[verb || 'after'](contents);
+                            $context[verb || "after"](contents);
                             return $(contents);
                         },
                         
-                        // Truncate a str to a specific number of words; optional arg: trailer string - default '…'
+                        // Truncate a str to a specific number of words; optional arg: trailer string - default "…"
                         truncate: function (str, numWords, trailer) {
-                            var newStr = String(str).replace(new RegExp('^((\\W*\\w*\\b){0,' + numWords + '}\\.?).*$', 'm'), '$1');
-                            return newStr + (newStr.length < str.length ? (trailer || '\u2026') : '');
+                            var newStr = String(str).replace(new RegExp("^((\\W*\\w*\\b){0," + numWords + "}\\.?).*$", "m"), "$1");
+                            return newStr + (newStr.length < str.length ? (trailer || "\u2026") : "");
                         },
                     
                         // Repeat a string num times 
                         repeat: function (str, repeats) {
-                            return repeats > 0 ? new Array(repeats + 1).join(str) : '';
+                            return repeats > 0 ? new Array(repeats + 1).join(str) : "";
                         },
                         
                         // Return a number with leading zeroes, up to total length of number string
                         leadingZeroes: function (num, totalLength) {
-                            return this.repeat('0', (totalLength || 2) - String(num).length) + num;
+                            return this.repeat("0", (totalLength || 2) - String(num).length) + num;
                         },
  
-                        // Parse an atom date string and return as a JS Date object. E.g. '2007-10-29T23:39:38+06:00'
+                        // Parse an atom date string and return as a JS Date object. E.g. "2007-10-29T23:39:38+06:00"
                         // TODO: Detect if arg is Date obj, and return as Atom date string
                         atomDate: function (atomDateStr) {
                             var d, n, plusminus;
                             
-                            // Convert 'Z' UTC to '+00:00' and split to array
-                            atomDateStr = atomDateStr.replace(/z$/i, '+00:00');
+                            // Convert "Z" UTC to "+00:00" and split to array
+                            atomDateStr = atomDateStr.replace(/z$/i, "+00:00");
                             d = atomDateStr.split(/[\-T:+]/);  // TODO: Confirm this is fine in IE6
                             n = Number;
                                 
@@ -1265,14 +1246,14 @@ var Sqwidget;
                             cacheTime = cacheTime || this.settings.cssCacheTime;
                             
                             // Simple check to tell difference between css text and a url - this does not attempt to validate CSS
-                            // Check for '@' or "{" - e.g. with @import or div{color:red};
+                            // Check for "@" or "{" - e.g. with @import or div{color:red};
                             function isCss(str) {
                                 return (/@|\{/m).test(str);
                             }
-                            $('head').append(
+                            $("head").append(
                                 isCss(css) ? 
-                                    '<style type="text/css">' + css + '</style>' :
-                                    '<link type="text/css" rel="stylesheet" href="' + (cacheTime ? this.cacheUrl(css, cacheTime) : css) + '" />'
+                                    "<style type='text/css'>" + css + "</style>" :
+                                    "<link type='text/css' rel='stylesheet' href='" + (cacheTime ? this.cacheUrl(css, cacheTime) : css) + "' />"
                             );
                         }
                     }
@@ -1300,7 +1281,7 @@ var Sqwidget;
             scripts = [],
             styles = [],
             plugins = {},
-            templateText = '',
+            templateText = "",
             loaded = false,
             /** errors noted on template load */
             errors = [],
@@ -1325,7 +1306,7 @@ var Sqwidget;
         // PRIVATE methods
         
         function parseTemplateFile(template) {
-            _('parsing template file for ' + templateType);
+            _("parsing template file for " + templateType);
             // TODO document type detection (doctype tells us it is HTML or similar)
             // For now: default body html stored -- and activated immediately
             var 
@@ -1341,22 +1322,22 @@ var Sqwidget;
             else {
                 templateStr = template;
             }
-            _('template: ' + templateType, {head: head, body: body});
+            _("template: " + templateType, {head: head, body: body});
             if (body !== null) {
-                templates['default'] = body;
+                templates["default"] = body;
             }
             // grab script templates - from the HEAD only for templates other than the default
             j = jQuery(templateStr);
-            j.filter('script[type=text/template][id]')
+            j.filter("script[type=text/template][id]")
              .each(function (i, t) {
                 t = jQuery(t);
-                templates[t.attr('id')] = jQuery.trim(t.html());
+                templates[t.attr("id")] = jQuery.trim(t.html());
             });
             
             //
             // grab javascripts from head and execute in order
             //
-            j.filter('script:not([type]), script[type=text/javascript]')
+            j.filter("script:not([type]), script[type=text/javascript]")
              .each(function (i, t) {
                 t = jQuery(t);
                 scripts.push(t.html());
@@ -1365,24 +1346,24 @@ var Sqwidget;
             // capture css
             // and move
             // TODO -- capture media attributes as well
-            j.filter('style')
+            j.filter("style")
                 .each(function (i, t) {
                     t = jQuery(t);
-                    styles.push({text: t.html(), media: t.attr('media'), type: t.attr('type'), title: t.attr('title')});
+                    styles.push({text: t.html(), media: t.attr("media"), type: t.attr("type"), title: t.attr("title")});
                 });
             //TODO hook for style injection -- not done for now
             // modes -- simple injection with container div added
-            _('styles', styles);
+            _("styles", styles);
             jQuery.each(styles, function (s, style) {
-                var ss = jQuery('<style>' + style.text + '</style>');
+                var ss = jQuery("<style>" + style.text + "</style>");
                 ss.attr({title: style.title, type: style.type, media: style.media});
-                jQuery('head').append(ss);
+                jQuery("head").append(ss);
             });
         }
         
         function initWidgets() {
             jQuery.each(widgets, function (w, widget) {
-                _('running controller for ' + widget.toString());
+                _("running controller for " + widget.toString());
                 widget.onTemplateLoaded(self);
             });
         }
@@ -1390,7 +1371,7 @@ var Sqwidget;
         function showErrorsInWidgets() {
             if (sqwidget.settings.development) {
                 jQuery.each(widgets, function (w, widget) {
-                    widget.render('<div style="color: red;border:1px dashed red;">Sqwidget Errors:<ul><li>' + errors.join('</li><li>') + '</li></ul></div>');
+                    widget.render("<div style='color: red;border:1px dashed red;'>Sqwidget Errors:<ul><li>" + errors.join("</li><li>") + "</li></ul></div>");
                 });
             }
         }
@@ -1403,25 +1384,25 @@ var Sqwidget;
                         r.push(key + ': "' + a[key] + '"');
                     }
                 }
-                return '{' + r.join(' ') + '}';
+                return "{" + r.join(" ") + "}";
             }
             
             var type, tn;
-            _('template full name is ' + templateType);
+            _("template full name is " + templateType);
             // extract name and save it for later
             try {
                 // annoying regex issue to be sorted out sometime
-                // filename match doesn't work unless pathed so adding './' to keep things happy
+                // filename match doesn't work unless pathed so adding "./" to keep things happy
                 tn = templateType;
-                if (tn.indexOf('/') === -1) {
-                    tn = './' + tn;
+                if (tn.indexOf("/") === -1) {
+                    tn = "./" + tn;
                 }
                 type = tn.match(/(.*)[\/\\]([^\/\\]+)\.\w+$/)[2];
             }
             catch (e) {
                 type = templateType;
             }
-            _('template type is ' + type);
+            _("template type is " + type);
             sqwidget.widgetTemplatesByType[type] = self;
             templateConfig.type = type;
             
@@ -1434,17 +1415,17 @@ var Sqwidget;
             
                 jQuery.get(templateType, function (data, textStatus, request) {
                     // on template loaded
-                    _('template data: ' + data);
-                    _('template text status: ' + textStatus);
-                    if (data.length === 0 || textStatus !== 'success') {
+                    _("template data: " + data);
+                    _("template text status: " + textStatus);
+                    if (data.length === 0 || textStatus !== "success") {
                         // template load failed
-                        errors.push('loading of template ' + templateType + ' failed.');
+                        errors.push("loading of template " + templateType + " failed.");
                     }
                     else {
-                        _('template loaded');                
+                        _("template loaded");                
                         templateText = data;
                         parseTemplateFile(templateText);
-                        _('templates: ' + props(templates));
+                        _("templates: " + props(templates));
                         loaded = true;
                     }
                     if (errors.length === 0) {
@@ -1459,7 +1440,7 @@ var Sqwidget;
                     else {
                         showErrorsInWidgets();
                     }
-                }, 'text');
+                }, "text");
             }
         }
         
@@ -1599,7 +1580,7 @@ var Sqwidget;
          * @return {undefined}
          */
         function evalScript(script) {
-            _('eval script', {source: script});            
+            _("eval script", {source: script});            
             //TODO minimise context for controller functions
             eval(script.toString());
         }
@@ -1619,7 +1600,7 @@ var Sqwidget;
                     r.push(key + ': "' + a[key] + '"');
                 }
             }
-            return '{' + r.join(' ') + '}';
+            return "{" + r.join(" ") + "}";
         }
          
         widget.plugins = plugins;
@@ -1651,7 +1632,7 @@ var Sqwidget;
          */
         // TODO use the template name if not available in the container
         widget.getId = function () {
-            if (dataSqwidget.hasOwnProperty('id')) {
+            if (dataSqwidget.hasOwnProperty("id")) {
                 return dataSqwidget.id;
             }
             else {
@@ -1670,7 +1651,7 @@ var Sqwidget;
         };
         
         widget.setPlugin = function (name, module, config) {
-            _('setting up plugin: ' + name + ' for widget ' + widget.getId());
+            _("setting up plugin: " + name + " for widget " + widget.getId());
             plugins[name] = module(sqwidget, widget, jQuery, config);
             //TODO check all plugins loaded
             // TODO: merge this block with .checkRun() method below
@@ -1689,14 +1670,14 @@ var Sqwidget;
                     if (readyFn) {
                         widgetWrapper = jQuery(widget);
                             
-                        _('calling widget.ready(): ' + container.id);
-                        widgetWrapper.trigger('readyStart');
+                        _("calling widget.ready(): " + container.id);
+                        widgetWrapper.trigger("readyStart");
                         readyFn.call(widget);
-                        widgetWrapper.trigger('readyEnd');
+                        widgetWrapper.trigger("readyEnd");
                     }
                     else {
                         //TODO decide what extra contents will be displayed here
-                        widget.setTemplate('default', {}, null);
+                        widget.setTemplate("default", {}, null);
                     }
                 }
             }            
@@ -1710,15 +1691,15 @@ var Sqwidget;
          */
         widget.getBodyElement = function (idSuffix) {
             var 
-                elId = widget.getId() + '_' + idSuffix,
-                el = jQuery('#' + elId),
+                elId = widget.getId() + "_" + idSuffix,
+                el = jQuery("#" + elId),
                 div;
             if (el.length) {
                 return el;
             }
             else {
-                div = jQuery('<div></div>').attr('id', elId).css('display', 'none');
-                jQuery('body').append(div);
+                div = jQuery("<div></div>").attr("id", elId).css("display", "none");
+                jQuery("body").append(div);
                 return div;
             }
         };
@@ -1727,7 +1708,7 @@ var Sqwidget;
         //TODO fit this into the proper place
         widget.ui = {
             head: function (content) {
-                $('head').append(content);
+                $("head").append(content);
             },
             body: function (content) {
                 container.empty().append(content);
@@ -1766,14 +1747,14 @@ var Sqwidget;
         // create the main ui for this widget instance
         instance.main = instance.ui();
         // add style to document head (using default ui engine)
-        instance.main.head('<style></style>');
-        instance.main.body('<p>blah</p>');
-        instance.main.body.template = template.templates['default'];
+        instance.main.head("<style></style>");
+        instance.main.body("<p>blah</p>");
+        instance.main.body.template = template.templates["default"];
         instance.main.body(mainTemplate, dataJson);
         
-        instance.lightbox = instance.ui('appleofmyiframe');
+        instance.lightbox = instance.ui("appleofmyiframe");
         instance.lightbox.template = templates.lightbox;
-        instance.lightbox.body('<p>blah</p>');
+        instance.lightbox.body("<p>blah</p>");
         */
         
 
@@ -1785,12 +1766,12 @@ var Sqwidget;
          */
         widget.init = function () {
             //attach ourselves to template -- this also loads the template if that hasn't happened before
-            _('  getting template');
+            _("  getting template");
             var sqTemplate = sqwidget.getTemplate(dataSqwidget.src, widget);
             template = sqTemplate;
-            _('  registering widget');
+            _("  registering widget");
             sqTemplate.register(widget);
-            _('   widget registered');            
+            _("   widget registered");            
         };
                 
         /**
@@ -1835,12 +1816,12 @@ var Sqwidget;
         widget.showLoading = function () {
             var t;
                 
-            if (jQuery('.sqwidget-placeholder', container).length === 0) {
+            if (jQuery(".sqwidget-placeholder", container).length === 0) {
                 if (loadingFn) {
                     loadingFn.call(widget);
                 }
                 else {
-                    t = template.getTemplate('loading');
+                    t = template.getTemplate("loading");
                     if (t) {
                         widget.render(t);
                     }
@@ -1882,7 +1863,7 @@ var Sqwidget;
          * Run the script controller
          */
         widget.runController = function (scripts) {
-            _('  running controller scripts..');
+            _("  running controller scripts..");
             jQuery.each(scripts, function (s, script) {
                 evalScript(scripts[s]);
             });
@@ -1894,12 +1875,12 @@ var Sqwidget;
          */
          
         widget.toString = function () {
-            return 'type: ' + widgetType + ' container id: ' + div.id + ' dataSqwidget: ' + props(dataSqwidget) + ' dataSqwidgetSettings: ' + props(settings);
+            return "type: " + widgetType + " container id: " + div.id + " dataSqwidget: " + props(dataSqwidget) + " dataSqwidgetSettings: " + props(settings);
         };
         
         // TEMP: jQuery has a bug that is to be released in v1.4.3 - in the meantime, jQuery errors on unbinding custom events from a plain native JavaScript object: http://forum.jquery.com/topic/javascript-error-when-unbinding-a-custom-event-using-jquery-1-4-2
-        if (!Sqwidget.hasMinVersion(jQuery.fn.jquery, '1.4.3')) {
-            widget.addEventListener = widget.removeEventListener = function () {};
+        if (!Sqwidget.hasMinVersion(jQuery.fn.jquery, "1.4.3")) {
+            widget.addEventListener = widget.removeEventListener = function(){};
         }
         
         return widget;
@@ -1914,7 +1895,7 @@ var Sqwidget;
 
 Sqwidget.ready(function () {
     if (Sqwidget.settings.automatic) {
-        Sqwidget._('sqwidget (on automatic) loading and starting widgets');
+        Sqwidget._("sqwidget (on automatic) loading and starting widgets");
         Sqwidget.startWidgets();
     }
 });
