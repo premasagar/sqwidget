@@ -1,8 +1,5 @@
 "use strict";
 
-/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: false, immed: true, nomen: false, evil: true*/
-
-
 /*!
 * Sqwidget
 *   github.com/premasagar/sqwidget
@@ -43,11 +40,12 @@ var Sqwidget;
     
     var window = self,
         document = window.document,
-        _ = function(){}, // console logging placeholder function
+        _,
+        $,
+        jQuery,
         tim,
         ready,
         splitdoc,
-        jQuery, $,
         Template,
         Widget;
         
@@ -59,11 +57,9 @@ var Sqwidget;
 /////////////////////////
 
 
-/*  Console logging functionality
-
-    This block may be safely ommited. If present, it enhances sqwidget.js with console logging ability, for debugging.
-
-    To activate console logging, add "?sqwidgetDebug" or "&sqwidgetDebug" to the URL in the browser address bar.
+/*  CONSOLE LOGGING
+    To activate, add "?sqwidgetDebug" or "&sqwidgetDebug" to the URL query string in the browser's address bar.
+    This block of code may be safely ommited, if console logging is unneeded.
 */
 
 /*
@@ -72,19 +68,7 @@ var Sqwidget;
 *
 *//*
     cross-browser JavaScript debug console logging
-
-    by Premasagar Rose
-        dharmafly.com
-
-    license:
-        opensource.org/licenses/mit-license.php
-        
-    v1.2
-
 */
-
-/* The block below may be safely removed, if console logging is not required for debugging */
-        
     _ = (function(){
         var window = self,
             ua = window.navigator.userAgent,
@@ -178,7 +162,10 @@ var Sqwidget;
     if (window.location && window.location.search.indexOf("sqwidgetDebug") !== -1) {
         window.sqwidgetDebug = true;
     }
-    
+    if (!window.sqwidgetDebug || !_){
+        _ = function(){};
+    }
+
 
     /////////////////////////
 
@@ -1899,3 +1886,5 @@ Sqwidget.ready(function () {
         Sqwidget.startWidgets();
     }
 });
+
+/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: false, immed: true, nomen: false, evil: true*/
