@@ -24,6 +24,8 @@
         
 */
 
+/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, bitwise: true, regexp: false, strict: true, newcap: false, immed: true, nomen: false, evil: true*//*global window: true, self: true */
+
 /**
 * GLOBALS VARS
 **/
@@ -73,83 +75,54 @@ var Sqwidget;
         var window = self,
             ua = window.navigator.userAgent,
             console = window.console,
-            opera = window.opera,
-            debug, log;
+            air = window.air && window.air.Introspector,
+            debug = console && console.debug,
+            log = console && console.log,
+            method,
+            msg = "Debugging on";
         
-        // Doesn't support console API
-        if (!console){
-            // Opera 
-            return (opera && opera.postError) ?
-                 function(){
-                     var i, argLen, log = opera.postError, args = arguments, arg, subArgs, prop;
-                     log(args);
-                     
-                     argLen = args.length;
-                     for (i=0; i < argLen; i++){
-                         arg = args[i];
-                         if (typeof arg === "object" && arg !== null){
-                            subArgs = [];
-                            for (prop in arg){
-                                try {
-                                    if (arg.hasOwnProperty(prop)){
-                                        subArgs.push(prop + ": " + arg[prop]);
-                                    }
-                                }
-                                catch(e){}
-                            }
-                            log("----subArgs: " + subArgs);
-                         }
-                     }
-                 } :
-                 function(){};
-        }
-        else {
-            debug = console.debug;
-            log = console.log;
-            
-            if (debug){
-                // WebKit complains if console's debug function is called on its own
-                if (/webkit/i.test(ua)){
-                    return function(){
-                        var i = 0,
-                            args = arguments,
-                            len = args.length,
-                            arr = [];
-                        
-                        if (len === 1){
-                            console.debug(args[i]);
-                        }
-                        else if (len > 1){
-                            for (; i < len; i++){
-                                arr.push(args[i]);
-                            }
-                            console.debug(arr);
-                        }
-                    };
-                }
+        if (debug){
+            try {
+                debug(msg);
                 return debug;
             }
-            if (log){ // old WebKit
-                if (typeof log.apply === "function"){
-                    return function(){
-                        log.apply(console, arguments);
-                    };
-                }
-                else { // IE8
-                    return function(){
-                        var args = arguments,
-                            len = arguments.length,
-                            indent = "",
-                            i;
-                            
-                        for (i=0; i < len; i++){
-                            log(indent + args[i]);
-                            indent = "---- ";
-                        }
-                    };
-                }
+            catch(e){
+                method = function(){
+                    debug.apply(console, arguments);
+                };
             }
         }
+        
+        else if (log){
+            if (typeof log.apply === "function"){
+                method = function(){
+                    log.apply(console, arguments);
+                };
+            }
+            else { // IE8
+                method = function(){
+                    var args = arguments,
+                        len = arguments.length,
+                        indent = "",
+                        i;
+                        
+                    for (i=0; i < len; i++){
+                        log(indent + args[i]);
+                        indent = "---- ";
+                    }
+                };
+            }
+        }
+            
+        else if (air && air.Console && air.Console.log){
+            method = air.Console.log;
+        }
+        
+        if (method){
+            method(msg);
+            return method;
+        }
+        return function(){};
     }());
     
 /* end console logging */
@@ -1887,4 +1860,3 @@ Sqwidget.ready(function () {
     }
 });
 
-/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: false, immed: true, nomen: false, evil: true*/
