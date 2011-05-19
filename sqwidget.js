@@ -1,5 +1,3 @@
-"use strict";
-
 /*!
 * Sqwidget
 *   github.com/premasagar/sqwidget
@@ -39,6 +37,7 @@ var Sqwidget;
 * SQWIDGET CORE
 **/
 (function () {
+    "use strict";
     
     var window = self,
         document = window.document,
@@ -248,21 +247,21 @@ var Sqwidget;
     *
     */
     splitdoc = (function(){
-        var exports = exports || {};
+        var exports = {};
         
         function trim(str){
             return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, ""); // match the full set of whitespace characters
         }
         
         function Splitdoc(raw, options){
-            var
-                // cast raw to string
-                html = typeof raw !== "undefined" && raw !== null ? raw + "" : "",
+            var // cast raw to string
+                html = (typeof raw !== "undefined" && raw !== null) ?
+                    String(raw) : "",
             
                 // options - most of these set the default values for components of the HTML document
                 doctypeDefault = options && typeof options.doctype !== "undefined" ? options.doctype : "<!doctype html>",
                 charsetDefault = options && typeof options.charset !== "undefined" ? options.charset : "utf-8",
-                charsetMetaDefault = options && typeof options.charsetmeta !== "undefined" ? options.charsetmeta : "<meta charset=" + charsetDefault + ">",
+                charsetMetaDefault = options && typeof options.charsetmeta !== "undefined" ? options.charsetmeta : "<meta charset='" + charsetDefault + "' />",
                 titleDefault = options && typeof options.title !== "undefined" ? options.title : "",
                 bodyDefault = options && typeof options.body !== "undefined" ? options.body : "",
                 
@@ -271,7 +270,7 @@ var Sqwidget;
                 htmlAttrRegex = /<html([^>]*)>/i,
                 headRegex = /<head([^>]*)>([\w\W]*?)<\/head>/i, // <head> and the first available </head>, with backrefs: 1) head attributes 2) contents
                 // TODO: Improve robustness of the charset regex
-                charsetRegex = /<meta charset=([\w\-]+)\s*\/?>|<meta http-equiv=["']Content-Type["'] content=["']text\/html;\s*charset=([\w\-]+)["']\s*\/?>/,
+                charsetRegex = /<meta charset=['"]?([\w\-]+)['"]?\s*\/?>|<meta http-equiv=["']Content-Type["'] content=["']text\/html;\s*charset=([\w\-]+)["']\s*\/?>/,
                 titleRegex = /<title([^>]*)>([\w\W]*?)<\/title>/i,
                 bodyRegex = /<body([^>]*)>([\w\W]*?)<\/body>/i, // <body> and the first available </body>, with backrefs: 1) body attributes 2) contents
             
@@ -755,6 +754,7 @@ var Sqwidget;
                 div, dataSqwidgetSettings, dataSqwidget, widgetType, i;
         
             function trim(str) {
+                _("str: widgetsInDom trim");
                 return str.replace(regexWhitespaceAtEnd, "");
             }
             
@@ -768,6 +768,7 @@ var Sqwidget;
              * Use \; to include a ";" in a value
              */
             function settings(str) {
+                _("str: settings");
                 if (!str) {
                     return {};
                 }
@@ -1053,6 +1054,7 @@ var Sqwidget;
 
                 // Test whether the str is *probably* a url. It does not attempt to validate the url.
                 isUrl: function (str) {
+                    _("str: isUrl");
                     return (/^https?:\/\/[\-\w]+\.\w[\-\w]+\S*$/).test(str);
                 },
 
@@ -1158,12 +1160,14 @@ var Sqwidget;
                         
                         // Truncate a str to a specific number of words; optional arg: trailer string - default "…"
                         truncate: function (str, numWords, trailer) {
+                            _("str: truncate");
                             var newStr = String(str).replace(new RegExp("^((\\W*\\w*\\b){0," + numWords + "}\\.?).*$", "m"), "$1");
                             return newStr + (newStr.length < str.length ? (trailer || "\u2026") : "");
                         },
                     
                         // Repeat a string num times 
                         repeat: function (str, repeats) {
+                            _("str: repeat");
                             return repeats > 0 ? new Array(repeats + 1).join(str) : "";
                         },
                         
@@ -1206,6 +1210,7 @@ var Sqwidget;
                             // Simple check to tell difference between css text and a url - this does not attempt to validate CSS
                             // Check for "@" or "{" - e.g. with @import or div{color:red};
                             function isCss(str) {
+                                _("str: isCss");
                                 return (/@|\{/m).test(str);
                             }
                             $("head").append(
