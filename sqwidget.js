@@ -20,9 +20,7 @@
         
     v0.1
         
-*/
-
-/*jslint onevar: true, browser: true, devel: true, undef: true, eqeqeq: true, bitwise: true, regexp: false, strict: true, newcap: false, immed: true, nomen: false, evil: true*//*global window: true, self: true */
+*//*global window */
 
 /**
 * GLOBALS VARS
@@ -36,10 +34,10 @@ var Sqwidget;
 /**
 * SQWIDGET CORE
 **/
-(function () {
+(function (window) {
     "use strict";
     
-    var window = self,
+    var self = window,
         document = window.document,
         _,
         $,
@@ -70,10 +68,8 @@ var Sqwidget;
 *//*
     cross-browser JavaScript debug console logging
 */
-    _ = (function(){
-        var window = self,
-            ua = window.navigator.userAgent,
-            console = window.console,
+    _ = (function(window){
+        var console = window.console,
             air = window.air && window.air.Introspector,
             debug = console && console.debug,
             log = console && console.log,
@@ -120,7 +116,7 @@ var Sqwidget;
             return method;
         }
         return function(){};
-    }());
+    }(window));
     
 /* end console logging */
 
@@ -364,9 +360,8 @@ var Sqwidget;
     *//*
         onDocumentReady abstraction
     */
-    ready = (function () {
-        var window = self,
-            doc = window.document,
+    ready = (function (window) {
+        var doc = window.document,
             docEl = doc.documentElement,
             addEventListener = doc.addEventListener,
             attachEvent = doc.attachEvent,
@@ -378,12 +373,15 @@ var Sqwidget;
             atTopLevel;
 
         function fireReady() {
-            if (ready) { 
+            var i = 0,
+                l = readyFns.length;
+            
+            if (ready) {
                 return; 
             }
             ready = true;
         
-            for (var i = 0, l = readyFns.length; i < l; i += 1) {
+            for (; i < l; i += 1) {
                 readyFns[i]();
             }
         }
@@ -397,7 +395,7 @@ var Sqwidget;
                 // http://javascript.nwbox.com/IEContentLoaded/
                 docEl.doScroll("left");
             } catch (e) {
-                setTimeout(scrollCheck, 1);
+                window.setTimeout(scrollCheck, 1);
                 return;
             }
         
@@ -451,7 +449,7 @@ var Sqwidget;
         }
 
         return onReady;
-    }());
+    }(window));
 
 
     /////////////////////////
@@ -566,7 +564,7 @@ var Sqwidget;
             
             if (dict) {
                 for (key in dict) {
-                    if (key in this.settings) {
+                    if (dict.hasOwnProperty(key) && typeof this.settings[key] !== "undefined") {
                         this.settings[key] = dict[key];
                     }
                 }
@@ -1463,7 +1461,7 @@ var Sqwidget;
             
             if (dict) {
                 for (key in dict) {
-                    if (key in templateConfig) {
+                    if (dict.hasOwnProperty(key) && typeof templateConfig !== "undefined") {
                         templateConfig[key] = dict[key];
                     }
                 }
@@ -1849,17 +1847,19 @@ var Sqwidget;
         return widget;
     };
     
-}());
+    /////
+    
+    // On DOM ready loading to be done
+    // TODO proper metaphors for calling this
+    // a default function here, but can be overridden if called by the doc?
 
+    Sqwidget.ready(function () {
+        if (Sqwidget.settings.automatic) {
+            Sqwidget._("sqwidget (on automatic) loading and starting widgets");
+            Sqwidget.startWidgets();
+        }
+    });
+    
+}(window));
 
-// On DOM ready loading to be done
-// TODO proper metaphors for calling this
-// a default function here, but can be overridden if called by the doc?
-
-Sqwidget.ready(function () {
-    if (Sqwidget.settings.automatic) {
-        Sqwidget._("sqwidget (on automatic) loading and starting widgets");
-        Sqwidget.startWidgets();
-    }
-});
-
+/*jslint white: false, onevar: true, browser: true, evil: true, undef: true, nomen: false, regexp: false, plusplus: false, bitwise: true, newcap: true, strict: true, maxerr: 50, indent: 4 */
