@@ -242,9 +242,7 @@ var Sqwidget;
     *   github.com/premasagar/mishmash/tree/master/splitdoc/
     *
     */
-    splitdoc = (function(){
-        var exports = {};
-        
+    splitdoc = (function(){        
         function trim(str){
             return str.replace(/^[\0\t\n\v\f\r\s]+|[\0\t\n\v\f\r\s]+$/g, ""); // match the full set of whitespace characters
         }
@@ -257,7 +255,7 @@ var Sqwidget;
                 // options - most of these set the default values for components of the HTML document
                 doctypeDefault = options && typeof options.doctype !== "undefined" ? options.doctype : "<!doctype html>",
                 charsetDefault = options && typeof options.charset !== "undefined" ? options.charset : "utf-8",
-                charsetMetaDefault = options && typeof options.charsetmeta !== "undefined" ? options.charsetmeta : "<meta charset='" + charsetDefault + "' />",
+                charsetMetaDefault = options && typeof options.charsetmeta !== "undefined" ? options.charsetmeta : "<meta charset='" + charsetDefault + "'>",
                 titleDefault = options && typeof options.title !== "undefined" ? options.title : "",
                 bodyDefault = options && typeof options.body !== "undefined" ? options.body : "",
                 
@@ -299,12 +297,12 @@ var Sqwidget;
                             bodyDefault || "" : // then bodyContents is set to default value or blank
                             html // if not, then assume the whole HTML string is to be the contents of the body
                 );
-            
+
             if (!titleMatch){
                 headContents = "<title>" + titleDefault + "</title>" + headContents;
             }
             if (!charsetMatch){
-                headContents = charsetTag + headContents ;
+                headContents = charsetTag + headContents;
             }
             
             // document reference object
@@ -342,11 +340,11 @@ var Sqwidget;
             }
         };
         
-        function splitdoc(html, options){
-            return new Splitdoc(html, options);
-        }
+        /////
         
-        return (exports.splitdoc = splitdoc);
+        return function(html, options){
+            return new Splitdoc(html, options);
+        };
     }());
 
 
@@ -508,7 +506,7 @@ var Sqwidget;
     // SQWIDGET METHODS THAT ARE NOT JQUERY-DEPENDENT
     // TODO: turn Sqwidget object into a function that passes its arguments to Sqwidget.ready
     window.Sqwidget = Sqwidget = {
-        version: "0.3.0",            
+        version: "0.3.1",            
         _: _, // console logger
         
         /** 
@@ -638,7 +636,7 @@ var Sqwidget;
         
         templateText: function (jsonData) {
             var myTemplate;
-            _("Sqwidget.template text called", jsonData.type);
+            _("Sqwidget.templateText", jsonData.type);
             if (jsonData && jsonData.type) {
                 myTemplate = this.widgetTemplatesByType[jsonData.type];
                 if (myTemplate) {
@@ -993,8 +991,7 @@ var Sqwidget;
          * Locate and start widgets in this page. Typically called by Sqwidget.ready() function
          */
         startWidgets: function () {
-            var widgets = Sqwidget.widgetsInDom(); // get widgets in the page as Widget objects
-
+            var widgets = Sqwidget.widgets = Sqwidget.widgetsInDom(); // get widgets in the page as Widget objects
             _("found " + widgets.length.toString() + " widget divs:");
 
             _("initing widgets...");
@@ -1002,7 +999,7 @@ var Sqwidget;
             jQuery.each(widgets, function (w, widget) {
                 _("init for w: " + widgets[w].toString());
                 widget.init();
-            });    
+            });
             jQuery.each(widgets, function (w, widget) {
                 _("checkrun for w: " + widgets[w].toString());
                 widget.checkRun();
@@ -1314,7 +1311,6 @@ var Sqwidget;
                 });
             //TODO hook for style injection -- not done for now
             // modes -- simple injection with container div added
-            _("styles", styles);
             jQuery.each(styles, function (s, style) {
                 var ss = jQuery("<style>" + style.text + "</style>");
                 ss.attr({title: style.title, type: style.type, media: style.media});
@@ -1369,11 +1365,12 @@ var Sqwidget;
             
             
             //path to the base 
+            // TODO: allow .js?queryParameters=true etc.
             if (templateType.lastIndexOf(".js") === templateType.length - 3) {
                 Sqwidget.getScript(templateType); // this will call the Sqwidget.templateText method
             }
             else {
-            
+                // Ajax GET request for template at the URL specified by templateType
                 jQuery.get(templateType, function (data, textStatus, request) {
                     // on template loaded
                     _("template data: " + data);
@@ -1624,6 +1621,7 @@ var Sqwidget;
         
         widget.checkRun = function () {
             var widgetWrapper;
+            _("widget.checkRun", widget);
         
             if (allPluginsLoaded()) {
                 if (!readyRun) {
@@ -1665,14 +1663,13 @@ var Sqwidget;
             }
         };
         
-        
         //TODO fit this into the proper place
         widget.ui = {
             head: function (content) {
-                $("head").append(content);
+                jQuery("head").append(content);
             },
             body: function (content) {
-                container.empty().append(content);
+                jQuery(container).empty().append(content);
             }
         };
         
