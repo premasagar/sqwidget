@@ -4,9 +4,7 @@
  */
  
 /*jslint nomen: false*/
-/*global Sqwidget,window */    
-
-'use strict';
+/*global Sqwidget,window */ 
 
 /*!
 * AppleOfMyIframe
@@ -45,6 +43,8 @@
     *
     */
     (function($){
+    "use strict";
+    
         function throttle(handler, interval, defer){
             var context = this;
             interval = interval || 250; // milliseconds

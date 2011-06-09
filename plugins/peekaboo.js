@@ -1,4 +1,3 @@
-'use strict';
 /*
     Peekaboo
         Allows user to interact with a delegate element (e.g. a placeholder image or icon), to cause the widget to appear or disappear.
@@ -17,6 +16,7 @@
 
 
 (function(){
+"use strict";
     
 function peekabooInit($) {
     

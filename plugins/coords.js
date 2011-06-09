@@ -1,6 +1,5 @@
-'use strict';
-
 (function(){
+"use strict";
 
     Sqwidget.plugin('coords', function(sqwidget, widget, jQuery, options){
     

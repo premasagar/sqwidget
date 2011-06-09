@@ -1,4 +1,3 @@
-'use strict';
 /*
     Sqwidget plugin wrapper of important.js
         github.com/premasagar/important/
@@ -6,6 +5,7 @@
 
 
 (function(){
+"use strict";
 
 
     Sqwidget.plugin('important', function(sqwidget, widget, jQuery, options){

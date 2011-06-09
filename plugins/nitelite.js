@@ -1,6 +1,5 @@
-'use strict';
-
 Sqwidget.plugin('nitelite', function (sqwidget, widget, jQuery, options) {
+"use strict";
 
     /*!
     * Nitelite

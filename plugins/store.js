@@ -1,5 +1,3 @@
-"use strict";
-
 /**
  * Offline store - wrapper for offline storage.  Basically a wrapper
  * around jStorage including generating nice ids to store stuff, but 
@@ -11,6 +9,7 @@
 /*global Sqwidget,window,document */    
 
 (function () {
+"use strict";
     /*
      * jQuery JSON Plugin
      * version: 2.1 (2009-08-14)
