@@ -517,7 +517,7 @@ var Sqwidget;
         settings: { // TODO: Some props (e.g. "lightbox") would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
             jQuery: {
                 minVersion: "1.4.2", // minimum version of jQuery to allow, if already in DOM
-                src: "http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js",
+                src: "http://ajax.googleapis.com/ajax/libs/jquery/1.6.1s/jquery.min.js",
                 // Set noConflict properties to true to avoid global "$" and/or "jQuery" variables in the global namespace. If "$" is false, then "jQuery" is assumed to be false.
                 noConflict: {
                     $: true,
@@ -1293,9 +1293,9 @@ var Sqwidget;
             });
             
             //
-            // grab javascripts from head and execute in order
+            // grab javascripts from head and execute in order - we want to find scripts that either have no `type` attribute, or that specify javascript
             //
-            j.filter("script:not([type]), script[type=text/javascript]")
+            j.filter("script:not([type]), script[type='text/javascript'], script[type='application/javascript']")
              .each(function (i, t) {
                 t = jQuery(t);
                 scripts.push(t.html());
