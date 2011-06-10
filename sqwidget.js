@@ -986,6 +986,20 @@ var Sqwidget;
                 template.runAll();
             });
         },
+        
+        clearWidgets: function () {
+            // Empty Sqwidget.widgets array
+            Sqwidget.widgets.length = 0;
+        
+            // Empty each template's widgets array
+            jQuery.each(Sqwidget.widgetTemplatesByType, function(type, template){
+                if (template.widgets && template.widgets.length){
+                    template.widgets.length = 0;
+                }
+            });
+            
+            return this;
+        },
 
         /**
          * Locate and start widgets in this page. Typically called by Sqwidget.ready() function
@@ -1004,6 +1018,8 @@ var Sqwidget;
                 _("checkrun for w: " + widgets[w].toString());
                 widget.checkRun();
             });
+            
+            return this;
         }
     };
     /////
