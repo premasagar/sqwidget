@@ -9,16 +9,7 @@ Sqwidget smooths over the complex interactions that take place within the browse
 This allows widget developers to focus their time on the design and functionality of their specific application.
 
 
-h2. Deployment
-
-Widgets are deployed via a single HTML document, with the same familiar techniques as in normal client-side development (HTML5, CSS3, Ajax, etc). No XML descriptor files are required.
-
-h2. Templating
-
-A widget's HTML file may optionally be templated, by including any number of HTML snippets that represent different views of the application's user interface (e.g. a lightbox, or pop-up). The templates can include simple JavaScript variables, to allow dynamic content that has been sourced, say, from external APIs or offline data storage.
-
-
-h2. Features & Vision
+h2. Features
 
 * Automated jQuery loading, or re-use from the host page
 * Simple widget templates
@@ -29,75 +20,37 @@ h2. Features & Vision
 * Security sandboxing, to shield the host page and widget from potentially malicious scripts
 * Support for multiple widgets per page
 * Widget instance configuration via HTML5 'data-' attributes in the embed code in the host document
+* Widgets are deployed via a single HTML document, with the same familiar techniques as in normal client-side development (HTML5, CSS3, Ajax, etc). No XML descriptor files are required.
+
+
+h2. 'Hello world' example
+
+The simplest widget is a text string that can be embedded somewhere else.  The embed code looks like this:
+
+<code><div data-sqwidget="src:helloworld.html"></div>
+</code>
+
+and the source file `helloworld.html` looks like this:
+
+<code>hello world
+</code>
+
+The result here is that the string <code>'hello world'</code> is embedded into the embed <code><div></code>.  Simple, and useful it you need to embed a little text file from somewhere into a page.
+  
+Documentation, tutorials and further examples can be found on "the wiki":http://wiki.github.com/premasagar/sqwidget/
+
+Example sqwidgets are included within the *samples* directory of the repo.
+
+
+h2. Templating
+
+A widget's HTML file may optionally be templated, by including any number of HTML snippets that represent different views of the application's user interface (e.g. a lightbox, or pop-up). The templates can include simple JavaScript variables, to allow dynamic content that has been sourced, say, from external APIs or offline data storage.  
+
+This is documented on "the wiki":http://wiki.github.com/premasagar/sqwidget/
+
 
 
 h2. Status of the project
 
-Sqwidget is under ongoing development. Some of the plugins listed below are ready for production. See "the wiki":http://wiki.github.com/premasagar/sqwidget/ for documentation, examples and tutorials.
+Sqwidget has been used in a number of plugins, listed on "the wiki":http://wiki.github.com/premasagar/sqwidget/Plugins
 
-
-h2. Plugins and complementary projects
-
-h3. Tim
-
-"http://github.com/premasagar/tim":http://github.com/premasagar/tim
-
-A tiny, secure JavaScript micro-templating script. Tim lets you write simple templates that uses JavaScript's familiar dot notation. You pass in a JavaScript object that contains all the relevant strings, and they are then substituted into the template.
-
-*Status*: Stable. Used in production.
-
-
-h3. Sandie
-
-"http://github.com/premasagar/sandie":http://github.com/premasagar/sandie
-
-A simple method for creating a new JavaScript context in the browser, e.g. for loading external scripts into a page without affecting the global scope of the document. This is useful when there is a need to avoid collisions between otherwise conflicting scripts and to keep the global namespace clean.
-
-*Status*: Beta.
-
-
-h3. AppleOfMyIframe
-
-"http://github.com/premasagar/appleofmyiframe":http://github.com/premasagar/appleofmyiframe
-
-A jQuery plugin for the creation and manipulation of iframe elements, without the need to load external documents into the iframe. This allows iframe documents and their contents to be manipulated in a similar manner to jQuery's methods for DOM manipulation.
-
-*Status*: Stable. Used in production on the "MiShorts widget":http://www.mishorts.com/widget
-
-
-h3. CleanSlate
-
-"http://github.com/premasagar/cleanslate":http://github.com/premasagar/cleanslate
-
-CleanSlate sandboxes a widget from CSS in the host page, via the use of a reset stylesheet comprised solely of @!important@ rules. This resets all CSS properties, for all HTML elements, back to sensible defaults.
-
-*Status*: Beta. Would benefit from improvement in convenience for IE6 and IE7. Modified from the @!important@-based stylesheet used in the "BBC World Service widget":http://dharmafly.com/bbc-world-service-widget.
-
-
-h3. Important
-
-"http://github.com/premasagar/important":http://github.com/premasagar/important
-
-JavaScript jQuery plugin to manipulate !important rules for HTML elements in the DOM and inline or external stylesheets.
-
-Combined with CleanSlate, this allows CSS manipulation that is sandboxed from styling in the host document.
-
-*Status*: Stable. Methods for converting external stylesheets are still to come.
-
-
-h3. Nitelite
-
-"http://github.com/premasagar/nitelite":http://github.com/premasagar/nitelite
-
-A low-level "lightbox" plugin, for the display of UI components, overlaid on top of the host web page.
-
-*Status*: Stable. Used in production on the "MiShorts widget":http://www.mishorts.com/widget. Further refinements being worked on.
-
-
-h3. Sqweeze
-
-"http://github.com/premasagar/sqweeze":http://github.com/premasagar/sqweeze
-
-A command-line Ruby tool for merging and minifying all the HTML, CSS, JavaScript and images used in developing a widget, to produce a single, compressed HTML file. This reduces the number of HTTP requests required to render a widget (potentially to just one request), and reduces the bandwidth transmitted over the wire to the bare minimum.
-
-*Status*: pre-alpha
