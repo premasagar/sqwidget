@@ -42,15 +42,7 @@ Documentation, tutorials and further examples can be found on "the wiki":http://
 Example sqwidgets are included within the *samples* directory of the repo.
 
 
-h2. Templating
-
-A widget's HTML file may optionally be templated, by including any number of HTML snippets that represent different views of the application's user interface (e.g. a lightbox, or pop-up). The templates can include simple JavaScript variables, to allow dynamic content that has been sourced, say, from external APIs or offline data storage.  
-
-This is documented on "the wiki":http://wiki.github.com/premasagar/sqwidget/
-
-
-
-h2. Status of the project
+h2. Project status
 
 Sqwidget has been used in a number of plugins, listed on "the wiki":http://wiki.github.com/premasagar/sqwidget/Plugins
 
