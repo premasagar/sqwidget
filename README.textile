@@ -33,7 +33,7 @@ h2. Features & Vision
 
 h2. Status of the project
 
-Sqwidget is under rapid development at the moment. An initial release is anticipated around Autumn 2010. However, some of the plugins listed below are ready for production. See "the wiki":http://wiki.github.com/premasagar/sqwidget/ for emerging documentation, examples and tutorials.
+Sqwidget is under ongoing development. Some of the plugins listed below are ready for production. See "the wiki":http://wiki.github.com/premasagar/sqwidget/ for documentation, examples and tutorials.
 
 
 h2. Plugins and complementary projects
@@ -42,7 +42,7 @@ h3. Tim
 
 "http://github.com/premasagar/tim":http://github.com/premasagar/tim
 
-A tiny, secure JavaScript micro-templating script. Tim lets you write simple templates that uses JavaScript's familiar dot notation. You pass in a JavaScript object that contains all the relevant strings, and they are then substited into the template.
+A tiny, secure JavaScript micro-templating script. Tim lets you write simple templates that uses JavaScript's familiar dot notation. You pass in a JavaScript object that contains all the relevant strings, and they are then substituted into the template.
 
 *Status*: Stable. Used in production.
 
