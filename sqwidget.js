@@ -1302,7 +1302,7 @@ var Sqwidget;
             }
             // grab script templates - from the HEAD only for templates other than the default
             j = jQuery(templateStr);
-            j.filter("script[type=text/template][id]")
+            j.filter("script[type='text/template'][id]")
              .each(function (i, t) {
                 t = jQuery(t);
                 templates[t.attr("id")] = jQuery.trim(t.html());
