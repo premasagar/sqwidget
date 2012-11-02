@@ -517,7 +517,7 @@ var Sqwidget;
         settings: { // TODO: Some props (e.g. "lightbox") would be better as props on Sqwidget.prototype, so they can be modified as instance properties. Perhaps we need global settings and instance settings.
             jQuery: {
                 minVersion: "1.4.2", // minimum version of jQuery to allow, if already in DOM
-                src: "http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js",
+                src: "//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js",
                 // Set noConflict properties to true to avoid global "$" and/or "jQuery" variables in the global namespace. If "$" is false, then "jQuery" is assumed to be false.
                 noConflict: {
                     $: true,
