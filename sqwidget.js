@@ -1286,7 +1286,8 @@ var Sqwidget;
             var 
                 templateStr, head = null, body = null,
                 s = splitdoc(template),
-                j;
+                j,
+                links = [];
                 
             head = s.headContents;
             body = s.bodyContents;
@@ -1331,6 +1332,25 @@ var Sqwidget;
                 var ss = jQuery("<style>" + style.text + "</style>");
                 ss.attr({title: style.title, type: style.type, media: style.media});
                 jQuery("head").append(ss);
+            });
+            
+            // Tested working in IE8, 9
+            j.filter("link[rel='stylesheet']")
+                .each(function (i, t) {
+                    t = jQuery(t);
+                    var obj = { media: t.attr("media"), type: t.attr("type"), title: t.attr("title"), href: t.attr("href"), rel: t.attr("rel")}
+                    styles.push(obj);
+                    links.push(obj)
+                });  
+            jQuery.each(links, function (s, style) {
+              if (document.createStyleSheet){
+                document.createStyleSheet(style.href);
+              }
+              else {
+                var ss = jQuery("<link />");
+                ss.attr({rel: style.rel, href: style.href, title: style.title, type: style.type, media: style.media});
+                jQuery("head").append(ss);
+              }
             });
         }
         
