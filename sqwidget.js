@@ -481,8 +481,13 @@ var Sqwidget;
                     
                     // Error handling for when the property is not found
                     if (lookup === undef){
-                        // Throw error
-                        throw "tim: '" + path[i] + "' not found in " + tag;
+                        if (window.sqwidgetDebug){
+                          // Throw error
+                          throw "tim: '" + path[i] + "' not found in " + tag;
+                        }
+                        else {
+                          return '';
+                        }
                     }
                     
                     // Success! Return the required value
