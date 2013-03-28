@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>jsonp-x</title>
+    <title>Build cross-domain Sqwidget widget</title>
     <script src="../jquery.js"></script>
-    <script src="jsonpx.js"></script>
+    <script src="build-crossdomain.js"></script>
     
     <style>
         label, textarea, input, button {
@@ -18,18 +18,19 @@
 </head>
 
 <body>
-    <h1>Create a cross-domain, JSONP wrapper for an HTML template</h1>
+    <h1>Build a cross-domain Sqwidget template</h1>
+    <p>Pass HTML contents through this converter and save as <code>widgetname.js</code></p>
 
     <label for="source">Source code</label>
     <textarea id="source" rows="30" cols="80"></textarea>
     
-    <label for="callbackName">Callback name</label>
-    <input id="callbackName" value="mycallback">
+    <label for="widgetName">Widget name (the widget's filename, without ".js")</label>
+    <input id="widgetName" value="mywidget">
     
     <label for="stripwhitespace">Strip HTML whitespace</label>
     <input id="stripwhitespace" type="checkbox" checked>
     
-    <button id="jsonpxify">Go</button>
+    <button id="go">Go</button>
     
     <script>
         $('#source')
@@ -39,10 +40,10 @@
             });
         
 
-        $('#jsonpxify')
+        $('#go')
             .click(function(){
                 $('#source').val(
-                    jsonpx($('#source').val(), $('#callbackName').val(), $('#stripwhitespace')[0].checked)
+                    buildTemplate($('#source').val(), $('#widgetName').val(), $('#stripwhitespace')[0].checked)
                 );
             });
     </script>
