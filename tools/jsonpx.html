@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang=en>
+<html lang="en">
 <head>
-    <meta charset=utf-8>
+    <meta charset="utf-8">
     <title>jsonp-x</title>
-    <script src=../jquery.js></script>
-    <script src=jsonpx.js></script>
+    <script src="../jquery.js"></script>
+    <script src="jsonpx.js"></script>
     
     <style>
         label, textarea, input, button {
@@ -18,18 +18,18 @@
 </head>
 
 <body>
-    <h1>JSON-PX-ify your code</h1>
+    <h1>Create a </h1>
 
-    <label for=source>Source code</label>
-    <textarea id=source rows=30 cols=80></textarea>
+    <label for="source">Source code</label>
+    <textarea id="source" rows="30" cols="80"></textarea>
     
-    <label for=callbackName>Callback name</label>
-    <input id=callbackName value=Sqwidget.template>
+    <label for="callbackName">Callback name</label>
+    <input id="callbackName" value="Sqwidget.template">
     
-    <label for=stripwhitespace>Strip HTML whitespace</label>
-    <input id=stripwhitespace type=checkbox checked>
+    <label for="stripwhitespace">Strip HTML whitespace</label>
+    <input id="stripwhitespace" type="checkbox" checked>
     
-    <button id=jsonpxify>Go</button>
+    <button id="jsonpxify">Go</button>
     
     <script>
         $('#source')
