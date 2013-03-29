@@ -19,11 +19,20 @@ function buildTemplate(html, widgetName, doStripwhitespace){
             .replace(/(?=\n)/g, '\\');  // escape end of lines
     }
     
+    // this is very dumb, as it only handles the most
+    // basic of cases - we'd need a full blown parser to cope
+    // with multiline quotes etc
+    function stripComments(txt) {
+        return txt
+            .replace(/\s+\/\/.*/g, '');  // strip quotes      
+    }
+    
     html = escape(
-        doStripwhitespace ?
-            stripwhitespace(html) :
-            html
-    );
+              stripComments(
+                  doStripwhitespace ?
+                  stripwhitespace(html) :
+                  html
+    ));
     
     if (!widgetName){
         alert('No widget name provided');
