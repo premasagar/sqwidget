@@ -1,2 +1,0 @@
-A place to put standard sqwidget plugins
-
