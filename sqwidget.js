@@ -17,6 +17,34 @@ window.Sqwidget = (function(window, document){
 	/////
 
 
+	function trim(str){
+		return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+	}
+
+
+	function extend(target/*, any number of source objects*/){
+        var len = arguments.length,
+            withPrototype = arguments[len-1] === true,
+            i, obj, prop;
+        
+        if (!target){
+            target = {};
+        }
+
+        for (i = 1; i < len; i++){
+            obj = arguments[i];
+            if (typeof obj === 'object'){
+                for (prop in obj){
+                    if (withPrototype || obj.hasOwnProperty(prop)){
+                        target[prop] = obj[prop];
+                    }
+                }
+            }
+        }
+        return target;
+    }
+
+
 	/* contentloaded.js by Diego Perini
 	 * http://javascript.nwbox.com/ContentLoaded/
 	 * https://github.com/dperini/ContentLoaded
@@ -56,6 +84,14 @@ window.Sqwidget = (function(window, document){
 	}
 
 
+	/////
+
+
+	function Widget(el, settings){
+		this.el = el;
+		this.settings = settings || {};
+	}
+
 
 	/////
 
@@ -68,39 +104,63 @@ window.Sqwidget = (function(window, document){
 	/////
 
 
-	Sqwidget.version = version;
-	Sqwidget.isSupported = true;
+	extend(Sqwidget, {
+		version: version,
+		isSupported: true,
+		widgets: [],
+		extend: extend,
+		trim: trim,
 
-	Sqwidget.getElements = function(){
-		return document.querySelectorAll('[data-sqwidget]');
-	};
-	
-	Sqwidget.getParameters = function(element){
-		var paramString = element.getAttribute('data-sqwidget'),
-			// TODO: uses regex to allow backslash escaping of semicolons
-			keyValues = paramString.split(';'),
-			length = keyValues.length,
-			ret = {},
-			i, keyValue, key, value;
+		domReady: function(callback){
+			contentLoaded(window, callback);
+			return this;
+		},
+
+		getElements: function(){
+			return document.querySelectorAll('[data-sqwidget]');
+		},
+
+		parseParameters: function(str){
+			var // TODO: uses regex to allow backslash escaping of semicolons
+				keyValues = str.split(';'),
+				length = keyValues.length,
+				ret = {},
+				i, keyValue, key, value;
+
+			for (i=0; i<length; i++){
+				if (keyValues[i] !== ''){
+					// TODO: uses regex to allow backslash escaping of colons
+					keyValue = keyValues[i].split(':');
+					key = trim(keyValue[0]);
+					value = trim(keyValue[1]);
+					ret[key] = value;
+				}
+			}
+			return ret;
+		},
+
+		getParameters: function(element){
+			var paramString = element.getAttribute('data-sqwidget');
+			return this.parseParameters(paramString);
+		}
+	});
+
+
+	/////
+
+
+	Sqwidget.domReady(function(){
+		var elements = Sqwidget.getElements(),
+			length = elements.length,
+			i, el, settings, widget;
 
 		for (i=0; i<length; i++){
-			if (keyValues[i] !== ''){
-				// TODO: uses regex to allow backslash escaping of colons
-				keyValue = keyValues[i].split(':');
-				key = keyValue[0];
-				value = keyValue[1];
-				ret[key] = value;
-			}
+			el = elements[i];
+			settings = Sqwidget.getParameters(el);
+			widget = new Widget(el, settings);
+			Sqwidget.widgets.push(widget);
 		}
-		return ret;
-	};
-
-	Sqwidget.ready = function(callback){
-		contentLoaded(window, callback);
-		return this;
-	};
-	
-	/////
+	});
 	
 	return Sqwidget;
 
