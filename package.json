@@ -1,0 +1,18 @@
+{
+  "name": "pa-widgets",
+  "title": "Widgets for Press Association",
+  "version": "2.0.0",
+  "contributors": [
+    "Adhip Gupta <me@adhipg.in>"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "latest",
+    "grunt-contrib-connect": "latest",
+    "grunt-contrib-clean": "latest",
+    "grunt-contrib-requirejs": "~0.4.1",
+    "grunt-contrib-coffee": "latest",
+    "grunt-contrib-livereload": "latest",
+    "grunt-contrib-watch": "~0.5.3"
+  }
+}

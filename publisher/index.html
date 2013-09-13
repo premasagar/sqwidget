@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+
+  <body>
+    <h2>Publisher Website</h2>
+    <p>The widget script loads from <code>//localhost:8001</code> and all the
+    widgets are loaded from <code>//localhost:8002</code>.</p>
+
+    <script data-main="//localhost:8001/app/widget.js" src="//localhost:8001/app/require.js"></script>
+
+    <div data-sqwidget="//localhost:8002/hello-world"></div>
+
+  </body>
+</html>
