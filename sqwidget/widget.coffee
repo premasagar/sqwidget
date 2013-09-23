@@ -20,6 +20,8 @@ requirejs ['jquery', 'underscore', 'backbone', 'require', 'app/resources'],
 
   _.extend(Sqwidget, Backbone.Events)
 
+  # Just loads all the modules.
+  # TODO: Remove jQuery.
   $(document).ready () =>
     $('div[data-sqwidget]').each (index) ->
       $this = $(this).addClass('sqwidget')
@@ -31,6 +33,9 @@ requirejs ['jquery', 'underscore', 'backbone', 'require', 'app/resources'],
         widget = new module({settings: params})
         widget.render()
         $this.html(widget.el)
+        # fire a 'rendered' method so that the widget can do any post-render
+        # operations that it needs to do.
+        widget.trigger("rendered")
 
   getWidgetParams = ($widget) ->
     data = []
