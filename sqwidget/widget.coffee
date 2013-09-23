@@ -18,8 +18,12 @@ requirejs.config
       exports: 'Backbone'
 
 # The module that is loaded first
-requirejs ['jquery', 'underscore', 'backbone', 'require', 'app/resources'],
-($, _, Backbone, require, Ractive, resources) ->
+requirejs [
+  'jquery'
+  'underscore'
+  'backbone'
+  'require'
+], ($, _, Backbone, require, Ractive) ->
   # the only global object that we will use.
   Sqwidget = window.Sqwidget || {}
 
@@ -32,6 +36,9 @@ requirejs ['jquery', 'underscore', 'backbone', 'require', 'app/resources'],
     $('div[data-sqwidget]').each (index) ->
       $this = $(this).addClass('sqwidget')
       url = $this.data('sqwidget')
+      # we're expecting an 'index.js' file inside every widget.
+      # TODO: Use grunt to concat all the widget JS files into a single index.js
+      # file.
       require ["#{url}/index.js"], (module) ->
         params = getWidgetParams($this)
         # 'settings' object defines all the settings that were passed in via the

@@ -34,8 +34,6 @@ the real environment.
 ## To-Dos
 
 * Add `cleanslate` or similar to `sqwidget`
-* Pass all the widget settings to the widget from `sqwidget`. The actual widgets
-  should not need to read the embed code.
 * Write a couple of example widgets so that we know how they are supposed to be
   loaded. These widgets should get their data from another server (via JSONP)
   * Each widget may have CSS dependencies. Load them.
