@@ -1,7 +1,8 @@
-define ['backbone', 'underscore', 'require'], (Backbone, _, require) ->
+define ['backbone', 'underscore', 'require', "css!./css/app.css"], (Backbone, _, require) ->
 
   class module extends Backbone.View
     template: "<div>Hello Widget</div>"
+    className: "sqwidget-hello-world"
     constructor: ({@settings} = {}) ->
       super
       @on('rendered', @rendered)
