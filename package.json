@@ -14,6 +14,19 @@
     "grunt-contrib-coffee": "latest",
     "grunt-contrib-livereload": "latest",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-contrib-copy": "~0.4.1"
+    "grunt-contrib-copy": "~0.4.1",
+    "karma-script-launcher": "~0.1.0",
+    "karma-chrome-launcher": "~0.1.0",
+    "karma-firefox-launcher": "~0.1.0",
+    "karma-html2js-preprocessor": "~0.1.0",
+    "karma-requirejs": "~0.1.0",
+    "karma-coffee-preprocessor": "~0.1.0",
+    "karma-phantomjs-launcher": "~0.1.0",
+    "karma": "~0.10.2",
+    "grunt-karma": "~0.6.2",
+    "karma-chai": "0.0.1",
+    "mocha": "~1.13.0",
+    "karma-mocha": "~0.1.0",
+    "karma-sinon": "0.0.1"
   }
 }
