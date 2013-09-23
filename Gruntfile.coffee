@@ -41,10 +41,10 @@ module.exports = (grunt) ->
         tasks: ["connect:publisher"]
       sqwidget:
         files: ["sqwidget/**"]
-        tasks: ["connect:sqwidget"]
+        tasks: ["copy:sqwidget", "coffee:sqwidget", "connect:sqwidget"]
       widgets:
         files: ["widgets/**"]
-        tasks: ["connect:widgets"]
+        tasks: ["copy:widgets", "coffee:widgets", "connect:widgets"]
 
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
