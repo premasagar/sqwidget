@@ -41,7 +41,9 @@ module.exports = (grunt) ->
           files: ["sqwidget/tests/**.coffee", "sqwidget/tests/fixtures/**.html"]
         background: true
         frameworks: ["mocha", "chai"]
-        plugins: ["karma-coffee-preprocessor", "karma-html2js-preprocessor", "karma-mocha", "karma-chai", "karma-sinon", "karma-chrome-launcher", "karma-firefox-launcher", "karma-phantomjs-launcher"]
+        plugins: ["karma-coffee-preprocessor", "karma-html2js-preprocessor",
+                  "karma-mocha", "karma-chai", "karma-sinon", "karma-chrome-launcher",
+                  "karma-firefox-launcher", "karma-phantomjs-launcher"]
         browsers: ["Firefox", "Chrome", "PhantomJS"]
         preprocessors:
           'sqwidget/tests/**.coffee': ['coffee']
@@ -49,17 +51,18 @@ module.exports = (grunt) ->
       publisher:
         files: ["publisher/**"]
         tasks: ["connect:publisher"]
+
       sqwidget:
         files: ["sqwidget/**"]
         tasks: ["copy:sqwidget", "coffee:sqwidget", "connect:sqwidget"]
+
       widgets:
         files: ["widgets/**"]
         tasks: ["copy:widgets", "coffee:widgets", "connect:widgets"]
+
       karma:
         files: ["sqwidget/**", "sqwidget/tests/**"]
         tasks: ["karma:unit:run"]
-
-
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -67,11 +70,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-karma')
 
-  grunt.registerTask "default", [
-    "coffee"
-    "copy"
-    "connect"
-    "karma"
-    "watch"
-  ]
+  grunt.registerTask "build", [ "coffee", "copy" ]
+  grunt.registerTask "test", [ "build", "karma", "watch:karma" ]
+  grunt.registerTask "default", [ "build", "connect", "watch" ]
 
