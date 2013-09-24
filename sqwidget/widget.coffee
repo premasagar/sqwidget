@@ -44,12 +44,11 @@ requirejs [
         params = getWidgetParams($this)
         # 'settings' object defines all the settings that were passed in via the
         # embed code.
-        widget = new module({settings: params})
-        widget.render() if _.isFunction(widget.render)
-        $this.html(widget.el)
+        widget = new module.Controller({settings: params})
+        $this.html(widget.view.el)
         # fire a 'rendered' method so that the widget can do any post-render
         # operations that it needs to do.
-        widget.trigger("rendered")
+        widget.view.trigger("rendered")
 
   # returns an array of all the custom widget parameters. The new keys are
   # lowercase concatenated attributes from the embed code with 'data-sqwidget-'
