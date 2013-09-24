@@ -1,18 +1,22 @@
 module.exports = (grunt) ->
   grunt.initConfig
+
     connect:
       publisher:
         options:
           port: 8000
           base: 'publisher'
+
       sqwidget:
         options:
           port: 8001
           base: 'dist/sqwidget'
+
       widgets:
         options:
           port: 8002
           base: 'dist/widgets'
+
     coffee:
       sqwidget:
         expand: true
@@ -21,6 +25,7 @@ module.exports = (grunt) ->
         src: ["**/*.coffee"]
         dest: "dist/sqwidget/"
         rename: (dst, name) -> dst + name.replace(".coffee", ".js")
+
       widgets:
         expand: true
         bare: true
@@ -28,13 +33,16 @@ module.exports = (grunt) ->
         src: ["**/*.coffee"]
         dest: "dist/widgets/"
         rename: (dst, name) -> dst + name.replace(".coffee", ".js")
+
     copy:
       sqwidget:
         src: "sqwidget/**"
         dest: "dist/"
+
       widgets:
         src: "widgets/**"
         dest: "dist/"
+
     karma:
       unit:
         options:
@@ -47,6 +55,7 @@ module.exports = (grunt) ->
         browsers: ["Firefox", "Chrome", "PhantomJS"]
         preprocessors:
           'sqwidget/tests/**.coffee': ['coffee']
+
     watch:
       publisher:
         files: ["publisher/**"]

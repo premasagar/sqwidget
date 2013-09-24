@@ -1,29 +1,19 @@
 requirejs.config
   paths:
-    require: 'lib/require'
-    jquery: 'lib/jquery'
-    underscore: 'lib/underscore'
-    backbone: 'lib/backbone'
-    ractive: 'lib/ractive'
-    text: 'lib/text'
-    css: 'lib/css'
-    normalize: 'lib/normalize'
-  shim:
-    'jquery':
-      exports: '$'
-    'underscore':
-      exports: '_'
-    'backbone':
-      deps: ['underscore', 'jquery']
-      exports: 'Backbone'
+    rjs: 'lib/requirejs/require'
+    jquery: 'lib/jquery/jquery'
+    underscore: 'lib/underscore-amd/underscore'
+    backbone: 'lib/backbone-amd/backbone'
+    ractive: 'lib/ractive/Ractive'
+    normalize: 'lib/normalize-css/normalize'
 
 # The module that is loaded first
 requirejs [
   'jquery'
   'underscore'
   'backbone'
-  'require'
-], ($, _, Backbone, require, Ractive) ->
+  'rjs'
+], ($, _, Backbone, rjs, Ractive) ->
   # the only global object that we will use.
   Sqwidget = window.Sqwidget || {}
 
@@ -39,7 +29,7 @@ requirejs [
       # we're expecting an 'index.js' file inside every widget.
       # TODO: Use grunt to concat all the widget JS files into a single index.js
       # file.
-      require ["#{url}/index.js"], (module) ->
+      rjs ["#{url}/index.js"], (module) ->
         params = getWidgetParams($this)
         # 'settings' object defines all the settings that were passed in via the
         # embed code.
