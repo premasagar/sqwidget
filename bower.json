@@ -1,0 +1,14 @@
+{
+  "name": "sqwidget",
+  "version": "0.0.1",
+  "dependencies": {
+    "underscore-amd" : "",
+    "backbone-amd" : "",
+    "requirejs": "",
+    "requirejs-i18n": "",
+    "jquery": "",
+    "require-css": "",
+    "ractive": "",
+    "normalize-css": ""
+  }
+}
