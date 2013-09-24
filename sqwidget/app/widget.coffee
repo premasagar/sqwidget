@@ -27,7 +27,6 @@ requirejs [
     $('div[data-sqwidget]').each (index) ->
       $this = $(this).addClass('sqwidget')
       url = $this.data('sqwidget')
-      console.log require
       # we're expecting an 'index.js' file inside every widget.
       # TODO: Use grunt to concat all the widget JS files into a single index.js
       # file.

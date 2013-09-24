@@ -27,6 +27,18 @@ module.exports = (grunt) ->
           base: 'widgets'
 
     coffee:
+
+      tests:
+        expand: true
+        cwd: 'sqwidget/tests',
+        src: '**/*.coffee'
+        dest: 'compiled/tests/js'
+        ext: '.js'
+        options:
+          sourceRoot: '../../../app'
+          bare: true
+          sourceMap: true
+
       sqwidget:
         expand: true
         cwd: 'sqwidget/app',
@@ -49,17 +61,8 @@ module.exports = (grunt) ->
           sourceMap: true
 
     karma:
-      unit:
-        options:
-          files: ["sqwidget/tests/**.coffee", "sqwidget/tests/fixtures/**.html"]
-        background: true
-        frameworks: ["mocha", "chai"]
-        plugins: ["karma-coffee-preprocessor", "karma-html2js-preprocessor",
-                  "karma-mocha", "karma-chai", "karma-sinon", "karma-chrome-launcher",
-                  "karma-firefox-launcher", "karma-phantomjs-launcher"]
-        browsers: ["Firefox", "Chrome", "PhantomJS"]
-        preprocessors:
-          'sqwidget/tests/**.coffee': ['coffee']
+      integration:
+        configFile: 'config/karma.conf.js',
 
     watch:
 
