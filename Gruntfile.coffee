@@ -1,4 +1,9 @@
 module.exports = (grunt) ->
+
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
+
   grunt.initConfig
 
     connect:
@@ -10,38 +15,33 @@ module.exports = (grunt) ->
       sqwidget:
         options:
           port: 8001
-          base: 'dist/sqwidget'
+          base: 'compiled/js/app/'
 
       widgets:
         options:
           port: 8002
-          base: 'dist/widgets'
+          base: 'compiled/js/widgets'
 
     coffee:
       sqwidget:
         expand: true
-        bare: true
-        cwd: "sqwidget/"
-        src: ["**/*.coffee"]
-        dest: "dist/sqwidget/"
-        rename: (dst, name) -> dst + name.replace(".coffee", ".js")
+        cwd: 'sqwidget/app',
+        src: '**/*.coffee'
+        dest: 'compiled/js/app'
+        ext: '.js'
+        options:
+          bare: true
+          sourceMap: true
 
       widgets:
         expand: true
-        bare: true
-        cwd: "widgets/"
-        src: ["**/*.coffee"]
-        dest: "dist/widgets/"
-        rename: (dst, name) -> dst + name.replace(".coffee", ".js")
-
-    copy:
-      sqwidget:
-        src: "sqwidget/**"
-        dest: "dist/"
-
-      widgets:
-        src: "widgets/**"
-        dest: "dist/"
+        cwd: 'widgets/',
+        src: '**/*.coffee'
+        dest: 'compiled/js/widgets'
+        ext: '.js'
+        options:
+          bare: true
+          sourceMap: true
 
     karma:
       unit:
@@ -57,17 +57,14 @@ module.exports = (grunt) ->
           'sqwidget/tests/**.coffee': ['coffee']
 
     watch:
-      publisher:
-        files: ["publisher/**"]
-        tasks: ["connect:publisher"]
 
       sqwidget:
-        files: ["sqwidget/**"]
-        tasks: ["copy:sqwidget", "coffee:sqwidget", "connect:sqwidget"]
+        files: ["sqwidget/app/**/*.coffee"]
+        tasks: ["build"]
 
       widgets:
-        files: ["widgets/**"]
-        tasks: ["copy:widgets", "coffee:widgets", "connect:widgets"]
+        files: ["widgets/**/*.coffee"]
+        tasks: ["build"]
 
       karma:
         files: ["sqwidget/**", "sqwidget/tests/**"]
@@ -79,7 +76,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-karma')
 
-  grunt.registerTask "build", [ "coffee", "copy" ]
+  grunt.registerTask "build", [ "coffee:sqwidget" ]
   grunt.registerTask "test", [ "build", "karma", "watch:karma" ]
   grunt.registerTask "default", [ "build", "connect", "watch" ]
 
