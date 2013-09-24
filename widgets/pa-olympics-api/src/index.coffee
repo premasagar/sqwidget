@@ -17,9 +17,9 @@ define [
 
     fetch: (options = {}) =>
       # add the api_key as a parameter on all the calls.
-      options = _.extend options, {
-        data:
-          "api_key": config.api_key
+      options.data ?= {}
+      options.data = _.extend options.data, {
+        "api_key": config.api_key,
       }
       super(options)
 

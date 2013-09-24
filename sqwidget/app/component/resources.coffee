@@ -12,7 +12,6 @@ define ['backbone', 'underscore'], (Backbone, _) ->
       options = _.extend {
         type: "GET"
         dataType: "jsonp"
-        processData: false
       }, options
       super(method, model, options)
 
@@ -22,10 +21,7 @@ define ['backbone', 'underscore'], (Backbone, _) ->
       options = _.extend {
         type: "GET"
         dataType: "jsonp"
-        processData: false
       }, options
       super(method, model, options)
-
-
 
   module
