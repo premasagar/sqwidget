@@ -4,3 +4,4 @@ config.js
 
 # temporary!
 dist/
+compiled/

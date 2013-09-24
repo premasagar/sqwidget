@@ -3,7 +3,7 @@ define [
   'underscore'
   'backbone'
   'ractive'
-  'app/resources'
+  'component/resources'
   'config'
 ], ($, _, Backbone, Ractive, resources, config) ->
   module = {}

@@ -1,43 +1,53 @@
 module.exports = (grunt) ->
+
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
+
   grunt.initConfig
+
+    clean:
+      all:
+        src: [ "compiled" ]
+
     connect:
       publisher:
         options:
           port: 8000
           base: 'publisher'
+
       sqwidget:
         options:
           port: 8001
-          base: 'dist/sqwidget'
+          base: 'sqwidget'
+
       widgets:
         options:
           port: 8002
-          base: 'dist/widgets'
+          base: 'widgets'
+
     coffee:
       sqwidget:
         expand: true
-        bare: true
-        cwd: "sqwidget/"
-        src: ["**/*.coffee"]
-        dest: "dist/sqwidget/"
-        rename: (dst, name) -> dst + name.replace(".coffee", ".js")
+        cwd: 'sqwidget/app',
+        src: '**/*.coffee'
+        dest: 'compiled/sqwidget/js'
+        ext: '.js'
+        options:
+          sourceRoot: '../../../app'
+          bare: true
+          sourceMap: true
+
       widgets:
         expand: true
-        bare: true
-        cwd: "widgets/"
-        src: ["**/*.coffee"]
-        dest: "dist/widgets/"
-        rename: (dst, name) -> dst + name.replace(".coffee", ".js")
-    copy:
-      sqwidget:
-        src: "sqwidget/**"
-        dest: "dist/"
-      widgets:
-        src: "widgets/**"
-        dest: "dist/"
-      config:
-        src: "config.js"
-        dest: "dist/sqwidget/config.js"
+        cwd: 'widgets/',
+        src: '**/*.coffee'
+        dest: 'compiled/widgets/js'
+        ext: '.js'
+        options:
+          bare: true
+          sourceMap: true
+
     karma:
       unit:
         options:
@@ -50,22 +60,15 @@ module.exports = (grunt) ->
         browsers: ["Firefox", "Chrome", "PhantomJS"]
         preprocessors:
           'sqwidget/tests/**.coffee': ['coffee']
-    watch:
-      publisher:
-        files: ["publisher/**"]
-        tasks: ["connect:publisher"]
 
+    watch:
       sqwidget:
-        files: ["sqwidget/**"]
-        tasks: ["copy:sqwidget", "coffee:sqwidget", "connect:sqwidget"]
+        files: ["sqwidget/app/**/*.coffee"]
+        tasks: ["build"]
 
       widgets:
-        files: ["widgets/**"]
-        tasks: ["copy:widgets", "coffee:widgets", "connect:widgets"]
-
-      config:
-        files: ["config.js"]
-        tasks: ["copy:config"]
+        files: ["widgets/**/*.coffee"]
+        tasks: ["build"]
 
       karma:
         files: ["sqwidget/**", "sqwidget/tests/**"]
@@ -77,7 +80,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-karma')
 
-  grunt.registerTask "build", [ "coffee", "copy" ]
+  grunt.registerTask "build", [ "coffee" ]
   grunt.registerTask "test", [ "build", "karma", "watch:karma" ]
-  grunt.registerTask "default", [ "build", "connect", "watch" ]
+  grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]
 

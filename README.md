@@ -9,8 +9,10 @@ This is a WIP setup for helping develop widgets.
 ```
 npm install grunt-cli -g
 npm install coffee-script -g
+npm install bower -g
 npm install
 grunt
+bower install
 ```
 
 

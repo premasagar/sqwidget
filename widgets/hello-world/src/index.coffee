@@ -1,8 +1,8 @@
 define [
   'backbone'
   'underscore'
-  "./../pa-olympics-api/index.js"
-  "css!./css/app.css"
+  "../../pa-olympics-api/js/index.js"
+  #"css!./css/app.css"
 ], (Backbone, _, PAOlympicsApi) ->
   module = {views: {}}
 

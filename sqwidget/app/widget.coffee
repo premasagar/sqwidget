@@ -1,21 +1,12 @@
 requirejs.config
   paths:
-    require: 'lib/require'
-    jquery: 'lib/jquery'
-    underscore: 'lib/underscore'
-    backbone: 'lib/backbone'
-    ractive: 'lib/Ractive'
-    text: 'lib/text'
-    css: 'lib/css'
-    normalize: 'lib/normalize'
-  shim:
-    'jquery':
-      exports: '$'
-    'underscore':
-      exports: '_'
-    'backbone':
-      deps: ['underscore', 'jquery']
-      exports: 'Backbone'
+    require: '../../lib/requirejs/require'
+    jquery: '../../lib/jquery/jquery'
+    underscore: '../../lib/underscore-amd/underscore'
+    backbone: '../../lib/backbone-amd/backbone'
+    ractive: '../../lib/ractive/Ractive'
+    normalize: '../../lib/normalize-css/normalize'
+    config: '../../config'
 
 # The module that is loaded first
 requirejs [
@@ -40,7 +31,7 @@ requirejs [
       # we're expecting an 'index.js' file inside every widget.
       # TODO: Use grunt to concat all the widget JS files into a single index.js
       # file.
-      require ["#{url}/index.js"], (module) ->
+      require ["#{url}/js/index.js"], (module) ->
         params = getWidgetParams($this)
         # 'settings' object defines all the settings that were passed in via the
         # embed code.
