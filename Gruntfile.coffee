@@ -27,7 +27,6 @@ module.exports = (grunt) ->
           base: 'widgets'
 
     coffee:
-
       tests:
         expand: true
         cwd: 'sqwidget/tests',
