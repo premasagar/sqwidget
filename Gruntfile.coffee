@@ -37,7 +37,7 @@ module.exports = (grunt) ->
         options:
           sourceRoot: '../../../app'
           bare: true
-          sourceMap: true
+          sourceMap: false
 
       sqwidget:
         expand: true

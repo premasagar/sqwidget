@@ -9,14 +9,15 @@ module.exports = function(config) {
 
 
     // frameworks to use
-    frameworks: ['mocha', 'chai', 'requirejs'],
+    frameworks: ['mocha', 'requirejs'],
 
 
     // list of files / patterns to load in the browser
     files: [
       'compiled/tests/js/test-main.js',
       {pattern: 'compiled/tests/js/spec/**/*.js', included: false},
-      {pattern: 'sqwidget/lib/**/*.js', included: false}
+      {pattern: 'compiled/sqwidget/js/**/*.js', included: false},
+      {pattern: 'sqwidget/lib/**/*.js', included: false, watched: false}
     ],
 
 
