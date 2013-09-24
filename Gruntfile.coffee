@@ -63,6 +63,10 @@ module.exports = (grunt) ->
         files: ["widgets/**"]
         tasks: ["copy:widgets", "coffee:widgets", "connect:widgets"]
 
+      config:
+        files: ["config.js"]
+        tasks: ["copy:config"]
+
       karma:
         files: ["sqwidget/**", "sqwidget/tests/**"]
         tasks: ["karma:unit:run"]

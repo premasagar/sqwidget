@@ -4,7 +4,7 @@ requirejs.config
     jquery: 'lib/jquery'
     underscore: 'lib/underscore'
     backbone: 'lib/backbone'
-    ractive: 'lib/ractive'
+    ractive: 'lib/Ractive'
     text: 'lib/text'
     css: 'lib/css'
     normalize: 'lib/normalize'
@@ -23,6 +23,7 @@ requirejs [
   'underscore'
   'backbone'
   'require'
+  'ractive'
 ], ($, _, Backbone, require, Ractive) ->
   # the only global object that we will use.
   Sqwidget = window.Sqwidget || {}

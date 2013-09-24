@@ -1,4 +1,9 @@
-define ['backbone', 'underscore', 'require', "css!./css/app.css"], (Backbone, _, require) ->
+define [
+  'backbone'
+  'underscore'
+  "./../pa-olympics-api/index.js"
+  "css!./css/app.css"
+], (Backbone, _, API) ->
 
   class module extends Backbone.View
     template: "<div>Hello Widget</div>"

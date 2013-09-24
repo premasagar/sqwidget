@@ -1,8 +1,6 @@
 define ['backbone', 'underscore'], (Backbone, _) ->
   module = {}
 
-  class module.Model extends Backbone.Model
-
   # A collection should need to do a few extra things for us:
   # - allow sync() to use jsonp by default.
   # - setup subscriptions. That is, if a collection has been created we should
@@ -17,5 +15,17 @@ define ['backbone', 'underscore'], (Backbone, _) ->
         processData: false
       }, options
       super(method, model, options)
+
+
+  class module.Model extends Backbone.Model
+    sync: (method, model, options) ->
+      options = _.extend {
+        type: "GET"
+        dataType: "jsonp"
+        processData: false
+      }, options
+      super(method, model, options)
+
+
 
   module
