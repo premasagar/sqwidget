@@ -35,6 +35,9 @@ module.exports = (grunt) ->
       widgets:
         src: "widgets/**"
         dest: "dist/"
+      config:
+        src: "config.js"
+        dest: "dist/sqwidget/config.js"
     karma:
       unit:
         options:
