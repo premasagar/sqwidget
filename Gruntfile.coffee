@@ -85,6 +85,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-karma')
 
   grunt.registerTask "build", [ "coffee" ]
-  grunt.registerTask "test", [ "build", "karma", "watch:karma" ]
+  grunt.registerTask "test", [ "clean", "build", "karma", "watch:karma" ]
   grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]
 

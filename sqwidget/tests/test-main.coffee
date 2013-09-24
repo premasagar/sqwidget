@@ -1,6 +1,7 @@
 tests = []
 for file of window.__karma__.files
-  if /unit\//.test(file)
+  console.log file
+  if /spec\//.test(file)
     tests.push(file)
 
 requirejs.config
@@ -12,11 +13,10 @@ requirejs.config
     backbone: '../../sqwidget/lib/backbone-amd/backbone'
     ractive: '../../sqwidget/lib/ractive/Ractive'
     normalize: '../../sqwidget/lib/normalize-css/normalize'
+  deps: tests
   callback: ->
     #set the URI for the example widgets to the karma server port
-
-
-    window.__karma__.start
+    window.__karma__.start()
 
 #list all your unit files here
 #require ["angular", "angularMocks", "/compiled/js/test/unit.js"], ->

@@ -5,7 +5,7 @@ module.exports = function(config) {
   config.set({
 
     // base path, that will be used to resolve files and exclude
-    basePath: '',
+    basePath: '../',
 
 
     // frameworks to use
@@ -15,8 +15,8 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'compiled/tests/js/test-main.js',
-      {pattern: 'compiled/tests/spec/**/*.js', included: false}
-      {pattern: 'sqwidget/lib/tests/spec/**/*.js', included: false}
+      {pattern: 'compiled/tests/js/spec/**/*.js', included: false},
+      {pattern: 'sqwidget/lib/**/*.js', included: false}
     ],
 
 
