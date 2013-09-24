@@ -81,7 +81,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('grunt-karma')
 
-  grunt.registerTask "build", [ "coffee:sqwidget" ]
+  grunt.registerTask "build", [ "coffee" ]
   grunt.registerTask "test", [ "build", "karma", "watch:karma" ]
   grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]
 

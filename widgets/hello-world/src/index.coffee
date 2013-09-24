@@ -1,4 +1,8 @@
-define ['backbone', 'underscore', "css!./css/app.css"], (Backbone, _) ->
+define [
+  'backbone'
+  'underscore'
+  #"css!./css/app.css"
+], (Backbone, _) ->
 
   class module extends Backbone.View
     template: "<div>Hello Widget</div>"
