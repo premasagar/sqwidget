@@ -1,11 +1,11 @@
 requirejs.config
   paths:
-    rjs: 'lib/requirejs/require'
-    jquery: 'lib/jquery/jquery'
-    underscore: 'lib/underscore-amd/underscore'
-    backbone: 'lib/backbone-amd/backbone'
-    ractive: 'lib/ractive/Ractive'
-    normalize: 'lib/normalize-css/normalize'
+    rjs: '../../lib/requirejs/require'
+    jquery: '../../lib/jquery/jquery'
+    underscore: '../../lib/underscore-amd/underscore'
+    backbone: '../../lib/backbone-amd/backbone'
+    ractive: '../../lib/ractive/Ractive'
+    normalize: '../../lib/normalize-css/normalize'
 
 # The module that is loaded first
 requirejs [

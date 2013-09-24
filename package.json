@@ -3,7 +3,8 @@
   "title": "Widgets for Press Association",
   "version": "2.0.0",
   "contributors": [
-    "Adhip Gupta <me@adhipg.in>"
+    "Adhip Gupta <me@adhipg.in>",
+    "Simon Elliott <simon@papercreatures.com>"
   ],
   "dependencies": {},
   "devDependencies": {

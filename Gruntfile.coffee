@@ -6,6 +6,10 @@ module.exports = (grunt) ->
 
   grunt.initConfig
 
+    clean:
+      all:
+        src: [ "compiled" ]
+
     connect:
       publisher:
         options:
@@ -15,21 +19,22 @@ module.exports = (grunt) ->
       sqwidget:
         options:
           port: 8001
-          base: 'compiled/js/app/'
+          base: 'sqwidget'
 
       widgets:
         options:
           port: 8002
-          base: 'compiled/js/widgets'
+          base: 'widgets'
 
     coffee:
       sqwidget:
         expand: true
         cwd: 'sqwidget/app',
         src: '**/*.coffee'
-        dest: 'compiled/js/app'
+        dest: 'compiled/sqwidget/js'
         ext: '.js'
         options:
+          sourceRoot: '../../../app'
           bare: true
           sourceMap: true
 
@@ -37,7 +42,7 @@ module.exports = (grunt) ->
         expand: true
         cwd: 'widgets/',
         src: '**/*.coffee'
-        dest: 'compiled/js/widgets'
+        dest: 'compiled/widgets/js'
         ext: '.js'
         options:
           bare: true
@@ -78,5 +83,5 @@ module.exports = (grunt) ->
 
   grunt.registerTask "build", [ "coffee:sqwidget" ]
   grunt.registerTask "test", [ "build", "karma", "watch:karma" ]
-  grunt.registerTask "default", [ "build", "connect", "watch" ]
+  grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]
 
