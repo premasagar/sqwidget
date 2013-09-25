@@ -17,8 +17,8 @@ define ['chai', 'jquery', 'component/core'], (chai, $, Core) ->
         widget.on 'rendered', ->
           assert.ok "Triggered event"
           assert.equal(src.html(),
-            '<div class="sqwidget-hello-world"><div>Test Widget</div></div>'
-            'Rendered correctly'
+            '<div>TEST</div>'
+            'Rendered Ractive view correctly'
           )
           done()
 

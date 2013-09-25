@@ -8,21 +8,12 @@ define [
   module = {views: {}}
 
   class module.Controller
-    constructor: ({@settings} = {}) ->
-      @view = new module.views.Test({ @settings })
-      @view.render()
+    constructor: ({@el, @settings} = {}) ->
+      view = new Ractive
+        el: @el,
+        template: template,
+        data:
+          test: "TEST"
 
-  class module.views.Test extends Backbone.View
-    template: "<div>Test Widget</div>"
-    className: "sqwidget-hello-world"
-    constructor: ({@settings, @model} = {}) ->
-      super
-      @on('rendered', @rendered)
-
-    render: =>
-      @$el.html(@template)
-
-    rendered: =>
-      @$el.html(@settings.message).css("color", @settings.color)
 
   module
