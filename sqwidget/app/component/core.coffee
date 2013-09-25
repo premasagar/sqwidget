@@ -3,9 +3,11 @@ define [], () ->
   class SqwidgetCore
     constructor: () ->
 
+    registered: []
 
     register: (el) ->
       $this = $(el).addClass('sqwidget')
+      @registered.push($this)
       opts = @getWidgetParams($this)
 
       throw new Error("No widget source") unless opts.url
