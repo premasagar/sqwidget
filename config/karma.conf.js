@@ -17,7 +17,8 @@ module.exports = function(config) {
       'compiled/tests/js/test-main.js',
       {pattern: 'compiled/tests/js/spec/**/*.js', included: false},
       {pattern: 'compiled/sqwidget/js/**/*.js', included: false},
-      {pattern: 'sqwidget/lib/**/*.js', included: false, watched: false}
+      {pattern: 'sqwidget/lib/**/*.js', included: false, watched: false},
+      {pattern: 'node_modules/karma-chai-plugins/node_modules/chai/chai.js', included: false},
     ],
 
 
@@ -44,8 +45,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
-
+    autoWatch: false,
 
     // Start these browsers, currently available:
     // - Chrome
@@ -55,7 +55,11 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome', 'Firefox', 'PhantomJS'],
+    browsers: [
+      //'Chrome',
+      //,'Firefox'
+      'PhantomJS'
+    ],
 
 
     // If browser does not capture in given timeout [ms], kill it
@@ -64,6 +68,6 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false
+    singleRun: true,
   });
 };

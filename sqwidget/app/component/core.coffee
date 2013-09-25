@@ -7,7 +7,8 @@ define [], () ->
 
     register: (el) ->
       $this = $(el).addClass('sqwidget')
-      @registered.push($this)
+      pkg = el: $this
+      @registered.push(pkg)
       opts = @getWidgetParams($this)
 
       throw new Error("No widget source") unless opts.url
@@ -17,6 +18,7 @@ define [], () ->
         # 'settings' object defines all the settings that were passed in via the
         # embed code.
         widget = new module.Controller({settings: opts})
+        pkg.widget = widget
         $this.html(widget.view.el)
         # fire a 'rendered' method so that the widget can do any post-render
         # operations that it needs to do.
