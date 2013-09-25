@@ -19,7 +19,7 @@ define ['underscore','backbone'], (_, Backbone) ->
       require ["#{opts.url}/js/index.js"], (module) =>
         # 'settings' object defines all the settings that were passed in via the
         # embed code.
-        widget = new module.Controller({settings: opts})
+        widget = new module.Controller({settings: opts, sqwidget: @})
         pkg.instance = widget
         $this.html(widget.view.el)
         # fire a 'rendered' method so that the widget can do any post-render
