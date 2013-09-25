@@ -8,10 +8,10 @@ define ['underscore','backbone'], (_, Backbone) ->
 
     register: (el) ->
       $this = $(el).addClass('sqwidget')
-      pkg = el: $this
+      opts = @getWidgetParams($this)
+      pkg = el: $this, opts: opts
       _.extend(pkg, Backbone.Events)
       @registered.push(pkg)
-      opts = @getWidgetParams($this)
 
       throw new Error("No widget source") unless opts.url
 
@@ -39,7 +39,7 @@ define ['underscore','backbone'], (_, Backbone) ->
     #     'data-sqwidget-bg-color='#FFF' -> data['bgcolor'] = '#FFF'
     #
     getWidgetParams: ($el) ->
-      data = []
+      data = {}
       for key, val of $el.data()
         key = key.replace("sqwidget", "").toLowerCase()
         data[key || "url" ] = val
