@@ -11,8 +11,11 @@ requirejs.config
     jquery: '../../../sqwidget/lib/jquery/jquery'
     underscore: '../../../sqwidget/lib/underscore-amd/underscore'
     backbone: '../../../sqwidget/lib/backbone-amd/backbone'
-    ractive: '../../../sqwidget/lib/ractive/Ractive'
+    Ractive: '../../../sqwidget/lib/ractive/Ractive'
+    text: '../../../sqwidget/lib/requirejs-text/text',
+    rv: '../../../sqwidget/lib/rv',
     normalize: '../../../sqwidget/lib/normalize-css/normalize'
+
   deps: tests
   callback: ->
     #set the URI for the example widgets to the karma server port

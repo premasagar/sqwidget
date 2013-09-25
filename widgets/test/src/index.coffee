@@ -1,8 +1,8 @@
 define [
   'backbone'
   'underscore'
-  'ractive'
-  'rv!templates/test.html'
+  'Ractive'
+  'rv!../templates/test.html'
   #"css!./css/app.css"
 ], (Backbone, _, Ractive, template) ->
   module = {views: {}}

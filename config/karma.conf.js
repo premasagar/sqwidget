@@ -3,7 +3,7 @@
 
 module.exports = function(config) {
   config.set({
-
+    preprocessors: { },
     // base path, that will be used to resolve files and exclude
     basePath: '../',
 
@@ -13,11 +13,12 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'compiled/tests/js/test-main.js',
+      {pattern: 'node_modules/karma-chai-plugins/node_modules/chai/chai.js', included: false},
+      {pattern: 'compiled/tests/js/spec/**/*.js', included: false},
       {pattern: 'compiled/tests/js/spec/**/*.js', included: false},
       {pattern: 'compiled/sqwidget/js/**/*.js', included: false},
       {pattern: 'widgets/**', included: false, watch: true},
       {pattern: 'sqwidget/lib/**/*.js', included: false, watched: false},
-      {pattern: 'node_modules/karma-chai-plugins/node_modules/chai/chai.js', included: false},
     ],
 
     // list of files to exclude
@@ -35,7 +36,7 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_DEBUG,
 
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: false,
@@ -49,7 +50,7 @@ module.exports = function(config) {
     // - PhantomJS
     // - IE (only Windows)
     browsers: [
-      //'Chrome',
+    //'Chrome',
       //,'Firefox'
       'PhantomJS'
     ],
