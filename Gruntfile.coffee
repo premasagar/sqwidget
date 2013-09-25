@@ -79,8 +79,8 @@ module.exports = (grunt) ->
         tasks: ["build"]
 
       karma:
-        files: ["sqwidget/**", "sqwidget/tests/**"]
-        tasks: ["karma:unit:run"]
+        files: ["sqwidget/**/*.coffee", "sqwidget/tests/**/*.coffee"]
+        tasks: ["build", "karma"]
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch');

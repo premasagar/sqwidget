@@ -2,7 +2,7 @@ define [
   'jquery'
   'underscore'
   'backbone'
-  'ractive'
+  'Ractive'
   'component/resources'
   'config'
 ], ($, _, Backbone, Ractive, resources, config) ->
