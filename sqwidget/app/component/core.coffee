@@ -2,6 +2,7 @@ define ['underscore','backbone'], (_, Backbone) ->
 
   class SqwidgetCore
     constructor: () ->
+      _.extend(@, Backbone.Events)
 
     registered: []
 
@@ -15,7 +16,7 @@ define ['underscore','backbone'], (_, Backbone) ->
       throw new Error("No widget source") unless opts.url
 
       # we're expecting an 'index.js' file inside every widget.
-      require ["#{opts.url}/js/index.js"], (module) ->
+      require ["#{opts.url}/js/index.js"], (module) =>
         # 'settings' object defines all the settings that were passed in via the
         # embed code.
         widget = new module.Controller({settings: opts})
@@ -25,6 +26,7 @@ define ['underscore','backbone'], (_, Backbone) ->
         # operations that it needs to do.
         widget.view.trigger("rendered")
         pkg.trigger("rendered")
+        @trigger("rendered:#{opts.url}")
       return pkg
 
 
