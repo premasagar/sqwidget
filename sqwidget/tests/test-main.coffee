@@ -13,8 +13,8 @@ requirejs.config
     underscore: '../../../sqwidget/lib/underscore-amd/underscore'
     backbone: '../../../sqwidget/lib/backbone-amd/backbone'
     Ractive: '../../../sqwidget/lib/ractive/Ractive'
-    text: '../../../sqwidget/lib/requirejs-text/text',
-    rv: '../../../sqwidget/lib/rv',
+    text: '../../../sqwidget/lib/requirejs-text/text'
+    rv: '../../../sqwidget/lib/requirejs-ractive/rv'
     normalize: '../../../sqwidget/lib/normalize-css/normalize'
 
   deps: tests

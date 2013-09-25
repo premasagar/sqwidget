@@ -8,7 +8,8 @@
     "requirejs-i18n": "",
     "jquery": "",
     "require-css": "",
-    "require-text": "",
+    "requirejs-text": "",
+    "requirejs-ractive": "",
     "ractive": "",
     "normalize-css": ""
   }
