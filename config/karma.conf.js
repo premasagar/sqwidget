@@ -3,6 +3,7 @@
 
 module.exports = function(config) {
   config.set({
+    // set pre-processors to empty since karma has stupid defaults
     preprocessors: { },
     // base path, that will be used to resolve files and exclude
     basePath: '../',
