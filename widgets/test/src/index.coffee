@@ -1,10 +1,12 @@
+#Example widget using ractive to handle its view
+
 define [
-  'backbone'
   'underscore'
+  'backbone'
   'Ractive'
   'rv!../templates/test.html'
   #"css!./css/app.css"
-], (Backbone, _, Ractive, template) ->
+], (_, Backbone, Ractive, template) ->
   module = {views: {}}
 
   class module.Controller
@@ -14,6 +16,5 @@ define [
         template: template,
         data:
           test: "TEST"
-
 
   module

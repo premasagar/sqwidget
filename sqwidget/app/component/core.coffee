@@ -28,7 +28,6 @@ define ['underscore','backbone'], (_, Backbone) ->
         @trigger("rendered:#{widget.id || opts.url}")
       return pkg
 
-
     # returns an array of all the custom widget parameters. The new keys are
     # lowercase concatenated attributes from the embed code with 'data-sqwidget-'
     # removed.
