@@ -14,8 +14,6 @@ define ['chai', 'jquery', 'component/core'], (chai, $, Core) ->
         console.log(widget.opts)
         assert.deepEqual( widget.opts, { test: 'moo', url: '/base/widgets/test' } , "params parsed")
 
-
-
       it 'should trigger rendered event', (done) ->
         widget.on 'rendered', ->
           assert.ok "Triggered event"
