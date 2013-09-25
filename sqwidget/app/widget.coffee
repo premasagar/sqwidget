@@ -4,6 +4,8 @@ requirejs.config
     underscore: '../../lib/underscore-amd/underscore'
     backbone: '../../lib/backbone-amd/backbone'
     ractive: '../../lib/ractive/Ractive'
+    text: 'plugins/text',
+    rv: 'plugins/rv'
     normalize: '../../lib/normalize-css/normalize'
     config: '../../config'
 

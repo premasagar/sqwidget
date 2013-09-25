@@ -1,8 +1,10 @@
 define [
   'backbone'
   'underscore'
+  'ractive'
+  'rv!templates/test.html'
   #"css!./css/app.css"
-], (Backbone, _) ->
+], (Backbone, _, Ractive, template) ->
   module = {views: {}}
 
   class module.Controller

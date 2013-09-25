@@ -8,6 +8,7 @@
     "requirejs-i18n": "",
     "jquery": "",
     "require-css": "",
+    "require-text": "",
     "ractive": "",
     "normalize-css": ""
   }
