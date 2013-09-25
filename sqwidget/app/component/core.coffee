@@ -26,7 +26,7 @@ define ['underscore','backbone'], (_, Backbone) ->
         # operations that it needs to do.
         widget.view.trigger("rendered")
         pkg.trigger("rendered")
-        @trigger("rendered:#{opts.url}")
+        @trigger("rendered:#{widget.id || opts.url}")
       return pkg
 
 
