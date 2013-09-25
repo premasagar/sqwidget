@@ -1,4 +1,4 @@
-define ['require'], (require) ->
+define [], () ->
 
   class SqwidgetCore
     constructor: () ->
