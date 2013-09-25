@@ -11,7 +11,6 @@ define ['chai', 'jquery', 'component/core'], (chai, $, Core) ->
         assert.lengthOf(sqwidget.registered, 1, "Registered module")
 
       it 'should parse params correctly', ->
-        console.log(widget.opts)
         assert.deepEqual( widget.opts, { test: 'moo', url: '/base/widgets/test' } , "params parsed")
 
       it 'should trigger rendered event', (done) ->
