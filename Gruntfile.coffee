@@ -23,6 +23,12 @@ module.exports = (grunt) ->
 
       widgets:
         options:
+          middleware: (connect, options) -> [
+            (req, res, next) ->
+              res.setHeader('Access-Control-Allow-Origin', '*')
+              next()
+            connect.static(options.base)
+          ]
           port: 8002
           base: 'widgets'
 
