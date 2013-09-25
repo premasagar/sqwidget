@@ -23,6 +23,7 @@ define [], () ->
         # fire a 'rendered' method so that the widget can do any post-render
         # operations that it needs to do.
         widget.view.trigger("rendered")
+      return pkg
 
 
     # returns an array of all the custom widget parameters. The new keys are
