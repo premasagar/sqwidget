@@ -1,4 +1,4 @@
-define [], () ->
+define ['underscore','backbone'], (_, Backbone) ->
 
   class SqwidgetCore
     constructor: () ->
@@ -8,6 +8,7 @@ define [], () ->
     register: (el) ->
       $this = $(el).addClass('sqwidget')
       pkg = el: $this
+      _.extend(pkg, Backbone.Events)
       @registered.push(pkg)
       opts = @getWidgetParams($this)
 
@@ -18,11 +19,12 @@ define [], () ->
         # 'settings' object defines all the settings that were passed in via the
         # embed code.
         widget = new module.Controller({settings: opts})
-        pkg.widget = widget
+        pkg.instance = widget
         $this.html(widget.view.el)
         # fire a 'rendered' method so that the widget can do any post-render
         # operations that it needs to do.
         widget.view.trigger("rendered")
+        pkg.trigger("rendered")
       return pkg
 
 
