@@ -2,6 +2,7 @@ requirejs.config
   paths:
     jquery: '../../lib/jquery/jquery'
     underscore: '../../lib/underscore-amd/underscore'
+    backbone: '../../lib/backbone-amd/backbone'
 
 # The module that is loaded first
 requirejs [

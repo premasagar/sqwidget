@@ -5,6 +5,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks('grunt-contrib-connect')
   grunt.loadNpmTasks('grunt-contrib-copy')
+  grunt.loadNpmTasks('grunt-contrib-requirejs')
   grunt.loadNpmTasks('grunt-karma')
 
 
@@ -12,7 +13,7 @@ module.exports = (grunt) ->
 
     clean:
       all:
-        src: [ "compiled/js", "compiled/tests" ]
+        src: [ "compiled", "dist" ]
 
     connect:
       publisher:
@@ -61,7 +62,17 @@ module.exports = (grunt) ->
         files: ["src/**/*.coffee", "tests/**/*.coffee"]
         tasks: ["build", "karma"]
 
+    requirejs:
+      compile:
+        options:
+          name: "sqwidget"
+          optimize: 'none'
+          baseUrl: "compiled/js",
+          mainConfigFile: "compiled/js/sqwidget.js",
+          out: "dist/sqwidget.js"
+
   grunt.registerTask "build", [ "coffee" ]
+  grunt.registerTask "dist", [ "coffee", "requirejs" ]
   grunt.registerTask "test", [ "clean", "build", "karma" ]
   grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]
 

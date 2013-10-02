@@ -6,7 +6,7 @@
     "Adhip Gupta <me@adhipg.in>",
     "Simon Elliott <simon@papercreatures.com>"
   ],
-  "main": "compiled/js/sqwidget.js",
+  "main": "dist/sqwidget.js",
   "engines": {
     "node": ">= 0.8.0"
   },
