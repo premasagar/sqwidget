@@ -1,7 +1,7 @@
 {
   "name": "sqwidget",
   "title": "Sqwidget",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "contributors": [
     "Adhip Gupta <me@adhipg.in>",
     "Simon Elliott <simon@papercreatures.com>"
@@ -9,6 +9,13 @@
   "main": "compiled/js/sqwidget.js",
   "engines": {
     "node": ">= 0.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/premagasar/sqwidget"
+  },
+  "bugs": {
+    "url": "http://github.com/premagasar/sqwidget/issues"
   },
   "dependencies": {},
   "devDependencies": {
@@ -33,6 +40,7 @@
   },
   "scripts": {
     "prepublish": "make build",
+    "build": "make build",
     "test": "make test"
   }
 }

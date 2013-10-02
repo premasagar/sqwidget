@@ -12,7 +12,7 @@ module.exports = (grunt) ->
 
     clean:
       all:
-        src: [ "compiled" ]
+        src: [ "compiled/js", "compiled/tests" ]
 
     connect:
       publisher:
