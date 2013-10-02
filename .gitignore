@@ -1,6 +1,7 @@
 .DS_Store
 node_modules/
 config.js
+lib/
 
 # temporary!
 dist/

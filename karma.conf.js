@@ -6,7 +6,7 @@ module.exports = function(config) {
     // set pre-processors to empty since karma has stupid defaults
     preprocessors: { },
     // base path, that will be used to resolve files and exclude
-    basePath: '../',
+    basePath: '.',
 
     // frameworks to use
     frameworks: ['mocha', 'requirejs'],
@@ -15,11 +15,10 @@ module.exports = function(config) {
     files: [
       'compiled/tests/js/test-main.js',
       {pattern: 'node_modules/karma-chai-plugins/node_modules/chai/chai.js', included: false},
+      {pattern: 'compiled/js/**/*.js', included: false},
       {pattern: 'compiled/tests/js/spec/**/*.js', included: false},
-      {pattern: 'compiled/tests/js/spec/**/*.js', included: false},
-      {pattern: 'compiled/sqwidget/js/**/*.js', included: false},
-      {pattern: 'widgets/**', included: false, watch: true},
-      {pattern: 'sqwidget/lib/**/*.js', included: false, watched: false},
+      {pattern: 'lib/**/*.js', included: false, watched: false},
+      {pattern: 'widgets/test/**/*.js', included: false, watched: false},
     ],
 
     // list of files to exclude
@@ -53,7 +52,7 @@ module.exports = function(config) {
     browsers: [
     //'Chrome',
       //,'Firefox'
-      'PhantomJS'
+      'Chrome'
     ],
 
     // If browser does not capture in given timeout [ms], kill it

@@ -18,7 +18,7 @@ define ['chai', 'jquery', 'component/core'], (chai, $, Core) ->
           assert.ok "Triggered event"
           assert.equal(src.html(),
             '<div>TEST</div>'
-            'Rendered Ractive view correctly'
+            'Rendered correctly'
           )
           done()
 
