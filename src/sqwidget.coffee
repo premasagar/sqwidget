@@ -8,6 +8,7 @@ requirejs.config
 requirejs [
   'jquery'
   'component/core'
+  'component/test'
 ], ($, Core) ->
 
   # the only global object that we will use.
