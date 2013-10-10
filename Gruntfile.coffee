@@ -63,7 +63,7 @@ module.exports = (grunt) ->
         tasks: ["build", "karma"]
 
     requirejs:
-      compile:
+      sqwidget:
         options:
           name: "sqwidget"
           optimize: 'none'
@@ -71,7 +71,16 @@ module.exports = (grunt) ->
           mainConfigFile: "compiled/js/sqwidget.js",
           out: "dist/sqwidget.js"
 
-  grunt.registerTask "build", [ "coffee" ]
+      test:
+        options:
+          name: "index"
+          findNestedDependencies: true
+          optimize: 'none'
+          baseUrl: "widgets/test/js",
+          mainConfigFile: "widgets/test/js/index.js",
+          out: "dist/test.js"
+
+  grunt.registerTask "build", [ "coffee", "requirejs" ]
   grunt.registerTask "dist", [ "coffee", "requirejs" ]
   grunt.registerTask "test", [ "clean", "build", "karma" ]
   grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]

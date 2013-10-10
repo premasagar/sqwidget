@@ -1,3 +1,11 @@
+requirejs.config({
+  paths: {
+    jquery: '../../../lib/jquery/jquery',
+    underscore: '../../../lib/underscore-amd/underscore',
+    backbone: '../../../lib/backbone-amd/backbone'
+  }
+});
+
 define(['underscore', 'backbone'], function(_, Backbone) {
   var module = {
     views: {}
