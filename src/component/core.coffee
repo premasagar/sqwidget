@@ -17,7 +17,7 @@ define ['underscore', 'backbone'], (_, Backbone) ->
 
       # Widgets are pre-packaged, so we just load the rjs optimized source
       require ["#{opts.url}.js"], (container) =>
-        require ["index"], (module) =>
+        require ["src/index"], (module) =>
           # 'settings' object defines all the settings that were passed in via the
           # embed code.
           widget = new module.Controller({settings: opts, sqwidget: @, el: $this})
