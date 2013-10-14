@@ -3,12 +3,16 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks('grunt-contrib-connect')
+  grunt.loadNpmTasks('grunt-contrib-copy')
+  grunt.loadNpmTasks('grunt-contrib-requirejs')
+  grunt.loadNpmTasks('grunt-karma')
 
   grunt.initConfig
 
     clean:
       all:
-        src: [ "compiled" ]
+        src: [ "compiled", "dist" ]
 
     connect:
       publisher:
@@ -21,21 +25,10 @@ module.exports = (grunt) ->
           port: 8001
           base: 'sqwidget'
 
-      widgets:
-        options:
-          middleware: (connect, options) -> [
-            (req, res, next) ->
-              res.setHeader('Access-Control-Allow-Origin', '*')
-              next()
-            connect.static(options.base)
-          ]
-          port: 8002
-          base: 'widgets'
-
     coffee:
       tests:
         expand: true
-        cwd: 'sqwidget/tests',
+        cwd: 'tests',
         src: '**/*.coffee'
         dest: 'compiled/tests/js'
         ext: '.js'
@@ -46,49 +39,48 @@ module.exports = (grunt) ->
 
       sqwidget:
         expand: true
-        cwd: 'sqwidget/app',
+        cwd: 'src',
         src: '**/*.coffee'
-        dest: 'compiled/sqwidget/js'
+        dest: 'compiled/js'
         ext: '.js'
         options:
           sourceRoot: '../../../app'
           bare: true
-          sourceMap: true
-
-      widgets:
-        expand: true
-        cwd: 'widgets/',
-        src: '**/*.coffee'
-        dest: 'compiled/widgets/js'
-        ext: '.js'
-        options:
-          bare: true
-          sourceMap: true
+          sourceMap: false
 
     karma:
       integration:
-        configFile: 'config/karma.conf.js',
+        configFile: 'karma.conf.js',
 
     watch:
       sqwidget:
-        files: ["sqwidget/app/**/*.coffee"]
-        tasks: ["build"]
-
-      widgets:
-        files: ["widgets/**/*.coffee"]
+        files: ["src/**/*.coffee"]
         tasks: ["build"]
 
       karma:
-        files: ["sqwidget/**/*.coffee", "sqwidget/tests/**/*.coffee"]
+        files: ["src/**/*.coffee", "tests/**/*.coffee"]
         tasks: ["build", "karma"]
 
-  grunt.loadNpmTasks('grunt-contrib-coffee')
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-connect')
-  grunt.loadNpmTasks('grunt-contrib-copy')
-  grunt.loadNpmTasks('grunt-karma')
+    requirejs:
+      sqwidget:
+        options:
+          name: "sqwidget"
+          optimize: 'none'
+          baseUrl: "compiled/js",
+          mainConfigFile: "compiled/js/sqwidget.js",
+          out: "sqwidget.js"
 
-  grunt.registerTask "build", [ "coffee" ]
-  grunt.registerTask "test", [ "clean", "build", "karma", "watch:karma" ]
+      test:
+        options:
+          name: "index"
+          findNestedDependencies: true
+          optimize: 'none'
+          baseUrl: "widgets/test/js",
+          mainConfigFile: "widgets/test/js/index.js",
+          out: "dist/test.js"
+
+  grunt.registerTask "build", [ "coffee", "requirejs" ]
+  grunt.registerTask "dist", [ "coffee", "requirejs" ]
+  grunt.registerTask "test", [ "clean", "build", "karma" ]
   grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]
 

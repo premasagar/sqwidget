@@ -1,4 +1,4 @@
-define ['underscore','backbone'], (_, Backbone) ->
+define ['underscore', 'backbone'], (_, Backbone) ->
 
   class SqwidgetCore
     constructor: () ->
@@ -15,17 +15,19 @@ define ['underscore','backbone'], (_, Backbone) ->
 
       throw new Error("No widget source") unless opts.url
 
-      # we're expecting an 'index.js' file inside every widget.
-      require ["#{opts.url}/js/index.js"], (module) =>
-        # 'settings' object defines all the settings that were passed in via the
-        # embed code.
-        widget = new module.Controller({settings: opts, sqwidget: @, el: $this})
-        pkg.instance = widget
-        # fire a 'rendered' method so that the widget can do any post-render
-        # operations that it needs to do.
-        #widget.view.trigger("rendered")
-        pkg.trigger("rendered")
-        @trigger("rendered:#{widget.id || opts.url}")
+      # Widgets are pre-packaged, so we just load the rjs optimized source
+      require ["#{opts.url}.js"], (container) =>
+        require ["src/index"], (module) =>
+          # 'settings' object defines all the settings that were passed in via the
+          # embed code.
+          widget = new module.Controller({settings: opts, sqwidget: @, el: $this})
+          pkg.instance = widget
+          # fire a 'rendered' method so that the widget can do any post-render
+          # operations that it needs to do.
+          #widget.view.trigger("rendered")
+          pkg.trigger("rendered")
+          @trigger("rendered:#{widget.id || opts.url}")
+
       return pkg
 
     # returns an array of all the custom widget parameters. The new keys are
