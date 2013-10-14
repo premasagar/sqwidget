@@ -8,7 +8,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-requirejs')
   grunt.loadNpmTasks('grunt-karma')
 
-
   grunt.initConfig
 
     clean:
@@ -47,7 +46,7 @@ module.exports = (grunt) ->
         options:
           sourceRoot: '../../../app'
           bare: true
-          sourceMap: true
+          sourceMap: false
 
     karma:
       integration:
@@ -69,7 +68,7 @@ module.exports = (grunt) ->
           optimize: 'none'
           baseUrl: "compiled/js",
           mainConfigFile: "compiled/js/sqwidget.js",
-          out: "dist/sqwidget.js"
+          out: "sqwidget.js"
 
       test:
         options:

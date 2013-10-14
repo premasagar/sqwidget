@@ -4,3 +4,4 @@ config.js
 compiled/**/*.*
 lib/
 dist/
+sqwidget.js
