@@ -11,7 +11,7 @@ requirejs [
   'ondomready'
   'component/core'
   'component/test'
-], ('ondomready', $, Core) ->
+], ( ondomready, $, Core) ->
 
   # the only global object that we will use.
   sqwidget = window.sqwidget = new Core()
