@@ -1,8 +1,8 @@
-define ['chai', 'jquery', 'component/core'], (chai, $, Core) ->
+define ['chai', 'bonzo', 'component/core'], (chai, bonzo, Core) ->
   assert = chai.assert
   describe 'Core', ->
     sqwidget = new Core()
-    src = $("<div data-sqwidget-test='moo' data-sqwidget='/base/dist/test'></div>'")
+    src = bonzo.create("<div data-sqwidget-test='moo' data-sqwidget='/base/dist/test'></div>'")
 
     describe '#register()', ->
       widget = sqwidget.register(src)
@@ -16,7 +16,7 @@ define ['chai', 'jquery', 'component/core'], (chai, $, Core) ->
       it 'should trigger rendered event', (done) ->
         widget.on 'rendered', ->
           assert.ok "Triggered event"
-          assert.equal(src.html(),
+          assert.equal(bonzo(src).html(),
             '<div>TEST</div>'
             'Rendered correctly'
           )
