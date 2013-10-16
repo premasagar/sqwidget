@@ -65,7 +65,7 @@ module.exports = (grunt) ->
       sqwidget:
         options:
           name: "sqwidget"
-          optimize: 'uglify'
+          optimize: 'none'
           baseUrl: "compiled/js",
           mainConfigFile: "compiled/js/sqwidget.js",
           out: "sqwidget.js"
