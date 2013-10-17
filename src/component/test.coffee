@@ -1,4 +1,4 @@
-define ['component/core', 'jquery'], (Core, $) ->
+define ['component/core', 'qwery'], (Core, $) ->
   sqwidget = new Core()
 
   return el: (el) ->

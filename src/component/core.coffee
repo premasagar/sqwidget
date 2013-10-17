@@ -1,16 +1,19 @@
-define ['underscore', 'backbone'], (_, Backbone) ->
+define ['heir', 'bonzo', 'EventEmitter'], (heir, bonzo, EventEmitter) ->
 
   class SqwidgetCore
     constructor: () ->
-      _.extend(@, Backbone.Events)
+
+      #sqwidget level event bus
+      @ee = new EventEmitter()
 
     registered: []
 
     register: (el) ->
-      $this = $(el).addClass('sqwidget')
+      $this = bonzo(el).addClass('sqwidget')
       opts = @getWidgetParams($this)
-      pkg = el: $this, opts: opts
-      _.extend(pkg, Backbone.Events)
+      pkg = new EventEmitter()
+      pkg.el = $this
+      pkg.opts = opts
       @registered.push(pkg)
 
       throw new Error("No widget source") unless opts.url
@@ -30,6 +33,11 @@ define ['underscore', 'backbone'], (_, Backbone) ->
 
       return pkg
 
+    #proxy event methods
+    trigger: (opts...) => @ee.trigger(opts...)
+    on: (opts...) => @ee.on(opts...)
+    off: (opts...) => @ee.off(opts...)
+
     # returns an array of all the custom widget parameters. The new keys are
     # lowercase concatenated attributes from the embed code with 'data-sqwidget-'
     # removed.
@@ -40,9 +48,8 @@ define ['underscore', 'backbone'], (_, Backbone) ->
     #
     getWidgetParams: ($el) ->
       data = {}
-      for key, val of $el.data()
+      for key, val of $el.data() when key.match("sqwidget")
         key = key.replace("sqwidget", "").toLowerCase()
         data[key || "url" ] = val
       data
-
 
