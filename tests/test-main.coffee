@@ -9,9 +9,11 @@ requirejs.config
   baseUrl: "/base/compiled/js/"
   paths:
     chai: '../../node_modules/karma-chai-plugins/node_modules/chai/chai'
-    jquery: '../../lib/jquery/jquery'
-    underscore: '../../lib/underscore-amd/underscore'
-    backbone: '../../lib/backbone-amd/backbone'
+    EventEmitter: '../../node_modules/wolfy87-eventemitter/EventEmitter'
+    ondomready: '../../lib/ondomready'
+    qwery: '../../lib/qwery/qwery'
+    heir: '../../lib/heir/heir'
+    bonzo: '../../lib/bonzo/bonzo'
 
   deps: tests
   callback: ->

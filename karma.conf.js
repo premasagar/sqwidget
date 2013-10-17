@@ -15,6 +15,7 @@ module.exports = function(config) {
     files: [
       'compiled/tests/js/test-main.js',
       {pattern: 'node_modules/karma-chai-plugins/node_modules/chai/chai.js', included: false},
+      {pattern: 'node_modules/wolfy87-eventemitter/EventEmitter.js', included: false},
       {pattern: 'compiled/js/**/*.js', included: false},
       {pattern: 'compiled/tests/js/spec/**/*.js', included: false},
       {pattern: 'lib/**/*.js', included: false, watched: false},

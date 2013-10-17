@@ -72,11 +72,11 @@ module.exports = (grunt) ->
 
       test:
         options:
-          name: "index"
+          name: "src/index"
           findNestedDependencies: true
           optimize: 'none'
-          baseUrl: "widgets/test/js",
-          mainConfigFile: "widgets/test/js/index.js",
+          baseUrl: "widgets/test",
+          mainConfigFile: "widgets/test/src/index.js",
           out: "dist/test.js"
 
   grunt.registerTask "build", [ "coffee", "requirejs" ]
