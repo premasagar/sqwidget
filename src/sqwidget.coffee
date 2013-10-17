@@ -9,14 +9,16 @@ requirejs.config
 # The module that is loaded first
 requirejs [
   'ondomready'
+  'qwery'
   'component/core'
   'component/test'
-], ( ondomready, Core) ->
+], ( ondomready, $, Core) ->
 
   # the only global object that we will use.
   sqwidget = window.sqwidget = new Core()
   # Iterate all elements and register
   ondomready ->
-    $('div[data-sqwidget]').each (index) ->
-      sqwidget.register(@)
+    sqwidgets = $('div[data-sqwidget]')
+    for el in sqwidgets
+      sqwidget.register(el)
 

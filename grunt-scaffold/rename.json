@@ -1,0 +1,4 @@
+{
+  "lib/**/*": false,
+  "node_modules/**/*": false
+}

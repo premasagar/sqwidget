@@ -1,0 +1,2 @@
+build:
+	volo build
