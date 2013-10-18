@@ -1,14 +1,10 @@
 require({
-  baseUrl: 'lib',
-  paths: {
-    'src': '../src',
-  },
+  baseUrl: 'src',
+  paths: { },
   map: {
     '*': {
-      'css': 'require-css/css',
-      'less': 'require-less/less'
-      //'is': 'require-is/is',
-      //'cs': 'require-coffee/cs'
+      css: 'require-css/css',
+      less: 'require-less/less'
     }
   }
 }, ['src/index']);

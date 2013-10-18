@@ -1,4 +1,6 @@
 {
   "lib/**/*": false,
-  "node_modules/**/*": false
+  "node_modules/**/*": false,
+  "bower.json.tmpl": "bower.json",
+  "package.json.tmpl": "package.json"
 }

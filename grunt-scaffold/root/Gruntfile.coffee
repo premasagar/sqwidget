@@ -1,12 +1,10 @@
 module.exports = (grunt) ->
 
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-connect'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-requirejs'
-  grunt.loadNpmTasks 'grunt-karma'
+  grunt.loadNpmTasks 'grunt-bower-requirejs'
 
   grunt.initConfig
 
@@ -28,3 +26,9 @@ module.exports = (grunt) ->
     clean:
       all:
         src: [ "compiled", "dist" ]
+
+    bower:
+      target:
+        rjsConfig: 'app/main.js'
+
+  grunt.registerTask 'default', ['bower']

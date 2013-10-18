@@ -21,6 +21,8 @@ exports.template = function(grunt, init, done) {
       'grunt-contrib-requirejs': '~0.4.1',
       'grunt-contrib-jshint': '~0.6.4',
       'grunt-contrib-watch': '~0.5.3',
+      'grunt-contrib-clean': '~0.5.0',
+      'grunt-contrib-connect': '~0.5.0',
     };
 
     // Files to copy (and process).
