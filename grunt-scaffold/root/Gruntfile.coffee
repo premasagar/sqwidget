@@ -1,10 +1,12 @@
+less = require('component-less')
+fs = require('fs')
+
+
 module.exports = (grunt) ->
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-connect'
-  grunt.loadNpmTasks 'grunt-contrib-requirejs'
-  grunt.loadNpmTasks 'grunt-bower-requirejs'
 
   grunt.initConfig
 
@@ -27,8 +29,19 @@ module.exports = (grunt) ->
       all:
         src: [ "compiled", "dist" ]
 
-    bower:
-      target:
-        rjsConfig: 'app/main.js'
+    connect:
+      widget:
+        options:
+          port: 8080
+          base: '.'
 
-  grunt.registerTask 'default', ['bower']
+    watch:
+      widget:
+        files: ["app/src/**/*"]
+        tasks: ["build"]
+
+    requirejs:
+
+
+  grunt.registerTask 'default', ['build', 'connect', 'watch']
+  grunt.registerTask 'build', ['requirejs']

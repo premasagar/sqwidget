@@ -16,8 +16,8 @@ exports.template = function(grunt, init, done) {
     init.prompt('version'),
   ], function(err, props) {
     props.keywords = [];
+
     props.devDependencies = {
-      'grunt-bower-requirejs': '~0.7.1',
       'grunt-contrib-requirejs': '~0.4.1',
       'grunt-contrib-jshint': '~0.6.4',
       'grunt-contrib-watch': '~0.5.3',
@@ -33,6 +33,7 @@ exports.template = function(grunt, init, done) {
 
     // Generate package.json file.
     init.writePackageJSON('package.json', props);
+    init.writePackageJSON('app/main.js', props);
 
     // All done!
     done();

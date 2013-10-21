@@ -1,6 +1,6 @@
 {
-  "lib/**/*": false,
+  "app/lib/**/*": false,
   "node_modules/**/*": false,
-  "bower.json.tmpl": "bower.json",
+  "component.json.tmpl": "component.json",
   "package.json.tmpl": "package.json"
 }

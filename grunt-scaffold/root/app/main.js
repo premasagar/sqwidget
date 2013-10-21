@@ -1,10 +1,11 @@
 require({
-  baseUrl: 'src',
-  paths: { },
+  baseUrl: 'app',
   map: {
     '*': {
-      css: 'require-css/css',
-      less: 'require-less/less'
+      Ractive: 'lib/Ractive/Ractive',
+      less: 'lib/require-less/less',
+      text: 'lib/requirejs-text/text',
+      rv: 'lib/requirejs-ractive/rv'
     }
   }
-}, ['src/index']);
+}, ['index']);

@@ -20,7 +20,10 @@ define ['heir', 'bonzo', 'EventEmitter'], (heir, bonzo, EventEmitter) ->
 
       # Widgets are pre-packaged, so we just load the rjs optimized source
       require ["#{opts.url}.js"], (container) =>
-        require ["src/index"], (module) =>
+        #wrapper should automatically define a guid for this widget
+        console.log(container)
+        #load the namespaced module index
+        require ["index"], (module) =>
           # 'settings' object defines all the settings that were passed in via the
           # embed code.
           widget = new module.Controller({settings: opts, sqwidget: @, el: $this})
