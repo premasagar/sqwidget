@@ -41,6 +41,7 @@
   },
   "scripts": {
     "prepublish": "make dist",
+    "postinstall": "./grunt-scaffold/install.sh",
     "build": "make build",
     "test": "make test"
   }
