@@ -1,8 +1,9 @@
 define([
   'Ractive',
   'rv!templates/index.html',
-  //'less!../less/main'
-], function(Ractive, template, less ) {
+  'less!../less/main',
+  'i18n!nls/main',
+], function(Ractive, template, less, lang ) {
 
   var module = { views: {} };
 
@@ -11,7 +12,7 @@ define([
       el: opts.el,
       template: template,
       data: {
-        message: "Hello World"
+        message: lang.hello + " World"
       }
     });
   };
