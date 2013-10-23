@@ -1,5 +1,5 @@
 require({
-  baseUrl: 'app',
+  baseUrl: './',
   map: {
     '*': {
       Ractive: 'lib/Ractive/Ractive',

@@ -1,7 +1,7 @@
 define([
   'Ractive',
   'rv!templates/index.html',
-  'less!../less/main'
+  //'less!../less/main'
 ], function(Ractive, template, less ) {
 
   var module = { views: {} };

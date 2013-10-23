@@ -7,6 +7,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-connect'
+  grunt.loadNpmTasks 'grunt-contrib-requirejs'
+  grunt.loadTasks 'tasks'
+
 
   grunt.initConfig
 
@@ -41,7 +44,26 @@ module.exports = (grunt) ->
         tasks: ["build"]
 
     requirejs:
+      compile:
+        options:
+          dir: 'dist'
+          appDir: 'app'
+          skipDirOptimize: true
+          keepBuildDir: true
+          #namespace: 'sqwidget'
+          #findNestedDependencies: true
 
+          modules: [
+            name: "index"
+          ]
+
+          mainConfigFile: "app/main.js"
+
+    'requirejs-i18n':
+      widget:
+        options:
+          src: 'app/i18n.yml'
+          dest: 'app/nls/'
 
   grunt.registerTask 'default', ['build', 'connect', 'watch']
   grunt.registerTask 'build', ['requirejs']
