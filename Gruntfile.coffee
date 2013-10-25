@@ -37,26 +37,11 @@ module.exports = (grunt) ->
           bare: true
           sourceMap: false
 
-      sqwidget:
-        expand: true
-        cwd: 'src',
-        src: '**/*.coffee'
-        dest: 'compiled/js'
-        ext: '.js'
-        options:
-          sourceRoot: '../../../app'
-          bare: true
-          sourceMap: false
-
     karma:
       integration:
         configFile: 'karma.conf.js',
 
     watch:
-      sqwidget:
-        files: ["src/**/*.coffee"]
-        tasks: ["build"]
-
       karma:
         files: ["src/**/*.coffee", "tests/**/*.coffee"]
         tasks: ["build", "karma"]

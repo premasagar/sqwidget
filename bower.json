@@ -2,10 +2,10 @@
   "name": "sqwidget",
   "version": "0.0.1",
   "dependencies": {
-    "requirejs": "",
-    "requirejs-i18n": "",
+    "curl": "~0.8.4",
     "bonzo": "~1.3.6",
-    "heir": "~2.0.0",
-    "qwery": "~3.4.1"
+    "qwery": "~3.4.1",
+    "EventEmitter": "master",
+    "eventEmitter": "git@github.com:Wolfy87/EventEmitter.git#master"
   }
 }
