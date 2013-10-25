@@ -33,7 +33,11 @@ module.exports = (grunt) ->
 
     watch:
       scaffold:
-        files: ["grunt-scaffold/root/main.js", "grunt-scaffold/root/app/**/*.js", "grunt-scaffold/**/*.tmpl"]
+        files: [
+          "grunt-scaffold/root/main.js"
+          "grunt-scaffold/root/app/**/*.js"
+          "grunt-scaffold/**/*.tmpl"
+        ]
         tasks: ["build"]
 
   grunt.registerTask "build", [ "shell:build_example" ]

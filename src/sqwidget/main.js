@@ -6,15 +6,18 @@ function(bonzo, qwery, Emitter) {
 
     function SqwidgetCore() {}
 
+    for (var key in Emitter.prototype) {
+      SqwidgetCore.prototype[key] = Emitter.prototype[key];
+    }
+
     SqwidgetCore.prototype.registered = [];
 
     SqwidgetCore.prototype.register = function(el) {
-      var $this, opts, pkg, _this = this;
+      var opts, pkg, _this = this;
 
-      $this = bonzo(el).addClass('sqwidget');
-      opts = this.getWidgetParams($this);
       pkg = new Emitter();
-      pkg.el = $this;
+      pkg.el = bonzo(el).addClass('sqwidget');
+      opts = this.getWidgetParams(pkg.el);
       pkg.opts = opts;
 
       this.registered.push(pkg);
@@ -26,10 +29,9 @@ function(bonzo, qwery, Emitter) {
       curl(["" + opts.url + ".js"], function(promise) {
         return promise.then(
           function(module) {
-            console.log(module);
             if(module.Controller) {
               var widget = new module.Controller({
-                settings: opts, sqwidget: _this, el: $this
+                settings: opts, sqwidget: _this, el: pkg.el
               });
 
               pkg.instance = widget;
@@ -61,9 +63,6 @@ function(bonzo, qwery, Emitter) {
       }
       return data;
     };
-    for (var key in Emitter.prototype) {
-      SqwidgetCore[key] = Emitter.prototype[key];
-    }
     return SqwidgetCore;
 
   })();
