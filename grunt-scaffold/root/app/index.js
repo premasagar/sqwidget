@@ -2,7 +2,7 @@ define([
   'Ractive',
   'i18n!./nls/strings',
   './plugin/rv!./templates/index.html',
-  //'less!../less/main',
+  'css!./compiled/css/main',
 ], function(Ractive, strings, template ) {
 
   var module = { views: {} };

@@ -1,11 +1,7 @@
 module.exports = (grunt) ->
 
-  #grunt.loadNpmTasks 'grunt-contrib-clean'
-  #grunt.loadNpmTasks 'grunt-contrib-watch'
-  #grunt.loadNpmTasks 'grunt-contrib-connect'
-  #grunt.loadNpmTasks 'grunt-contrib-requirejs'
+  grunt.loadNpmTasks 'grunt-contrib-less'
   grunt.loadTasks 'tasks'
-
 
   grunt.initConfig
 
@@ -44,6 +40,10 @@ module.exports = (grunt) ->
         options:
           src: 'app/i18n.yml'
           dest: 'app/nls/'
+    less:
+      widget:
+        files:
+          "app/compiled/css/main.css": "app/less/main.less"
 
   grunt.registerTask 'default', ['build', 'connect', 'watch']
-  grunt.registerTask 'build', ['requirejs']
+  grunt.registerTask 'build', ['less:widget', 'requirejs-i18n:widget']
