@@ -18,7 +18,7 @@ module.exports = function (grunt) {
         dir = '';
       }
       var gen = grunt.template.process(template, { data: { json: JSON.stringify(trans) } });
-      grunt.file.write(options.dest + dir + 'main.js', gen);
+      grunt.file.write(options.dest + dir + 'strings.js', gen);
 
     });
   });

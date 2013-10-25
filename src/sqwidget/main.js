@@ -23,18 +23,25 @@ function(bonzo, qwery, Emitter) {
         throw new Error("No widget source");
       }
 
-      curl(["" + opts.url + ".js"], function() {
-        return require(["index"], function(module) {
-          var widget;
-          widget = new module.Controller({
-            settings: opts,
-            sqwidget: _this,
-            el: $this
-          });
-          pkg.instance = widget;
-          pkg.trigger("rendered");
-          return _this.trigger("rendered:" + (widget.id || opts.url));
-        });
+      curl(["" + opts.url + ".js"], function(promise) {
+        return promise.then(
+          function(module) {
+            console.log(module);
+            if(module.Controller) {
+              var widget = new module.Controller({
+                settings: opts, sqwidget: _this, el: $this
+              });
+
+              pkg.instance = widget;
+              pkg.trigger("rendered");
+              _this.trigger("rendered:" + (widget.id || opts.url));
+            } else {
+              console.log("controller not found for " + opts.url);
+            }
+          }, function(err) {
+            console.log("failed to initialise " + opts.url);
+          }
+        );
       });
       return pkg;
     };

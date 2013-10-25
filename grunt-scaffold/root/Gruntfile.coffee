@@ -1,13 +1,9 @@
-less = require('component-less')
-fs = require('fs')
-
-
 module.exports = (grunt) ->
 
-  grunt.loadNpmTasks 'grunt-contrib-clean'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-contrib-connect'
-  grunt.loadNpmTasks 'grunt-contrib-requirejs'
+  #grunt.loadNpmTasks 'grunt-contrib-clean'
+  #grunt.loadNpmTasks 'grunt-contrib-watch'
+  #grunt.loadNpmTasks 'grunt-contrib-connect'
+  #grunt.loadNpmTasks 'grunt-contrib-requirejs'
   grunt.loadTasks 'tasks'
 
 
@@ -42,22 +38,6 @@ module.exports = (grunt) ->
       widget:
         files: ["app/src/**/*"]
         tasks: ["build"]
-
-    requirejs:
-      compile:
-        options:
-          dir: 'dist'
-          appDir: 'app'
-          skipDirOptimize: true
-          keepBuildDir: true
-          #namespace: 'sqwidget'
-          #findNestedDependencies: true
-
-          modules: [
-            name: "index"
-          ]
-
-          mainConfigFile: "app/main.js"
 
     'requirejs-i18n':
       widget:

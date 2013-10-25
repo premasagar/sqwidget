@@ -1,6 +1,7 @@
 module.exports = (grunt) ->
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-connect'
   grunt.loadNpmTasks 'grunt-karma'
   grunt.loadNpmTasks 'grunt-shell'
@@ -30,7 +31,12 @@ module.exports = (grunt) ->
       build_example:
         command: "./build_example.sh"
 
-  grunt.registerTask "build", [ ]
+    watch:
+      scaffold:
+        files: ["grunt-scaffold/root/main.js", "grunt-scaffold/root/app/**/*.js", "grunt-scaffold/**/*.tmpl"]
+        tasks: ["build"]
+
+  grunt.registerTask "build", [ "shell:build_example" ]
   grunt.registerTask "test", [ "clean", "build", "karma" ]
-  grunt.registerTask "default", [ "clean", "build", "connect" ]
+  grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]
 

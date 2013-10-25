@@ -6,3 +6,4 @@ cd example-widget
 ../node_modules/grunt-init/bin/grunt-init ../grunt-scaffold --yes
 npm install
 bower install
+grunt requirejs-i18n

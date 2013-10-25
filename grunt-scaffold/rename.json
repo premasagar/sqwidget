@@ -1,8 +1,8 @@
 {
   "app/lib/**/*": false,
   "app/nls/**/*": false,
+  "dist/**/*": false,
   "node_modules/**/*": false,
-  "component.json.tmpl": "component.json",
-  "package.json.tmpl": "package.json",
-  "app/index.js": "app/{% name %}.js"
+  "bower.json.tmpl": "bower.json",
+  "package.json.tmpl": "package.json"
 }
