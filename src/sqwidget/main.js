@@ -26,7 +26,7 @@ function(bonzo, qwery, Emitter) {
         throw new Error("No widget source");
       }
 
-      curl(["" + opts.url + ".js"], function(promise) {
+      curl([opts.url + "/main.js"], function(promise) {
         return promise.then(
           function(module) {
             if(module.Controller) {

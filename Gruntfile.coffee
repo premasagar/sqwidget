@@ -16,12 +16,12 @@ module.exports = (grunt) ->
       publisher:
         options:
           port: 8000
-          base: 'publisher'
+          base: '.'
 
       sqwidget:
         options:
-          port: 8001
-          base: 'sqwidget'
+          port: 8002
+          base: 'example-widget'
 
     karma:
       integration:
