@@ -70,15 +70,6 @@ module.exports = (grunt) ->
           mainConfigFile: "compiled/js/sqwidget.js",
           out: "sqwidget.js"
 
-      test:
-        options:
-          name: "src/index"
-          findNestedDependencies: true
-          optimize: 'none'
-          baseUrl: "widgets/test",
-          mainConfigFile: "widgets/test/src/index.js",
-          out: "dist/test.js"
-
   grunt.registerTask "build", [ "coffee", "requirejs" ]
   grunt.registerTask "dist", [ "coffee", "requirejs" ]
   grunt.registerTask "test", [ "clean", "build", "karma" ]

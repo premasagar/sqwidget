@@ -19,9 +19,8 @@ define ['heir', 'bonzo', 'EventEmitter'], (heir, bonzo, EventEmitter) ->
       throw new Error("No widget source") unless opts.url
 
       # Widgets are pre-packaged, so we just load the rjs optimized source
-      require ["#{opts.url}.js"], (container) =>
+      require ["#{opts.url}.js"], () =>
         #wrapper should automatically define a guid for this widget
-        console.log(container)
         #load the namespaced module index
         require ["index"], (module) =>
           # 'settings' object defines all the settings that were passed in via the
