@@ -5,3 +5,4 @@ compiled/**/*.*
 src/lib/
 dist/
 sqwidget.js
+example-widget/

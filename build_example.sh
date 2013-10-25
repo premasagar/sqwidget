@@ -1,12 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 rm -Rf example-widget
-mkdir !$
-cd !$
-grunt-init ../grunt-scaffold <<-END
-test-widget
-Desc
-0.1.0
-N
-END
-
+mkdir example-widget
+cd example-widget
+../node_modules/grunt-init/bin/grunt-init ../grunt-scaffold --yes
+npm install
+bower install

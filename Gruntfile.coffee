@@ -32,5 +32,5 @@ module.exports = (grunt) ->
 
   grunt.registerTask "build", [ ]
   grunt.registerTask "test", [ "clean", "build", "karma" ]
-  grunt.registerTask "default", [ "clean", "build", "connect", "watch" ]
+  grunt.registerTask "default", [ "clean", "build", "connect" ]
 
