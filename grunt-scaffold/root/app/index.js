@@ -1,6 +1,6 @@
 define([
   'Ractive',
-  'i18n!./nls/strings',
+  './plugin/i18n!./nls/strings',
   './plugin/rv!./templates/index.html',
   'css!./compiled/css/main',
 ], function(Ractive, strings, template ) {
