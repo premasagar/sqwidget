@@ -141,6 +141,7 @@ define(/*=='curl/plugin/i18n',==*/ ['./locale'], function (getLocale) {
     load: function (resId, require, loaded, config) {
       var sources = [],
           eb = loaded.error,
+          toId = config.localeToModuleId || getLocale.toModuleId,
           locale = getLocale(config, resId);
 
       if (!resId) {
@@ -150,27 +151,29 @@ define(/*=='curl/plugin/i18n',==*/ ['./locale'], function (getLocale) {
       var p = locale;
       var related = [];
       while(p) {
-        related.push(toId(p));
+        related.push(toId(resId, p));
         p = p.split('-').reverse().slice(1).reverse().join('-');
       }
 
       //get base locale file first to see if we are using old or new style
       require([resId], function(base) {
-        require(related, function() {
-          var languages = Array.prototype.slice.call(arguments);
-          var combined = base.root || base;
-          // if root exists, fetch children only if we also have this locale
-          // defined in the base.
-          if(!base.root || base[locale]) {
+        var combined = base.root || base;
+        if(!base.root || base[locale]) {
+          require(related, function() {
+            var languages = Array.prototype.slice.call(arguments);
+            // if root exists, fetch children only if we also have this locale
+            // defined in the base.
             for (var i = 0; i < languages.length; i++) {
               //merge in order if the language was successfully loaded
               if(languages[i]) {
                 combined = mixin(combined, languages[i].root || languages[i] );
               }
             }
-          }
+            loaded(combined);
+          });
+        } else {
           loaded(combined);
-        });
+        }
       });
     }
 
