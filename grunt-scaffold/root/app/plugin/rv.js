@@ -1,6 +1,6 @@
 /*global define, XMLHttpRequest */
 
-define( [ './_fetchText', 'Ractive' ], function ( text, Ractive ) {
+define( [ './_fetchText', '../lib/ractive/Ractive' ], function ( text, Ractive ) {
 
   'use strict';
   var buildMap = {};

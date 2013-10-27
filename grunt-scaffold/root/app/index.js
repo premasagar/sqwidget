@@ -1,21 +1,23 @@
 define([
-  'Ractive',
+  'module',
+  './lib/ractive/Ractive',
   './plugin/i18n!./nls/strings',
   './plugin/rv!./templates/index.html',
   'css!./compiled/css/main',
-], function(Ractive, strings, template ) {
+], function(module, Ractive, strings, template ) {
 
-  var module = { views: {} };
-
-  module.Controller = function (opts) {
-    this.view = new Ractive({
-      el: opts.el,
-      template: template,
-      data: {
-        message: strings.root.hello + " World"
-      }
-    });
+  var config = module.config();
+  console.log(config);
+  return {
+    Views: {},
+    Controller: function (opts) {
+      this.view = new Ractive({
+        el: config.el,
+        template: template,
+        data: {
+          message: strings.hello + " World"
+        }
+      });
+    }
   };
-
-  return module;
 });

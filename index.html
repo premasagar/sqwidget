@@ -7,10 +7,14 @@
     widgets are loaded from <code>//localhost:8002</code>.</p>
 
     <script data-curl-run="src/sqwidget.js" src="src/lib/curl/dist/curl/curl.js"></script>
+    <!--<script data-curl-run="src/sqwidget.js" src="src/lib/curl/dist/debug/curl.js"></script>-->
 
-    <div data-sqwidget="/example-widget"
+    <div data-sqwidget="http://localhost:8080/example-widget"
       data-sqwidget-message="1"
       data-sqwidget-background-color="#EEE" data-sqwidget-color="#F00"></div>
 
+    <div data-sqwidget="http://localhost:8080/example-widget"
+      data-sqwidget-message="2"
+      data-sqwidget-background-color="#FFF" data-sqwidget-color="#F00"></div>
   </body>
 </html>
