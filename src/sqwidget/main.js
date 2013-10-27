@@ -63,25 +63,23 @@ function(bonzo, qwery, Emitter) {
     SqwidgetCore.prototype.initialize = function() {
       var names = [], pkg, _this = this;
 
-      for(var k in this.packages) names.push(k);
+      for(var k in _this.packages) names.push(k);
 
       curl({
-        packages: this.packages,
+        packages: _this.packages,
       }, names, function() {
         var loaded = Array.prototype.slice.call(arguments);
         for (var i = 0; i < loaded.length; i++) {
           var module = loaded[i];
-          //add the existing event emitter to the loaded module
-          console.log(module);
 
           if(module.Controller) {
             var widget = new module.Controller({
               sqwidget: _this
             });
 
-            //pkg.instance = widget;
-            //pkg.trigger("rendered");
-            //_this.trigger("rendered:" + (widget.id || module.location));
+            //bus events
+            _this.trigger("rendered:" + _this.packages[names[i]].location);
+            _this.trigger("rendered:" + _this.packages[names[i]].id);
           } else {
             console.log("controller not found for " + module.location);
           }
