@@ -5,9 +5,7 @@ define([
   './plugin/rv!./templates/index.html',
   'css!./compiled/css/main',
 ], function(module, Ractive, strings, template ) {
-
   var config = module.config();
-  console.log(config);
   return {
     Views: {},
     Controller: function (opts) {

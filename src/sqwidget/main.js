@@ -1,5 +1,4 @@
-define(['lib/bonzo/bonzo', 'lib/qwery/qwery',
-        'lib/EventEmitter/EventEmitter', 'domReady!'],
+define(['lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/EventEmitter/EventEmitter', 'domReady!'],
 function(bonzo, qwery, Emitter) {
 
   var SqwidgetCore = (function() {
@@ -10,7 +9,6 @@ function(bonzo, qwery, Emitter) {
       SqwidgetCore.prototype[key] = Emitter.prototype[key];
     }
 
-    SqwidgetCore.prototype.registered = [];
     SqwidgetCore.prototype.packages = {};
 
     //convert data-sqwidget to dictionary
@@ -41,11 +39,10 @@ function(bonzo, qwery, Emitter) {
       var opts, pkg, _this = this, id = this.guid();
 
       pkg = new Emitter();
-      var $el = bonzo(el).addClass('sqwidget');
+      var $el = bonzo(el).addClass('sqwidget').addClass(id);
       pkg.opts = opts = this.getWidgetParams($el);
       opts.el = pkg.el = $el;
-
-      this.registered[id] = pkg;
+      opts.id = id;
 
       if (!opts.url) {
         throw new Error("No widget source defined (set data-sqwidget-url)");
@@ -53,7 +50,7 @@ function(bonzo, qwery, Emitter) {
 
       this.packages[id] = {
         location: opts.url,
-        main: 'main',
+        main: 'app/index',
         config: opts
       };
 

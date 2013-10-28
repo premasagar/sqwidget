@@ -142,7 +142,7 @@ define(/*=='curl/plugin/i18n',==*/ ['./locale'], function (getLocale) {
       var sources = [],
           eb = loaded.error,
           toId = config.localeToModuleId || getLocale.toModuleId,
-          locale = getLocale(config, resId);
+          locale = config.locale || getLocale(config, resId);
 
       if (!resId) {
         eb(new Error('blank i18n bundle id.'));
