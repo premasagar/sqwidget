@@ -30,7 +30,7 @@ exports.template = function(grunt, init, done) {
 
     // Generate package.json file.
     //init.writePackageJSON('package.json', props);
-    init.writePackageJSON('app/main.js', props);
+    //init.writePackageJSON('app/main.js', props);
 
     // All done!
     done();

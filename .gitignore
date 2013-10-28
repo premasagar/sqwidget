@@ -2,7 +2,6 @@
 node_modules/
 config.js
 compiled/**/*.*
-src/lib/
+app/lib/
 dist/
-sqwidget.js
 example-widget/

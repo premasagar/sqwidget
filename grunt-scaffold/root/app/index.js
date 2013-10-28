@@ -1,8 +1,8 @@
 define([
   'module',
   './lib/ractive/Ractive',
-  './plugin/i18n!./nls/strings',
-  './plugin/rv!./templates/index.html',
+  'i18n!./nls/strings',
+  './plugins/rv!./templates/index.html',
   'css!./compiled/css/main',
 ], function(module, Ractive, strings, template ) {
   var config = module.config();
