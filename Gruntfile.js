@@ -43,5 +43,5 @@ module.exports = function(grunt) {
   });
   grunt.registerTask("build", ["shell:build_example"]);
   grunt.registerTask("test", ["clean", "build", "karma"]);
-  return grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
+  grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
 };

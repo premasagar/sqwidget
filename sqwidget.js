@@ -7,6 +7,7 @@
       underscore: { location: './app/lib/underscore-amd/underscore' },
       backbone: { location: './app/lib/backbone-amd/backbone' },
       jquery: { location: './app/lib/jquery/jquery' },
+      moment: { location: './app/lib/moment/moment' },
     },
     packages: {
       i18n: { location: './app/plugins', main: 'i18n' },
