@@ -1,6 +1,8 @@
 (function () {
   curl.config({
+    //this needs to be configurable.
     baseUrl: './sqwidget',
+    //Optional dependencies which aren't anonymous. AMD is crazy.
     paths: {
       underscore: { location: './app/lib/underscore-amd/underscore' },
       backbone: { location: './app/lib/backbone-amd/backbone' },
