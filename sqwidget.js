@@ -10,6 +10,7 @@
       jquery: { location: './app/lib/jquery/jquery' },
       moment: { location: './app/lib/momentjs/moment' },
     },
+    preloads: ['i18n'],
     packages: {
       i18n: { location: './app/plugins', main: 'i18n' },
       curl: { location: './app/lib/curl/src/curl/' },

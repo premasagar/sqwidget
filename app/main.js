@@ -1,4 +1,4 @@
-define(['./lib/bonzo/bonzo', './lib/qwery/qwery', './lib/eventEmitter/EventEmitter', 'domReady!'],
+define(['./lib/bonzo/bonzo', './lib/qwery/qwery', './lib/eventEmitter/EventEmitter', 'curl/plugin/domReady!'],
 function(bonzo, qwery, Emitter) {
 
   var SqwidgetCore = (function() {
