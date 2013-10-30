@@ -32,6 +32,9 @@ module.exports = function(grunt) {
     shell: {
       build_example: {
         command: "./build_example.sh"
+      },
+      build_cram: {
+        command: "./node_modules/cram/bin/cram sqwidget.js build.json -o dist/sqwidget.js"
       }
     },
     watch: {
@@ -44,4 +47,5 @@ module.exports = function(grunt) {
   grunt.registerTask("build", ["shell:build_example"]);
   grunt.registerTask("test", ["clean", "build", "karma"]);
   grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
+  grunt.registerTask("dist", ["shell:build_cram"]);
 };

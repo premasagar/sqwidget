@@ -7,7 +7,9 @@
     "Simon Elliott <simon@papercreatures.com>"
   ],
   "main": "sqwidget.js",
-  "files": ["sqwidget.js"],
+  "files": [
+    "sqwidget.js"
+  ],
   "engines": {
     "node": ">= 0.8.0"
   },
@@ -18,7 +20,9 @@
   "bugs": {
     "url": "http://github.com/premagasar/sqwidget/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "cram": "https://github.com/cujojs/cram/tarball/master"
+  },
   "devDependencies": {
     "grunt": "latest",
     "grunt-contrib-connect": "latest",

@@ -1,0 +1,9 @@
+{
+
+	"baseUrl": "",
+	"paths": {
+		"test-js": "test"
+	},
+	"pluginPath": "curl/plugin"
+
+}
