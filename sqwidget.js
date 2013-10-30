@@ -3,6 +3,7 @@
     //this needs to be configurable.
     baseUrl: './sqwidget',
     //Optional dependencies which aren't anonymous. AMD is crazy.
+    //preloads: ['curl/plugin/css','curl/plugin/i18n', 'curl/plugin/domReady'],
     paths: {
       underscore: { location: './app/lib/underscore-amd/underscore' },
       backbone: { location: './app/lib/backbone-amd/backbone' },

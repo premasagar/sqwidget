@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     bower: grunt.file.readJSON('bower.json'),
     clean: {
       all: {
-        src: ["compiled", "dist"]
+        src: ["build", "compiled", "dist"]
       }
     },
     concat: {
@@ -64,5 +64,5 @@ module.exports = function(grunt) {
   grunt.registerTask("build", ["shell:build_example"]);
   grunt.registerTask("test", ["clean", "build", "karma"]);
   grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
-  grunt.registerTask("dist", ["shell:build_cram", "uglify", "concat"]);
+  grunt.registerTask("dist", ["clean", "shell:build_cram", "uglify", "concat"]);
 };
