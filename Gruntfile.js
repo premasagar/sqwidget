@@ -3,6 +3,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-shell');
   grunt.initConfig({
@@ -12,10 +13,17 @@ module.exports = function(grunt) {
         src: ["compiled", "dist"]
       }
     },
+    concat: {
+      sqwidget: {
+        files: {
+          'dist/sqwidget-<%= bower.version %>.min.js': ['app/lib/curl/dist/curl/curl.js', 'build/sqwidget-min.js']
+        }
+      }
+    },
     uglify: {
       sqwidget: {
         files: {
-        'dist/sqwidget-<%= bower.version %>.min.js': ['dist/sqwidget.js']
+          'build/sqwidget-min.js': ['build/sqwidget.js']
         }
       }
     },
@@ -43,7 +51,7 @@ module.exports = function(grunt) {
         command: "./build_example.sh"
       },
       build_cram: {
-        command: "./node_modules/cram/bin/cram sqwidget.js build.json -o dist/sqwidget.js"
+        command: "./node_modules/cram/bin/cram sqwidget.js build.json -o build/sqwidget.js"
       }
     },
     watch: {
@@ -56,5 +64,5 @@ module.exports = function(grunt) {
   grunt.registerTask("build", ["shell:build_example"]);
   grunt.registerTask("test", ["clean", "build", "karma"]);
   grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
-  grunt.registerTask("dist", ["shell:build_cram", "uglify"]);
+  grunt.registerTask("dist", ["shell:build_cram", "uglify", "concat"]);
 };

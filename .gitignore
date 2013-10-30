@@ -6,3 +6,4 @@ app/lib/
 dist/
 example-widget/
 .cram/
+build/
