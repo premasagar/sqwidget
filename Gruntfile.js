@@ -2,12 +2,21 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-shell');
   grunt.initConfig({
+    bower: grunt.file.readJSON('bower.json'),
     clean: {
       all: {
         src: ["compiled", "dist"]
+      }
+    },
+    uglify: {
+      sqwidget: {
+        files: {
+        'dist/sqwidget-<%= bower.version %>.min.js': ['dist/sqwidget.js']
+        }
       }
     },
     connect: {
@@ -47,5 +56,5 @@ module.exports = function(grunt) {
   grunt.registerTask("build", ["shell:build_example"]);
   grunt.registerTask("test", ["clean", "build", "karma"]);
   grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
-  grunt.registerTask("dist", ["shell:build_cram"]);
+  grunt.registerTask("dist", ["shell:build_cram", "uglify"]);
 };

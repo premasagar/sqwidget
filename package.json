@@ -21,7 +21,8 @@
     "url": "http://github.com/premagasar/sqwidget/issues"
   },
   "dependencies": {
-    "cram": "https://github.com/cujojs/cram/tarball/master"
+    "cram": "https://github.com/cujojs/cram/tarball/master",
+    "grunt-contrib-uglify": "~0.2.5"
   },
   "devDependencies": {
     "grunt": "latest",
