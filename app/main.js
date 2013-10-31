@@ -1,13 +1,9 @@
-define(['./lib/bonzo/bonzo', './lib/qwery/qwery', './lib/eventEmitter/EventEmitter', 'curl/plugin/domReady!'],
-function(bonzo, qwery, Emitter) {
+define(['./lib/bonzo/bonzo', 'qwery', 'bean', 'curl/plugin/domReady!'],
+function(bonzo, qwery, bean) {
 
   var SqwidgetCore = (function() {
 
     function SqwidgetCore() {}
-
-    for (var key in Emitter.prototype) {
-      SqwidgetCore.prototype[key] = Emitter.prototype[key];
-    }
 
     SqwidgetCore.prototype.packages = {};
 
@@ -36,12 +32,13 @@ function(bonzo, qwery, Emitter) {
     };
 
     SqwidgetCore.prototype.register = function(el) {
-      var opts, pkg, _this = this, id = this.guid();
+      var opts,
+          _this = this,
+          id = this.guid();
 
-      pkg = new Emitter();
       var $el = bonzo(el).addClass('sqwidget').addClass(id);
-      pkg.opts = opts = this.getWidgetParams($el);
-      opts.el = pkg.el = $el;
+      opts = this.getWidgetParams($el);
+      opts.el = $el;
       opts.id = id;
 
       if (!opts.url) {
@@ -54,17 +51,16 @@ function(bonzo, qwery, Emitter) {
         config: opts
       };
 
-      return pkg;
+      return this.packages[id];
     };
 
     SqwidgetCore.prototype.initialize = function() {
-      var names = [], pkg, _this = this;
+      var names = [],
+          _this = this;
 
       for(var k in _this.packages) names.push(k);
 
-      curl({
-        packages: _this.packages,
-      }, names, function() {
+      curl({ packages: _this.packages, }, names, function() {
         var loaded = Array.prototype.slice.call(arguments);
         for (var i = 0; i < loaded.length; i++) {
           var module = loaded[i];
@@ -74,11 +70,13 @@ function(bonzo, qwery, Emitter) {
               sqwidget: _this
             });
 
+            var pkg = _this.packages[names[i]];
             //bus events
-            _this.trigger("rendered:" + _this.packages[names[i]].location);
-            _this.trigger("rendered:" + _this.packages[names[i]].id);
+            bean.fire(_this, "rendered:" + pkg.location);
+            bean.fire(_this, "rendered:" + pkg.id);
+            bean.fire(pkg, "rendered");
           } else {
-            console.log("controller not found for " + module.location);
+            throw("controller not found for " + module.location);
           }
         }
       });
@@ -95,6 +93,5 @@ function(bonzo, qwery, Emitter) {
   });
 
   sqwidget.initialize();
-
   return sqwidget;
 });
