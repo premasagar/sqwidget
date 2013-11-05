@@ -2,7 +2,6 @@
   curl.config({
     //this needs to be configurable.
     baseUrl: './sqwidget',
-    //Optional dependencies which aren't anonymous. AMD is crazy.
     //preloads: ['curl/plugin/css','curl/plugin/i18n', 'curl/plugin/domReady'],
     paths: {
       qwery: { location: '//cdnjs.cloudflare.com/ajax/libs/qwery/3.4.1/qwery.js' },
