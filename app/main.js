@@ -1,5 +1,5 @@
-define(['./lib/bonzo/bonzo', 'qwery', 'bean', 'curl/plugin/domReady!'],
-function(bonzo, qwery, bean) {
+define(['require', './lib/bonzo/bonzo', 'qwery', 'bean', 'curl/plugin/domReady!'],
+function(require, bonzo, qwery, bean) {
 
   var SqwidgetCore = (function() {
 
@@ -34,24 +34,19 @@ function(bonzo, qwery, bean) {
     SqwidgetCore.prototype.register = function(el) {
       var opts,
           _this = this,
-          id = this.guid();
+          location = opts.url + 'app/index';
 
       var $el = bonzo(el).addClass('sqwidget').addClass(id);
       opts = this.getWidgetParams($el);
       opts.el = $el;
-      opts.id = id;
+      opts.location = location;
+      opts.id = this.guid();
 
       if (!opts.url) {
         throw new Error("No widget source defined (set data-sqwidget-url)");
       }
 
-      this.packages[id] = {
-        location: opts.url,
-        main: 'app/index',
-        config: opts
-      };
-
-      return this.packages[id];
+      return this.packages[location] = opts;
     };
 
     SqwidgetCore.prototype.initialize = function() {
@@ -60,7 +55,7 @@ function(bonzo, qwery, bean) {
 
       for(var k in _this.packages) names.push(k);
 
-      curl({ packages: _this.packages, }, names, function() {
+      require(names, function() {
         var loaded = Array.prototype.slice.call(arguments);
         for (var i = 0; i < loaded.length; i++) {
           var module = loaded[i];
@@ -86,7 +81,7 @@ function(bonzo, qwery, bean) {
 
   })();
 
-  sqwidget = new SqwidgetCore();
+  var sqwidget = new SqwidgetCore();
 
   bonzo(qwery('div[data-sqwidget]')).each(function(el) {
     sqwidget.register(el);

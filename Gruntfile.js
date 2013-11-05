@@ -51,6 +51,7 @@ module.exports = function(grunt) {
         command: "./build_example.sh"
       },
       build_cram: {
+        options: { stdout: true, stderr: true },
         command: "./node_modules/cram/bin/cram sqwidget.js --include curl/plugin/domReady build.json -o build/sqwidget.js"
       }
     },
