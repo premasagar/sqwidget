@@ -1,4 +1,4 @@
-define(['require', './lib/bonzo/bonzo', 'qwery', 'bean', 'curl/plugin/domReady!'],
+define(['require', './lib/bonzo/bonzo', './lib/qwery/qwery', 'bean', 'curl/plugin/domReady!'],
 function(require, bonzo, qwery, bean) {
 
   var SqwidgetCore = (function() {
@@ -34,19 +34,16 @@ function(require, bonzo, qwery, bean) {
     SqwidgetCore.prototype.register = function(el) {
       var opts,
           _this = this,
-          location = opts.url + 'app/index';
-
-      var $el = bonzo(el).addClass('sqwidget').addClass(id);
+          $el = bonzo(el).addClass('sqwidget');
       opts = this.getWidgetParams($el);
       opts.el = $el;
-      opts.location = location;
       opts.id = this.guid();
 
       if (!opts.url) {
         throw new Error("No widget source defined (set data-sqwidget-url)");
       }
 
-      return this.packages[location] = opts;
+      return this.packages[opts.url] = opts;
     };
 
     SqwidgetCore.prototype.initialize = function() {
@@ -74,7 +71,7 @@ function(require, bonzo, qwery, bean) {
             throw("controller not found for " + module.location);
           }
         }
-      });
+      }, function(err) { throw err; } );
     };
 
     return SqwidgetCore;
