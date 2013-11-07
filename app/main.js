@@ -11,19 +11,24 @@ function(require, bonzo, qwery, bean) {
     SqwidgetCore.prototype.getWidgetParams = function($el) {
       var key, val,
           data = {},
-          _ref = $el.data();
+          elData = $el.data();
+
+      if(elData.sqwidget) {
+        elData.sqwidgetUrl = elData.sqwidget;
+        delete elData.sqwidget;
+      }
 
       var nest = function( names, data, val ) {
         for( var i = 0; i < names.length; i++ ) {
-          data = data[ names[i] ] =
+          data = data[ names[i].toLowerCase() ] =
             i === names.length - 1 ? val : data[ names[i] ] || {};
         }
       };
 
-      for (key in _ref) {
-        val = _ref[key];
-        if (!(key.match("sqwidget"))) { continue; }
-        nest(key.toLowerCase().split("-"), data, val);
+      for (key in elData) {
+        val = elData[key];
+        if (!(key.match("^sqwidget"))) { continue; }
+        nest(key.match(/([A-Z]?[^A-Z]*)/g).slice(0,-1), data, val);
       }
 
       return data.sqwidget;
@@ -45,6 +50,7 @@ function(require, bonzo, qwery, bean) {
       opts.el = $el;
       opts.id = id;
 
+      console.log(opts);
       if (!opts.url) {
         throw new Error("No widget source defined (set data-sqwidget-url)");
       }
