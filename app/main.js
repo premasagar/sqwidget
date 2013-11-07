@@ -9,23 +9,35 @@ function(require, bonzo, qwery, bean) {
 
     //convert data-sqwidget to dictionary
     SqwidgetCore.prototype.getWidgetParams = function($el) {
-      var data, key, val, _ref;
-      data = {};
-      _ref = $el.data();
+      var key, val,
+          data = {},
+          elData = $el.data();
 
-      for (key in _ref) {
-        val = _ref[key];
-        if (!(key.match("sqwidget"))) {
-          continue;
-        }
-        key = key.replace("sqwidget", "").toLowerCase();
-        data[key || "url"] = val;
+      //for compatibility data-sqwidget gets renamed data-sqwidget-url
+      if(elData.sqwidget) {
+        elData.sqwidgetUrl = elData.sqwidget;
+        delete elData.sqwidget;
       }
-      return data;
+
+      //convert list of names into a nested structure with val as the value
+      var nest = function( names, val, data ) {
+        for( var i = 0; i < names.length; i++ ) {
+          data = data[ names[i].toLowerCase() ] =
+            i === names.length - 1 ? val : data[ names[i] ] || {};
+        }
+      };
+
+      for (key in elData) {
+        val = elData[key];
+        if (!(key.match("^sqwidget"))) { continue; }
+        nest(key.match(/([A-Z]?[^A-Z]*)/g).slice(0,-1), val, data);
+      }
+
+      return data.sqwidget;
     };
 
     SqwidgetCore.prototype.guid = function() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      return 'sqwidget-xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
         return v.toString(16);
       });
@@ -34,10 +46,11 @@ function(require, bonzo, qwery, bean) {
     SqwidgetCore.prototype.register = function(el) {
       var opts,
           _this = this,
-          $el = bonzo(el).addClass('sqwidget');
+          id = this.guid(),
+          $el = bonzo(el).addClass('sqwidget').addClass(id);
       opts = this.getWidgetParams($el);
       opts.el = $el;
-      opts.id = this.guid();
+      opts.id = id;
 
       if (!opts.url) {
         throw new Error("No widget source defined (set data-sqwidget-url)");
