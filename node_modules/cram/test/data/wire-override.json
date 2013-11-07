@@ -1,0 +1,8 @@
+{
+	"packages": [
+		{ "name": "wire", "location": "../wire", "main": "wire" },
+		{ "name": "meld", "location": "../meld", "main": "meld" },
+		{ "name": "poly", "location": "../poly", "main": "poly" }
+	]
+}
+

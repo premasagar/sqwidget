@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tiny test</title>
+
+<script src="../../curl/src/curl.js"></script>
+<script>
+	curl(
+		{
+			"baseUrl": "",
+			"paths": {
+				"test-js": "../test",
+				"curl": "../support/curl/src/curl"
+			},
+			"pluginPath": "curl/plugin"
+		},
+		['main'],
+//		['test-js/tiny'],
+		function (tiny) {
+			console.log('page is loaded');
+		}
+	);
+</script>
+</head>
+<body>
+<p>use the following command lines to build js/tiny.js into main.js from the cram folder:</p>
+<ul class="tiny">
+	<li>node cram test/tiny-run.js -r . -o test/main.js</li>
+</ul>
+<p>the above should be blue on yellow if the css! plugin worked</p>
+<p>there should be some additional text below this if the text! plugin worked</p>
+</body>
+</html>

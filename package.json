@@ -7,7 +7,9 @@
     "Simon Elliott <simon@papercreatures.com>"
   ],
   "main": "sqwidget.js",
-  "files": ["sqwidget.js"],
+  "files": [
+    "sqwidget.js"
+  ],
   "engines": {
     "node": ">= 0.8.0"
   },
@@ -18,7 +20,6 @@
   "bugs": {
     "url": "http://github.com/premagasar/sqwidget/issues"
   },
-  "dependencies": {},
   "devDependencies": {
     "grunt": "latest",
     "grunt-contrib-connect": "latest",
@@ -36,6 +37,9 @@
     "karma-mocha": "~0.1.0",
     "karma-sinon": "0.0.1",
     "karma-chai-plugins": "~0.1.3",
+    "grunt-contrib-uglify": "~0.2.5",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-init": "# This is because of the yes option.PR raised",
     "grunt-init": "https://github.com/papercreatures/grunt-init/tarball/master"
   },
   "scripts": {
