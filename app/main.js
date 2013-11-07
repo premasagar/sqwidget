@@ -9,23 +9,28 @@ function(require, bonzo, qwery, bean) {
 
     //convert data-sqwidget to dictionary
     SqwidgetCore.prototype.getWidgetParams = function($el) {
-      var data, key, val, _ref;
-      data = {};
-      _ref = $el.data();
+      var key, val,
+          data = {},
+          _ref = $el.data();
+
+      var nest = function( names, data, val ) {
+        for( var i = 0; i < names.length; i++ ) {
+          data = data[ names[i] ] =
+            i === names.length - 1 ? val : data[ names[i] ] || {};
+        }
+      };
 
       for (key in _ref) {
         val = _ref[key];
-        if (!(key.match("sqwidget"))) {
-          continue;
-        }
-        key = key.replace("sqwidget", "").toLowerCase();
-        data[key || "url"] = val;
+        if (!(key.match("sqwidget"))) { continue; }
+        nest(key.toLowerCase().split("-"), data, val);
       }
-      return data;
+
+      return data.sqwidget;
     };
 
     SqwidgetCore.prototype.guid = function() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      return 'sqwidget-xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
         return v.toString(16);
       });
@@ -34,10 +39,11 @@ function(require, bonzo, qwery, bean) {
     SqwidgetCore.prototype.register = function(el) {
       var opts,
           _this = this,
-          $el = bonzo(el).addClass('sqwidget');
+          id = this.guid(),
+          $el = bonzo(el).addClass('sqwidget').addClass(id);
       opts = this.getWidgetParams($el);
       opts.el = $el;
-      opts.id = this.guid();
+      opts.id = id;
 
       if (!opts.url) {
         throw new Error("No widget source defined (set data-sqwidget-url)");
