@@ -1,13 +1,9 @@
-define(['./lib/bonzo/bonzo', './lib/qwery/qwery', './lib/eventEmitter/EventEmitter', 'domReady!'],
-function(bonzo, qwery, Emitter) {
+define(['require', './lib/bonzo/bonzo', './lib/qwery/qwery', 'bean', 'curl/plugin/domReady!'],
+function(require, bonzo, qwery, bean) {
 
   var SqwidgetCore = (function() {
 
     function SqwidgetCore() {}
-
-    for (var key in Emitter.prototype) {
-      SqwidgetCore.prototype[key] = Emitter.prototype[key];
-    }
 
     SqwidgetCore.prototype.packages = {};
 
@@ -36,65 +32,59 @@ function(bonzo, qwery, Emitter) {
     };
 
     SqwidgetCore.prototype.register = function(el) {
-      var opts, pkg, _this = this, id = this.guid();
-
-      pkg = new Emitter();
-      var $el = bonzo(el).addClass('sqwidget').addClass(id);
-      pkg.opts = opts = this.getWidgetParams($el);
-      opts.el = pkg.el = $el;
-      opts.id = id;
+      var opts,
+          _this = this,
+          $el = bonzo(el).addClass('sqwidget');
+      opts = this.getWidgetParams($el);
+      opts.el = $el;
+      opts.id = this.guid();
 
       if (!opts.url) {
         throw new Error("No widget source defined (set data-sqwidget-url)");
       }
 
-      this.packages[id] = {
-        location: opts.url,
-        main: 'app/index',
-        config: opts
-      };
-
-      return pkg;
+      return this.packages[opts.url] = opts;
     };
 
     SqwidgetCore.prototype.initialize = function() {
-      var names = [], pkg, _this = this;
+      var names = [],
+          _this = this;
 
       for(var k in _this.packages) names.push(k);
 
-      curl({
-        packages: _this.packages,
-      }, names, function() {
+      require(names, function() {
         var loaded = Array.prototype.slice.call(arguments);
         for (var i = 0; i < loaded.length; i++) {
           var module = loaded[i];
 
           if(module.Controller) {
+            var pkg = _this.packages[names[i]];
             var widget = new module.Controller({
-              sqwidget: _this
+              sqwidget: _this,
+              config: pkg
             });
 
             //bus events
-            _this.trigger("rendered:" + _this.packages[names[i]].location);
-            _this.trigger("rendered:" + _this.packages[names[i]].id);
+            bean.fire(_this, "rendered:" + pkg.location);
+            bean.fire(_this, "rendered:" + pkg.id);
+            bean.fire(pkg, "rendered");
           } else {
-            console.log("controller not found for " + module.location);
+            throw("controller not found for " + module.location);
           }
         }
-      });
+      }, function(err) { throw err; } );
     };
 
     return SqwidgetCore;
 
   })();
 
-  sqwidget = new SqwidgetCore();
+  var sqwidget = new SqwidgetCore();
 
   bonzo(qwery('div[data-sqwidget]')).each(function(el) {
     sqwidget.register(el);
   });
 
   sqwidget.initialize();
-
   return sqwidget;
 });

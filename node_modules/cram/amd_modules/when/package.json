@@ -1,0 +1,44 @@
+{
+    "name": "when",
+    "version": "1.8.1",
+	"description": "A lightweight Promise and when() implementation, plus other async goodies.",
+	"keywords": ["promise", "promises", "deferred", "deferreds", "when", "async", "asynchronous", "cujo"],
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "http://www.opensource.org/licenses/mit-license.php"
+		}
+	],
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/cujojs/when"
+		}
+	],
+	"bugs": "https://github.com/cujojs/when/issues",
+	"maintainers": [
+		{
+			"name": "Brian Cavalier",
+			"web": "http://hovercraftstudios.com"
+		},
+		{
+			"name": "John Hann",
+			"web": "http://unscriptable.com"
+		}
+	],
+	"devDependencies": {
+		"buster": "~0.6",
+		"jshint": "~1.0",
+		"promise-tests": "*"
+	},
+	"main": "when",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"test": "jshint *.js && buster test -e node && promise-tests promises-a test/when-adapter.js",
+		"test-all": "jshint *.js && buster test -e node && promise-tests all test/when-adapter.js",
+		"start": "buster server",
+		"test-browser": "jshint *.js && buster test -e browser"
+	}
+}

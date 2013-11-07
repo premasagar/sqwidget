@@ -1,0 +1,14 @@
+{
+	"name": "cram legacy example",
+	"version": "0.0.1",
+	"dependencies": {
+		"curl": "~0.8",
+		"backbone": "",
+		"jquery": "",
+		"underscore": ""
+	},
+	"ignore": [
+		"node_modules",
+		"amd_modules"
+	]
+}
