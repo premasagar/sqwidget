@@ -13,12 +13,14 @@ function(require, bonzo, qwery, bean) {
           data = {},
           elData = $el.data();
 
+      //for compatibility data-sqwidget gets renamed data-sqwidget-url
       if(elData.sqwidget) {
         elData.sqwidgetUrl = elData.sqwidget;
         delete elData.sqwidget;
       }
 
-      var nest = function( names, data, val ) {
+      //convert list of names into a nested structure with val as the value
+      var nest = function( names, val, data ) {
         for( var i = 0; i < names.length; i++ ) {
           data = data[ names[i].toLowerCase() ] =
             i === names.length - 1 ? val : data[ names[i] ] || {};
@@ -28,7 +30,7 @@ function(require, bonzo, qwery, bean) {
       for (key in elData) {
         val = elData[key];
         if (!(key.match("^sqwidget"))) { continue; }
-        nest(key.match(/([A-Z]?[^A-Z]*)/g).slice(0,-1), data, val);
+        nest(key.match(/([A-Z]?[^A-Z]*)/g).slice(0,-1), val, data);
       }
 
       return data.sqwidget;
