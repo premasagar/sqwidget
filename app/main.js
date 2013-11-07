@@ -50,7 +50,6 @@ function(require, bonzo, qwery, bean) {
       opts.el = $el;
       opts.id = id;
 
-      console.log(opts);
       if (!opts.url) {
         throw new Error("No widget source defined (set data-sqwidget-url)");
       }
