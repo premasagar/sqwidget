@@ -58,11 +58,12 @@ function(require, bonzo, qwery, bean) {
           var module = loaded[i];
 
           if(module.Controller) {
+            var pkg = _this.packages[names[i]];
             var widget = new module.Controller({
-              sqwidget: _this
+              sqwidget: _this,
+              config: pkg
             });
 
-            var pkg = _this.packages[names[i]];
             //bus events
             bean.fire(_this, "rendered:" + pkg.location);
             bean.fire(_this, "rendered:" + pkg.id);
