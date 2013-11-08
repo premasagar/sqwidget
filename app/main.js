@@ -59,6 +59,23 @@ function(require, bonzo, qwery, bean) {
       return this.packages[opts.url] = opts;
     };
 
+    //when the promise is resolved initialise the bundle controller
+    SqwidgetCore.prototype.resolve = function(pkg, bundle) {
+      if(bundle.Controller) {
+        var widget = new bundle.Controller({
+          sqwidget: this,
+          config: pkg
+        });
+
+        //bus events
+        bean.fire(this, "rendered:" + pkg.location);
+        bean.fire(this, "rendered:" + pkg.id);
+        bean.fire(pkg, "rendered");
+      } else {
+        throw("controller not found for " + bundle.location);
+      }
+    };
+
     SqwidgetCore.prototype.initialize = function() {
       var names = [],
           _this = this;
@@ -68,21 +85,15 @@ function(require, bonzo, qwery, bean) {
       require(names, function() {
         var loaded = Array.prototype.slice.call(arguments);
         for (var i = 0; i < loaded.length; i++) {
-          var module = loaded[i];
-
-          if(module.Controller) {
-            var pkg = _this.packages[names[i]];
-            var widget = new module.Controller({
-              sqwidget: _this,
-              config: pkg
-            });
-
-            //bus events
-            bean.fire(_this, "rendered:" + pkg.location);
-            bean.fire(_this, "rendered:" + pkg.id);
-            bean.fire(pkg, "rendered");
+          var pkg =  _this.packages[names[i]];
+          //if the bundle is a promise, wait for it to resolve, otherwise handle
+          //immediately
+          if("then" in loaded[i]) {
+            var resolve = function(bundle) {
+              return _this.resolve(pkg, bundle); };
+            loaded[i].then(resolve);
           } else {
-            throw("controller not found for " + module.location);
+            _this.resolve(pkg, loaded[i]);
           }
         }
       }, function(err) { throw err; } );
