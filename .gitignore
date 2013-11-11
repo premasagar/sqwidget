@@ -2,8 +2,7 @@
 node_modules/
 config.js
 compiled/**/*.*
-app/lib/
+src/lib/
 dist/
 example-widget/
-.cram/
 build/

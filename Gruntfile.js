@@ -2,24 +2,19 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-shell');
   grunt.initConfig({
     bower: grunt.file.readJSON('bower.json'),
+
     clean: {
       all: {
         src: ["build", "compiled", "dist"]
       }
     },
-    concat: {
-      sqwidget: {
-        files: {
-          'dist/sqwidget-<%= bower.version %>.min.js': ['app/lib/curl/dist/curl/curl.js', 'build/sqwidget-min.js']
-        }
-      }
-    },
+
     uglify: {
       sqwidget: {
         files: {
@@ -27,6 +22,7 @@ module.exports = function(grunt) {
         }
       }
     },
+
     connect: {
       publisher: {
         options: {
@@ -41,29 +37,52 @@ module.exports = function(grunt) {
         }
       }
     },
+
     karma: {
       integration: {
         configFile: 'karma.conf.js'
       }
     },
+
+    requirejs: {
+      compile: {
+        options: {
+          baseUrl: "src",
+          out: 'dist/<%= bower.name %>-<%= bower.version %>.js',
+          paths: {
+            almond: '../bower_components/almond/almond',
+            domReady: 'lib/requirejs-domready/domReady',
+          },
+          include: ['almond', 'index'],
+          // Wrapper for AMD
+          wrap: {
+            startFile: 'src/_wrapper/top.js',
+            endFile: 'src/_wrapper/bottom.js'
+          },
+          optimize: 'uglify2',
+          //optimize: 'none',
+          preserveLicenseComments: false,
+          generateSourceMaps: true
+        }
+      }
+    },
+
     shell: {
       build_example: {
         command: "./build_example.sh"
-      },
-      build_cram: {
-        options: { stdout: true, stderr: true },
-        command: "./node_modules/cram/bin/cram sqwidget.js --include curl/plugin/domReady build.json -o build/sqwidget.js"
       }
     },
+
     watch: {
       scaffold: {
         files: ["grunt-scaffold/root/main.js", "grunt-scaffold/root/app/**/*.js", "grunt-scaffold/**/*.tmpl"],
         tasks: ["build"]
       }
     }
+
   });
-  grunt.registerTask("build", ["shell:build_example"]);
+  grunt.registerTask("build", ["requirejs:compile"]);
   grunt.registerTask("test", ["clean", "build", "karma"]);
   grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
-  grunt.registerTask("dist", ["clean", "shell:build_cram", "uglify", "concat"]);
+  grunt.registerTask("dist", ["clean", "build"]);
 };

@@ -22,7 +22,11 @@
   ],
   "dependencies": {
     "bonzo": "~1.3.6",
-    "curl": "~0.8.4",
-    "qwery": "~3.4.1"
+    "qwery": "~3.4.1",
+    "requirejs-domready": "~2.0.1",
+    "bean": "~1.0.4",
+    "mocha": "~1.14.0",
+    "chai": "~1.8.1",
+    "requirejs": "~2.1.9"
   }
 }
