@@ -79,11 +79,11 @@ module.exports = function(grunt) {
       stable: {
         options: {
           endpoint: 'git://github.com/premasagar/sqwidget.git',
-          stageDir: 'dist'
+          packageName: "sqwidget.js",
+          stageDir: '.temp'
         },
         files: {
-          cwd: '.',
-          src: ['sqwidget.js'],
+          "sqwidget.js": ['dist/sqwidget.js'],
         }
       }
     }
