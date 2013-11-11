@@ -3,7 +3,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-bower-release');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-shell');
   grunt.initConfig({
@@ -35,12 +35,6 @@ module.exports = function(grunt) {
           port: 8002,
           base: 'example-widget'
         }
-      }
-    },
-
-    karma: {
-      integration: {
-        configFile: 'karma.conf.js'
       }
     },
 
@@ -79,11 +73,24 @@ module.exports = function(grunt) {
         files: ["grunt-scaffold/root/main.js", "grunt-scaffold/root/app/**/*.js", "grunt-scaffold/**/*.tmpl"],
         tasks: ["build"]
       }
+    },
+
+    bowerRelease: {
+      stable: {
+        options: {
+          endpoint: 'git://github.com/premasagar/sqwidget.git',
+          stageDir: 'dist'
+        },
+        files: {
+          cwd: '.',
+          src: ['sqwidget.js'],
+        }
+      }
     }
 
   });
   grunt.registerTask("build", ["requirejs:compile"]);
-  grunt.registerTask("test", ["clean", "build", "karma"]);
   grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
   grunt.registerTask("dist", ["clean", "build"]);
+  grunt.registerTask("release", ["dist", "bowerRelease:stable"]);
 };
