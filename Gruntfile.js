@@ -56,7 +56,6 @@ module.exports = function(grunt) {
           },
           //optimize: 'uglify2',
           optimize: 'none',
-          preserveLicenseComments: false,
           generateSourceMaps: true
         }
       }
