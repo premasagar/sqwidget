@@ -1,7 +1,7 @@
 sqwidget.define(['require', 'lib/when/when'] ,function(require, when) {
   var deferred = when.defer();
 
-  require(['lib/when/when'], function(when) {
+  require(['./dummy_load.js'], function(dummy) {
 
     var pkg = {
       Controller: function (opts) {
