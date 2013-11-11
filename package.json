@@ -39,11 +39,12 @@
     "karma-chai-plugins": "~0.1.3",
     "grunt-contrib-uglify": "~0.2.5",
     "grunt-contrib-concat": "~0.3.0",
-    "grunt-init": "# This is because of the yes option.PR raised",
+    "grunt-init": "# This is because of the yes option. PR raised",
     "grunt-init": "https://github.com/papercreatures/grunt-init/tarball/master"
   },
   "scripts": {
     "prepublish": "make dist",
+    //"install": "pushd node_modules/cram && bower install && popd",
     "postinstall": "./grunt-scaffold/install.sh",
     "build": "make build",
     "test": "make test"
