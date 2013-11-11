@@ -13,5 +13,8 @@ requirejs.config({
     domReady: 'lib/requirejs-domready/domReady'
   },
   deps: tests,
-  callback: window.__karma__.start
+  callback: function() {
+    window.sqwidget.define = define;
+    window.__karma__.start();
+  }
 });

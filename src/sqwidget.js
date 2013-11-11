@@ -1,6 +1,5 @@
-define(['require', 'core'], function(require, Core) {
+define(['require', './core'], function(require, Core) {
   var sqwidget = new Core();
-
 
   require(['domReady!'], function() {
     sqwidget.detectSources();

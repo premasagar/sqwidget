@@ -48,19 +48,20 @@ module.exports = function(grunt) {
       compile: {
         options: {
           baseUrl: "src",
-          out: 'dist/<%= bower.name %>-<%= bower.version %>.js',
+          out: 'dist/<%= bower.name %>.js',
           paths: {
-            almond: '../bower_components/almond/almond',
+            almond: 'lib/almond/almond',
+            requirejs: 'lib/requirejs/require',
             domReady: 'lib/requirejs-domready/domReady',
           },
-          include: ['almond', 'index'],
+          include: ['requirejs', 'sqwidget'],
           // Wrapper for AMD
           wrap: {
             startFile: 'src/_wrapper/top.js',
             endFile: 'src/_wrapper/bottom.js'
           },
-          optimize: 'uglify2',
-          //optimize: 'none',
+          //optimize: 'uglify2',
+          optimize: 'none',
           preserveLicenseComments: false,
           generateSourceMaps: true
         }
