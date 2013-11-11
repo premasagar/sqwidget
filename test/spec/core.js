@@ -1,4 +1,4 @@
-define(['chai', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean' ], function(chai, Core, bonzo, bean) {
+define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean' ], function(chai, async, Core, bonzo, bean) {
 
   //TODO: think of a way to inject chai
   var assert = chai.assert;
@@ -10,7 +10,7 @@ define(['chai', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean' ], function(chai, Cor
     );
 
     var w2 = bonzo.create(
-      "<div data-sqwidget='/base/test/fixture/example'></div>'"
+      "<div data-sqwidget='/base/test/fixture/promise'></div>'"
     );
 
     describe('#register()', function() {
@@ -39,8 +39,8 @@ define(['chai', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean' ], function(chai, Cor
       var w2r = sqwidget.register(w2);
       it('widget 2 parse params correctly', function() {
         assert.deepEqual(w2r, {
-          url: '/base/test/fixture/example',
-          src: '/base/test/fixture/example.js',
+          url: '/base/test/fixture/promise',
+          src: '/base/test/fixture/promise.js',
           id: w2r.id,
           el: w2r.el
         }, "ok");
@@ -48,19 +48,34 @@ define(['chai', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean' ], function(chai, Cor
 
       sqwidget.initialize();
 
-      it('should trigger rendered:' + widget.id + ' event', function(done) {
+      it('should trigger rendered on both widgets', function(done) {
 
-        bean.on(widget, 'rendered', function() {
-          assert.ok("Triggered event on package");
-        });
+        async.parallel([
+          function(cb) {
+            bean.on(widget, 'rendered', function() {
+              assert.ok("Triggered event on package");
+              cb();
+            });
+          },
 
-        bean.on(sqwidget, 'rendered:' + widget.id, function() {
-          assert.ok("Triggered event");
-          assert.equal(bonzo(w1).html(), '<div>TEST</div>', 'Rendered correctly');
-          done();
-        });
+          function(cb) {
+            bean.on(sqwidget, 'rendered:' + widget.id, function() {
+              assert.ok("Triggered event");
+              assert.equal(bonzo(w1).html(), '<div>TEST</div>', 'Rendered correctly');
+              cb();
+            });
+          },
+
+          function(cb) {
+            bean.on(sqwidget, 'rendered:' + w2r.id, function() {
+              assert.ok("Triggered event");
+              assert.equal(bonzo(w2).html(), '<div>PROMISE</div>', 'Rendered correctly');
+              cb();
+            });
+          },
+
+        ], done);
       });
-
     });
   });
 });

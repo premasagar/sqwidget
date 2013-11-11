@@ -1,4 +1,4 @@
 
-  this.sqwidget = { define: define };
+  this.sqwidget = { define: define, require: require };
   return require(['sqwidget'], function() {});
 }));

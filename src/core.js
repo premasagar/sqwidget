@@ -95,7 +95,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
           //immediately
 
           if("then" in loaded) {
-            var resolve = function(bundle) { return _this.resolve(pkg, bundle); };
+            var resolve = function(bundle) { return _this.resolve.apply(_this, [pkg, bundle]); };
             loaded.then(resolve);
           } else {
             _this.resolve(pkg, loaded);
