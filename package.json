@@ -44,7 +44,7 @@
   },
   "scripts": {
     "prepublish": "make dist",
-    //"install": "pushd node_modules/cram && bower install && popd",
+    "install": "pushd node_modules/cram && bower install && popd",
     "postinstall": "./grunt-scaffold/install.sh",
     "build": "make build",
     "test": "make test"
