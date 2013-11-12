@@ -1,8 +1,13 @@
 define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean' ], function(chai, async, Core, bonzo, bean) {
 
+  window.sqwidget = {
+    define: define,
+    require: require
+  };
+
   //TODO: think of a way to inject chai
   var assert = chai.assert;
-      sqwidget = new Core();
+      sqwidgetCore = new Core();
 
   describe('Core', function() {
     var w1 = bonzo.create(
@@ -15,14 +20,14 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
 
     describe('#register()', function() {
 
-      var widget = sqwidget.register(w1);
+      var widget = sqwidgetCore.register(w1);
 
       it('has been defined an id', function() {
         assert.isDefined(widget.id, widget.id);
       });
 
       it('should register widget', function() {
-        assert.ok(sqwidget.packages[widget.id], "Registered module");
+        assert.ok(sqwidgetCore.packages[widget.id], "Registered module");
       });
 
       it('should parse params correctly', function() {
@@ -36,7 +41,7 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
         }, "params parsed");
       });
 
-      var w2r = sqwidget.register(w2);
+      var w2r = sqwidgetCore.register(w2);
       it('widget 2 parse params correctly', function() {
         assert.deepEqual(w2r, {
           url: '/base/test/fixture/promise',
@@ -46,7 +51,7 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
         }, "ok");
       });
 
-      sqwidget.initialize();
+      sqwidgetCore.initialize();
 
       it('should trigger rendered on both widgets', function(done) {
 
@@ -59,7 +64,7 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
           },
 
           function(cb) {
-            bean.on(sqwidget, 'rendered:' + widget.id, function() {
+            bean.on(sqwidgetCore, 'rendered:' + widget.id, function() {
               assert.ok("Triggered event");
               assert.equal(bonzo(w1).html(), '<div>TEST</div>', 'Rendered correctly');
               cb();
@@ -67,7 +72,7 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
           },
 
           function(cb) {
-            bean.on(sqwidget, 'rendered:' + w2r.id, function() {
+            bean.on(sqwidgetCore, 'rendered:' + w2r.id, function() {
               assert.ok("Triggered event");
               assert.equal(bonzo(w2).html(), '<div>PROMISE</div>', 'Rendered correctly');
               cb();

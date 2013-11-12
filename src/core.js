@@ -60,6 +60,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
 
   //when the promise is resolved initialise the bundle controller
   SqwidgetCore.prototype.resolve = function(pkg, bundle) {
+
     if(bundle.Controller) {
       var widget = new bundle.Controller({
         sqwidget: this,
@@ -88,18 +89,46 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
 
     for(var id in _this.packages) {
       var pkg = _this.packages[id];
+
       (function(pkg) {
-        require([pkg.src], function(loaded) {
+        //parse out script name from path
+        var parts = pkg.url.split("/");
+        var name = "./" + parts.pop();
+        var path = parts.join("/");
 
-          //if the bundle is a promise, wait for it to resolve, otherwise handle
-          //immediately
+        var pkg_require = sqwidget.require.config({
+          context: id,
+          baseUrl: path
+        });
 
-          if("then" in loaded) {
-            var resolve = function(bundle) { return _this.resolve.apply(_this, [pkg, bundle]); };
-            loaded.then(resolve);
-          } else {
-            _this.resolve(pkg, loaded);
+        pkg_require(["require", name], function(require, bundle_config) {
+          //the outer bundle can define some config, like packages it would like
+          //loading before running its 'main' function
+          if(bundle_config && bundle_config.packages) {
+            var package_require = sqwidget.require.config({
+              context: id,
+              packages: bundle_config.packages,
+              paths: bundle_config.paths,
+            });
+
+            //TODO: MUST be loaded before main
+            package_require(["core"], function(core) { });
           }
+
+          window.context = sqwidget.require.s.contexts[id].defined;
+
+          //require here is contextual
+          require(["main"], function(loaded) {
+            //if the bundle is a promise, wait for it to resolve, otherwise handle
+            //immediately
+            if("then" in loaded) {
+              var resolve = function(bundle) { return _this.resolve.apply(_this, [pkg, bundle]); };
+              loaded.then(resolve);
+            } else {
+              _this.resolve(pkg, loaded);
+            }
+          });
+
         }, function(err) { throw err; } );
       })(pkg);
     }

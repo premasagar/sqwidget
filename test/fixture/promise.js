@@ -1,18 +1,20 @@
-sqwidget.define(['require', 'lib/when/when'] ,function(require, when) {
-  var deferred = when.defer();
+sqwidget.define(['require', '../../src/lib/when/when'] ,function(require, when) {
 
-  require(['./dummy_load.js'], function(dummy) {
+  define("main", function() {
+    var deferred = when.defer();
+    require(['/base/test/fixture/dummy_load.js'], function(dummy) {
 
-    var pkg = {
-      Controller: function (opts) {
-        opts.config.el.append("<div>PROMISE</div>");
-      }
-    };
+      var pkg = {
+        Controller: function (opts) {
+          opts.config.el.append("<div>PROMISE</div>");
+        }
+      };
 
-    deferred.resolve(pkg);
+      deferred.resolve(pkg);
+    });
+    return deferred.promise;
   });
-
-  return deferred.promise;
+  return {};
 });
 
 

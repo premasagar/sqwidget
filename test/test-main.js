@@ -14,7 +14,6 @@ requirejs.config({
   },
   deps: tests,
   callback: function() {
-    window.sqwidget.define = define;
     window.__karma__.start();
   }
 });
