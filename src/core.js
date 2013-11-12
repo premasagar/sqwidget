@@ -59,7 +59,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
   };
 
   //when the promise is resolved initialise the bundle controller
-  SqwidgetCore.prototype.resolve = function(pkg, bundle) {
+  SqwidgetCore.prototype.initialiseWidget = function(pkg, bundle) {
 
     if(bundle.Controller) {
       var widget = new bundle.Controller({
@@ -90,45 +90,69 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
     for(var id in _this.packages) {
       var pkg = _this.packages[id];
 
-      (function(pkg) {
+      (function(pkg,id) {
         //parse out script name from path
         var parts = pkg.url.split("/");
         var name = "./" + parts.pop();
         var path = parts.join("/");
 
-        var pkg_require = sqwidget.require.config({
+        var bundle_require = sqwidget.require.config({
           context: id,
           baseUrl: path
         });
 
-        pkg_require(["require", name], function(require, bundle_config) {
+        bundle_require(["require", name], function(require, bundle_config) {
           //the outer bundle can define some config, like packages it would like
           //loading before running its 'main' function
+
+          //todo fix dumb closing out on vars here
+          var loadMain = function(require,pkg,_this) {
+            require(["main"], function(loaded) {
+              //if the bundle is a promise, wait for it to resolve, otherwise handle
+              //immediately
+              if("then" in loaded) {
+                var resolve = function(bundle) {
+                  return _this.initializeWidget.apply(_this, [pkg, bundle]); };
+                loaded.then(resolve);
+              } else {
+                _this.initialiseWidget(pkg, loaded);
+              }
+            }, function(err) { throw err; } );
+          };
+
           if(bundle_config && bundle_config.packages) {
+
+            //create a new config for the lib loader
             var package_require = sqwidget.require.config({
               context: id,
               packages: bundle_config.packages,
               paths: bundle_config.paths,
             });
 
-            //TODO: MUST be loaded before main
-            package_require(["core"], function(core) { }, function(err) { throw err; } );
+            var package_names = ["require"];
+            for(var i=0; i < bundle_config.packages.length; i++) {
+              package_names.push(bundle_config.packages[i].name);
+            }
+
+            package_require(package_names, function(req) {
+
+              //optimization - currently the main bundle has to fully load
+              //before any mixins - we could do a tiny wrapper that returns
+              //config allowing both to be loaded simultaneously
+
+              var preloads = bundle_config.preloads || [];
+              //there must be a better way to do this... we could
+              //iterate context.registry() but that also seems insane.
+              require(preloads,function() {
+                loadMain(require,pkg,_this);
+              });
+            }, function(err) { throw err; } );
+          } else {
+            loadMain(require,pkg, _this);
           }
 
-          //require here is contextual
-          require(["main"], function(loaded) {
-            //if the bundle is a promise, wait for it to resolve, otherwise handle
-            //immediately
-            if("then" in loaded) {
-              var resolve = function(bundle) { return _this.resolve.apply(_this, [pkg, bundle]); };
-              loaded.then(resolve);
-            } else {
-              _this.resolve(pkg, loaded);
-            }
-          }, function(err) { throw err; } );
-
         }, function(err) { throw err; } );
-      })(pkg);
+      })(pkg,id);
     }
   };
 
