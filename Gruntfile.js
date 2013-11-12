@@ -68,6 +68,10 @@ module.exports = function(grunt) {
     },
 
     watch: {
+      sqwidget: {
+        files: ["src/*.js"],
+        tasks: ["build"]
+      },
       scaffold: {
         files: ["grunt-scaffold/root/main.js", "grunt-scaffold/root/app/**/*.js", "grunt-scaffold/**/*.tmpl"],
         tasks: ["build"]
