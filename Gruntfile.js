@@ -54,8 +54,11 @@ module.exports = function(grunt) {
             startFile: 'src/_wrapper/top.js',
             endFile: 'src/_wrapper/bottom.js'
           },
-          //optimize: 'uglify2',
-          optimize: 'none',
+          optimize: 'uglify2',
+          //optimize: 'none',
+          //required for source maps, we should probably have 2 configs one
+          //without source maps or uglification
+          preserveLicenseComments: false,
           generateSourceMaps: true
         }
       }
@@ -64,13 +67,16 @@ module.exports = function(grunt) {
     shell: {
       build_example: {
         command: "./build_example.sh"
+      },
+      test: {
+        command: "npm test"
       }
     },
 
     watch: {
       sqwidget: {
         files: ["src/*.js"],
-        tasks: ["build"]
+        tasks: ["shell:test", "build"]
       },
       scaffold: {
         files: ["grunt-scaffold/root/main.js", "grunt-scaffold/root/app/**/*.js", "grunt-scaffold/**/*.tmpl"],

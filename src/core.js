@@ -112,10 +112,8 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
             });
 
             //TODO: MUST be loaded before main
-            package_require(["core"], function(core) { });
+            package_require(["core"], function(core) { }, function(err) { throw err; } );
           }
-
-          window.context = sqwidget.require.s.contexts[id].defined;
 
           //require here is contextual
           require(["main"], function(loaded) {
@@ -127,7 +125,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
             } else {
               _this.resolve(pkg, loaded);
             }
-          });
+          }, function(err) { throw err; } );
 
         }, function(err) { throw err; } );
       })(pkg);
