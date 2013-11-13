@@ -152,7 +152,10 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
             loadMain();
           }
 
-        }, function(err) { throw err; } );
+        }, function(err) {
+          //ignore errors from loader so other widgets can continue to load
+          if(window.console) { console.log("Didn't load " + pkg.url + ": " + err); }
+        } );
       })(this.packages[id], id, this);
     }
   };
