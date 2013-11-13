@@ -68,9 +68,9 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
       });
 
       //bus events
-      bean.fire(this, "rendered:" + pkg.url);
-      bean.fire(this, "rendered:" + pkg.id);
-      bean.fire(pkg, "rendered");
+      bean.fire(this, "rendered:" + pkg.url, [bundle]);
+      bean.fire(this, "rendered:" + pkg.id,[bundle]);
+      bean.fire(pkg, "rendered", [bundle]);
     } else {
       throw("controller not found for " + bundle.location);
     }
@@ -84,13 +84,10 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
   };
 
   SqwidgetCore.prototype.initialize = function() {
-    var names = [],
-        _this = this;
 
-    for(var id in _this.packages) {
-      var pkg = _this.packages[id];
+    for(var id in this.packages) {
 
-      (function(pkg,id) {
+      (function(pkg, id, _this) {
         //parse out script name from path
         var parts = pkg.url.split("/");
         var name = "./" + parts.pop();
@@ -105,14 +102,15 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
           //the outer bundle can define some config, like packages it would like
           //loading before running its 'main' function
 
-          //todo fix dumb closing out on vars here
-          var loadMain = function(require,pkg,_this) {
+          //load the 'main' function inside the widget bundle when we have
+          //finished with dependencies
+          var loadMain = function() {
             require(["main"], function(loaded) {
               //if the bundle is a promise, wait for it to resolve, otherwise handle
               //immediately
               if("then" in loaded) {
                 var resolve = function(bundle) {
-                  return _this.initializeWidget.apply(_this, [pkg, bundle]); };
+                  _this.initialiseWidget.apply(_this, [pkg, bundle]); };
                 loaded.then(resolve);
               } else {
                 _this.initialiseWidget(pkg, loaded);
@@ -120,6 +118,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
             }, function(err) { throw err; } );
           };
 
+          // preload a library the widget bundle requires
           if(bundle_config && bundle_config.packages) {
 
             //create a new config for the lib loader
@@ -141,18 +140,20 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
               //config allowing both to be loaded simultaneously
 
               var preloads = bundle_config.preloads || [];
-              //there must be a better way to do this... we could
-              //iterate context.registry() but that also seems insane.
-              require(preloads,function() {
-                loadMain(require,pkg,_this);
-              });
+              //at the moment the bundle config passes things we need to preload
+              //however, since its an optimized bundle they are *all* loaded
+              //already they are just sat inside registry()
+              //we could iterate context.registry() instead to force them into
+              //the current require context
+              require(preloads,function() { loadMain(); });
+
             }, function(err) { throw err; } );
           } else {
-            loadMain(require,pkg, _this);
+            loadMain();
           }
 
         }, function(err) { throw err; } );
-      })(pkg,id);
+      })(this.packages[id], id, this);
     }
   };
 

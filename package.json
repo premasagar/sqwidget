@@ -42,7 +42,7 @@
   "scripts": {
     "prepublish": "make dist",
     "postinstall": "./grunt-scaffold/install.sh",
-    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+    "test": "grunt test:continuous"
   },
   "dependencies": {
     "grunt-bower-release": "0.0.2"

@@ -26,6 +26,7 @@ module.exports = function(config) {
     browsers: ['PhantomJS'],
     // If singleRun is set to true, Karma will start and capture all
     // configured browsers, run tests and then exit with an exit code of 0 or 1.
-    singleRun: false
+    singleRun: false,
+    reporters: 'dots'
   });
 };

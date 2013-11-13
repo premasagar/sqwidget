@@ -57,14 +57,25 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
 
         async.parallel([
           function(cb) {
-            bean.on(widget, 'rendered', function() {
+            bean.on(widget, 'rendered', function(bundle) {
+              assert.isTrue(bundle.require("dep1/helper"));
+              assert.isTrue(bundle.require("dep1/helper2"));
+              try {
+                bundle.require("dep2/helper");
+                assert.fail(true, false, "loaded");
+              } catch (e) {
+                assert.ok(e, "failed to load");
+              }
+
               assert.ok("Triggered event on package");
+              //check we have mixed in plugin
+
               cb();
             });
           },
 
           function(cb) {
-            bean.on(sqwidgetCore, 'rendered:' + widget.id, function() {
+            bean.on(sqwidgetCore, 'rendered:' + widget.id, function(bundle) {
               assert.ok("Triggered event");
               assert.equal(bonzo(w1).html(), '<div>TEST</div>', 'Rendered correctly');
               cb();
@@ -72,7 +83,9 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
           },
 
           function(cb) {
-            bean.on(sqwidgetCore, 'rendered:' + w2r.id, function() {
+            bean.on(sqwidgetCore, 'rendered:' + w2r.id, function(bundle) {
+              assert.isTrue(bundle.require("dep2/helper"));
+              assert.isTrue(bundle.require("dep2/helper2"));
               assert.ok("Triggered event");
               assert.equal(bonzo(w2).html(), '<div>PROMISE</div>', 'Rendered correctly');
               cb();

@@ -44,12 +44,10 @@ module.exports = function(grunt) {
           baseUrl: "src",
           out: 'dist/<%= bower.name %>.js',
           paths: {
-            almond: 'lib/almond/almond',
             requirejs: 'lib/requirejs/require',
             domReady: 'lib/requirejs-domready/domReady',
           },
           include: ['requirejs', 'sqwidget'],
-          // Wrapper for AMD
           wrap: {
             startFile: 'src/_wrapper/top.js',
             endFile: 'src/_wrapper/bottom.js'
@@ -63,20 +61,35 @@ module.exports = function(grunt) {
         }
       }
     },
+    karma: {
+      options: {
+        configFile: './karma.conf.js',
+        browsers: ['Chrome', 'Firefox']
+      },
+      unit: {
+        background: true
+      },
+      //continuous integration mode: run tests once in PhantomJS browser.
+      continuous: {
+        singleRun: true,
+        browsers: ['PhantomJS']
+      },
+    },
 
     shell: {
       build_example: {
         command: "./build_example.sh"
-      },
-      test: {
-        command: "npm test"
       }
     },
 
     watch: {
+      test: {
+        files: ["test/fixture/*.js", "src/*.js", "test/spec/*.js"],
+        tasks: ["karma:unit:run"]
+      },
       sqwidget: {
-        files: ["src/*.js"],
-        tasks: ["shell:test", "build"]
+        files: ["src/*.js", "test/spec/*.js"],
+        tasks: ["karma:unit:run", "build"]
       },
       scaffold: {
         files: ["grunt-scaffold/root/main.js", "grunt-scaffold/root/app/**/*.js", "grunt-scaffold/**/*.tmpl"],
@@ -100,6 +113,7 @@ module.exports = function(grunt) {
   });
   grunt.registerTask("build", ["requirejs:compile"]);
   grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
-  grunt.registerTask("dist", ["clean", "build"]);
+  grunt.registerTask("dist", ["clean", "build", "karma:unit"]);
+  grunt.registerTask("test", ["clean", "karma:unit", "watch:test"]);
   grunt.registerTask("release", ["dist", "bowerRelease:stable"]);
 };
