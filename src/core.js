@@ -48,7 +48,6 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
     opts = this.getWidgetParams($el);
     opts.el = $el;
     opts.id = id;
-    opts.src = opts.url + ".js";
 
     if (!opts.url) {
       throw new Error("No widget source defined (set data-sqwidget-url)");

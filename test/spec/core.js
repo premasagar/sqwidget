@@ -35,7 +35,6 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
           test: 'moo',
           deep: { param: 'moo' },
           url: '/base/test/fixture/example',
-          src: '/base/test/fixture/example.js',
           id: widget.id,
           el: widget.el
         }, "params parsed");
@@ -45,7 +44,6 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
       it('widget 2 parse params correctly', function() {
         assert.deepEqual(w2r, {
           url: '/base/test/fixture/promise',
-          src: '/base/test/fixture/promise.js',
           id: w2r.id,
           el: w2r.el
         }, "ok");
