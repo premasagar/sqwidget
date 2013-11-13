@@ -1,6 +1,6 @@
 {
-  "app/lib/**/*": false,
-  "app/nls/**/*": false,
+  "src/lib/**/*": false,
+  "src/nls/**/*": false,
   "dist/**/*": false,
   "node_modules/**/*": false,
   "bower.json.tmpl": "bower.json",

@@ -78,6 +78,7 @@ module.exports = function(grunt) {
 
     shell: {
       build_example: {
+        options: { stdout: true, stderr: true },
         command: "./build_example.sh"
       }
     },
