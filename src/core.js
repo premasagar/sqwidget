@@ -65,13 +65,12 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
       var res = bundle({
         sqwidget: this,
         el: pkg.el,
+        id: pkg.id,
         config: pkg
       });
 
-      //bus events
-      bean.fire(this, "rendered:" + pkg.url, [res]);
-      bean.fire(this, "rendered:" + pkg.id,[res]);
-      bean.fire(pkg, "rendered", [res]);
+      bean.fire(this, "rendered." + pkg.url, [res]);
+
     } else {
       throw("bundle should return a function to bootstrap: " + pkg.url);
     }
