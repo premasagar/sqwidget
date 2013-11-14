@@ -1,13 +1,15 @@
 {
   "name": "sqwidget",
   "title": "Sqwidget",
-  "version": "2.0.3",
+  "version": "2.0.5",
   "contributors": [
     "Adhip Gupta <me@adhipg.in>",
     "Simon Elliott <simon@papercreatures.com>"
   ],
   "main": "sqwidget.js",
-  "files": ["sqwidget.js"],
+  "files": [
+    "sqwidget.js"
+  ],
   "engines": {
     "node": ">= 0.8.0"
   },
@@ -18,13 +20,12 @@
   "bugs": {
     "url": "http://github.com/premagasar/sqwidget/issues"
   },
-  "dependencies": {},
   "devDependencies": {
     "grunt": "latest",
     "grunt-contrib-connect": "latest",
     "grunt-contrib-clean": "latest",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-requirejs": "~0.4.1",
     "karma-script-launcher": "~0.1.0",
     "karma-chrome-launcher": "~0.1.0",
     "karma-firefox-launcher": "~0.1.0",
@@ -41,7 +42,9 @@
   "scripts": {
     "prepublish": "make dist",
     "postinstall": "./grunt-scaffold/install.sh",
-    "build": "make build",
-    "test": "make test"
+    "test": "grunt test:continuous"
+  },
+  "dependencies": {
+    "grunt-bower-release": "0.0.2"
   }
 }

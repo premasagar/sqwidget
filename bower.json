@@ -21,13 +21,14 @@
     "tests"
   ],
   "dependencies": {
-    "backbone-amd": "~1.1.0",
     "bonzo": "~1.3.6",
-    "curl": "~0.8.4",
     "qwery": "~3.4.1",
-    "underscore-amd": "~1.5.2",
-    "eventEmitter": "git@github.com:Wolfy87/EventEmitter.git#master",
-    "jquery": "~2.0.3",
-    "momentjs": "~2.4.0"
+    "requirejs-domready": "~2.0.1",
+    "bean": "~1.0.4",
+    "mocha": "~1.14.0",
+    "chai": "~1.8.1",
+    "requirejs": "~2.1.9",
+    "when": "~2.6.0",
+    "async": "~0.2.5"
   }
 }
