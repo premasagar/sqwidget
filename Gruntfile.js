@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-bower-release');
@@ -15,11 +16,10 @@ module.exports = function(grunt) {
       }
     },
 
-    uglify: {
-      sqwidget: {
-        files: {
-          'build/sqwidget-min.js': ['build/sqwidget.js']
-        }
+    copy: {
+      bower: {
+        src: 'bower.json',
+        dest: 'dist/',
       }
     },
 
@@ -56,8 +56,9 @@ module.exports = function(grunt) {
           //optimize: 'none',
           //required for source maps, we should probably have 2 configs one
           //without source maps or uglification
-          preserveLicenseComments: false,
-          generateSourceMaps: true
+          generateSourceMaps: false
+          //preserveLicenseComments: false,
+          //generateSourceMaps: true
         }
       }
     },
@@ -115,5 +116,5 @@ module.exports = function(grunt) {
   grunt.registerTask("build", ["requirejs:compile"]);
   grunt.registerTask("dist", ["clean", "build", "karma:unit"]);
   grunt.registerTask("test", ["clean", "karma:unit", "watch:test"]);
-  grunt.registerTask("release", ["dist", "bowerRelease:stable"]);
+  grunt.registerTask("release", ["dist", "copy:bower"]);
 };
