@@ -113,7 +113,6 @@ module.exports = function(grunt) {
 
   });
   grunt.registerTask("build", ["requirejs:compile"]);
-  grunt.registerTask("default", ["clean", "build", "connect", "watch"]);
   grunt.registerTask("dist", ["clean", "build", "karma:unit"]);
   grunt.registerTask("test", ["clean", "karma:unit", "watch:test"]);
   grunt.registerTask("release", ["dist", "bowerRelease:stable"]);
