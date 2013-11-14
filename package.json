@@ -45,8 +45,5 @@
     "prepublish": "make dist",
     "postinstall": "./grunt-scaffold/install.sh",
     "test": "grunt test:continuous"
-  },
-  "dependencies": {
-    "grunt-bower-release": "0.0.2"
   }
 }
