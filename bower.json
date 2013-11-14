@@ -28,7 +28,7 @@
     "qwery": "~3.4.1",
     "requirejs-domready": "~2.0.1",
     "bean": "~1.0.4",
-    "requirejs": "~2.1.9"
+    "requirejs": "~2.1.9",
     "chai": "~1.8.1"
   }
 }
