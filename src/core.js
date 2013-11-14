@@ -60,18 +60,20 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
   //when the promise is resolved initialise the bundle controller
   SqwidgetCore.prototype.initialiseWidget = function(pkg, bundle) {
 
-    if(bundle.Controller) {
-      var widget = new bundle.Controller({
+    //run the bundles returned bootstrap
+    if(typeof bundle === 'function') {
+      var res = bundle({
         sqwidget: this,
+        el: pkg.el,
         config: pkg
       });
 
       //bus events
-      bean.fire(this, "rendered:" + pkg.url, [bundle]);
-      bean.fire(this, "rendered:" + pkg.id,[bundle]);
-      bean.fire(pkg, "rendered", [bundle]);
+      bean.fire(this, "rendered:" + pkg.url, [res]);
+      bean.fire(this, "rendered:" + pkg.id,[res]);
+      bean.fire(pkg, "rendered", [res]);
     } else {
-      throw("controller not found for " + bundle.location);
+      throw("bundle should return a function to bootstrap" + bundle.location);
     }
   };
 

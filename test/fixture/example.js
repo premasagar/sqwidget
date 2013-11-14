@@ -2,11 +2,9 @@
 sqwidget.define(["require"], function(require) {
 
   define("main", function() {
-    return {
-      Controller: function (opts) {
-        opts.config.el.append("<div>TEST</div>");
-      },
-      require: require
+    return function (opts) {
+      opts.el.append("<div>TEST</div>");
+      return { require: require };
     };
   });
 

@@ -4,11 +4,9 @@ sqwidget.define(['require', '../../src/lib/when/when'] ,function(require, when) 
     var deferred = when.defer();
     require(['/base/test/fixture/dummy_load.js'], function(dummy) {
 
-      var pkg = {
-        Controller: function (opts) {
-          opts.config.el.append("<div>PROMISE</div>");
-        },
-        require: require
+      var pkg = function(opts) {
+        opts.el.append("<div>PROMISE</div>");
+        return { require: require };
       };
 
       deferred.resolve(pkg);
