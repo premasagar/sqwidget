@@ -54,8 +54,11 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
       it('should trigger rendered on both widgets', function(done) {
 
         async.parallel([
+
           function(cb) {
-            bean.on(widget, 'rendered', function(bundle) {
+            bean.on(sqwidgetCore, 'rendered.' + widget.id, function(bundle) {
+              assert.ok("Triggered event");
+              assert.equal(bonzo(w1).html(), '<div>TEST</div>', 'Rendered correctly');
               assert.isTrue(bundle.require("dep1/helper"));
               assert.isTrue(bundle.require("dep1/helper2"));
               try {
@@ -73,15 +76,7 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
           },
 
           function(cb) {
-            bean.on(sqwidgetCore, 'rendered:' + widget.id, function(bundle) {
-              assert.ok("Triggered event");
-              assert.equal(bonzo(w1).html(), '<div>TEST</div>', 'Rendered correctly');
-              cb();
-            });
-          },
-
-          function(cb) {
-            bean.on(sqwidgetCore, 'rendered:' + w2r.id, function(bundle) {
+            bean.on(sqwidgetCore, 'rendered.' + w2r.id, function(bundle) {
               assert.isTrue(bundle.require("dep2/helper"));
               assert.isTrue(bundle.require("dep2/helper2"));
               assert.ok("Triggered event");

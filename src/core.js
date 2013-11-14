@@ -69,7 +69,9 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
         config: pkg
       });
 
+      //bus events
       bean.fire(this, "rendered." + pkg.url, [res]);
+      bean.fire(this, "rendered." + pkg.id, [res]);
 
     } else {
       throw("bundle should return a function to bootstrap: " + pkg.url);
