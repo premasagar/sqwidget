@@ -87,6 +87,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
 
   SqwidgetCore.prototype.initialize = function() {
 
+    var sq_this = this;
     for(var id in this.packages) {
 
       (function(pkg, id, _this) {
@@ -112,10 +113,10 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
               //immediately
               if("then" in loaded) {
                 var resolve = function(bundle) {
-                  _this.initialiseWidget.apply(_this, [pkg, bundle]); };
+                  _this.initialiseWidget.apply(sq_this, [pkg, bundle]); };
                 loaded.then(resolve);
               } else {
-                _this.initialiseWidget(pkg, loaded);
+                _this.initialiseWidget.apply(sq_this, [pkg, loaded]);
               }
             }, function(err) { throw err; } );
           };
