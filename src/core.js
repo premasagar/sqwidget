@@ -1,6 +1,8 @@
 define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domReady!'], function(require, bonzo, qwery, bean) {
 
-  function SqwidgetCore() {}
+  function SqwidgetCore() {
+    this.eventBus = this.curryBean();
+  }
 
   SqwidgetCore.prototype.packages = {};
 
@@ -55,6 +57,22 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
 
     //TODO: allow multiple loads of the same source
     return this.packages[opts.id] = opts;
+  };
+
+
+  //provide a curried bean.
+  SqwidgetCore.prototype.curryBean = function() {
+    var _this = this,
+        bus = {},
+        proxy = ['fire', 'on', 'off', 'once'];
+
+    for (var i = 0; i < proxy.length; i++) {
+      var n = proxy[i];
+      (function(n, _this) {
+        bus[n] = function(event, cb) { return bean[n](_this, event, cb); };
+      }(n, _this));
+    }
+    return bus;
   };
 
   //when the promise is resolved initialise the bundle controller
