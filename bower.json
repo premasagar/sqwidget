@@ -1,7 +1,7 @@
 {
   "name": "sqwidget",
   "main": "sqwidget.js",
-  "version": "2.0.0",
+  "version": "2.0.6",
   "homepage": "https://github.com/premasagar/sqwidget",
   "authors": [
     "Adhip Gupta <me@adhipg.in>",
@@ -24,11 +24,11 @@
     "when": "~2.6.0",
     "async": "~0.2.5",
     "mocha": "~1.14.0",
+    "chai": "~1.8.1",
     "bonzo": "~1.3.6",
     "qwery": "~3.4.1",
     "requirejs-domready": "~2.0.1",
     "bean": "~1.0.4",
-    "requirejs": "~2.1.9",
-    "chai": "~1.8.1"
+    "requirejs": "~2.1.9"
   }
 }
