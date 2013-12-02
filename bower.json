@@ -1,7 +1,7 @@
 {
   "name": "sqwidget",
   "main": "sqwidget.js",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "homepage": "https://github.com/premasagar/sqwidget",
   "authors": [
     "Adhip Gupta <me@adhipg.in>",
@@ -32,6 +32,6 @@
     "requirejs": "~2.1.9"
   },
   "dependencies": {
-    "youarei": "~0.9.4"
+    "youarei": "0.9.5"
   }
 }

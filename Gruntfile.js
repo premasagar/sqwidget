@@ -41,7 +41,7 @@ module.exports = function(grunt) {
       compile: {
         options: {
           baseUrl: "src",
-          out: 'dist/<%= bower.name %>.js',
+          out: '<%= bower.name %>.js',
           paths: {
             requirejs: 'lib/requirejs/require',
             domReady: 'lib/requirejs-domready/domReady',
