@@ -115,7 +115,6 @@ function(require, YouAreI, bonzo, qwery, bean) {
         var parts = pkg.url.split("/");
         var name = "./" + parts.pop();
         var path = parts.join("/");
-        console.log(path);
 
         var bundle_require = sqwidget.require.config({
           context: id,
