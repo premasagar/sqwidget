@@ -1,4 +1,6 @@
-define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domReady!'], function(require, bonzo, qwery, bean) {
+define(['require', 'lib/youarei/src/youarei', 'lib/bonzo/bonzo',
+        'lib/qwery/qwery', 'lib/bean/bean', 'domReady!'],
+function(require, YouAreI, bonzo, qwery, bean) {
 
   function SqwidgetCore() {
     this.eventBus = this.curryBean();
@@ -59,7 +61,6 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
     return this.packages[opts.id] = opts;
   };
 
-
   //provide a curried bean.
   SqwidgetCore.prototype.curryBean = function() {
     var _this = this,
@@ -82,6 +83,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
     if(typeof bundle === 'function') {
       var res = bundle({
         sqwidget: this,
+        url: new YouAreI(pkg.url),
         el: pkg.el,
         id: pkg.id,
         config: pkg
@@ -113,6 +115,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
         var parts = pkg.url.split("/");
         var name = "./" + parts.pop();
         var path = parts.join("/");
+        console.log(path);
 
         var bundle_require = sqwidget.require.config({
           context: id,
@@ -125,6 +128,7 @@ define(['require', 'lib/bonzo/bonzo', 'lib/qwery/qwery', 'lib/bean/bean', 'domRe
 
           //load the 'main' function inside the widget bundle when we have
           //finished with dependencies
+
           var loadMain = function() {
             require(["main"], function(loaded) {
               //if the bundle is a promise, wait for it to resolve, otherwise handle

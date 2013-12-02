@@ -11,7 +11,8 @@ sqwidget.define(["require"], function(require) {
   return {
     packages: [
       { name: "dep1", location: '/base/test/fixture', main:"dep1" },
-      { name: "dep2", location: '/base/test/fixture', main:"dep2" }
+      //relative dependency
+      { name: "dep2", location: '.', main:"dep2" }
     ],
     preloads: ["dep1/helper", "dep1/helper2"]
   };
