@@ -6,7 +6,7 @@ define(['chai', 'lib/async/lib/async', 'core', 'lib/bonzo/bonzo', 'lib/bean/bean
   };
 
   //TODO: think of a way to inject chai
-  var assert = chai.assert;
+  var assert = chai.assert,
       sqwidgetCore = new Core();
 
   describe('Core', function() {
