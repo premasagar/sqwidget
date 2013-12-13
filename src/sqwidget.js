@@ -1,8 +1,8 @@
 define(['require', './core'], function(require, Core) {
   var sqwidget = new Core();
-  if(!window.sqwidget) {
+  if(!window._sqwidget) {
     //only clobber global if it doesn't exist
-    window.sqwidget = sqwidget;
+    window._sqwidget = sqwidget;
   }
 
   require(['domReady!'], function() {
