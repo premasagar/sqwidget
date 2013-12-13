@@ -103,6 +103,7 @@ function(require, YouAreI, bonzo, qwery, bean) {
     bonzo(qwery('div[data-sqwidget]')).each(function(el) {
       _this.register(el);
     });
+    return _this.packages;
   };
 
   SqwidgetCore.prototype.initialize = function() {
