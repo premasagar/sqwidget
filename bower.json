@@ -1,7 +1,7 @@
 {
   "name": "sqwidget",
   "main": "sqwidget.js",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "homepage": "https://github.com/premasagar/sqwidget",
   "authors": [
     "Adhip Gupta <me@adhipg.in>",
@@ -9,7 +9,9 @@
   ],
   "description": "A template/framework to build widgets.",
   "keywords": [
-    "widgets"
+    "widgets",
+    "sqwidget",
+    "third-party-widgets"
   ],
   "license": "MIT",
   "ignore": [

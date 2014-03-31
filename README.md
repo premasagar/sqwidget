@@ -1,19 +1,50 @@
 # Sqwidget
 
 Sqwidget is a framework for adding components to a page in a way that ensures
-they are self contained and namespaced.
+they are self contained and namespaced. It is great for buliding third party
+widgets.
 
-## Scaffold
 
-Installing sqwidget via bower will add a 'sqwidget' scaffold to your grunt
-config. You can start a new widget by typing the following inside a new project
-directory:
+## Getting Started
 
-`grunt-init sqwidget`
+The easiest way to get started with using Sqwidget in your project is to use the
+Yeoman generator that bulids out a project layout for you.
 
-This will provide a simple sqwidget bundle for you to fill out.
+First, install Yeoman using:
+
+```
+$ npm install -g yo
+```
+
+Next, install the sqwidget-generator:
+
+```
+$ npm install -g generator-sqwidget
+```
+
+Finally, initiate your project in a new directory where you want to create your
+widget:
+
+```
+$ yo sqwidget
+```
+
+This will create your project for you and install all the dependencies. See your
+widget in action by doing:
+
+```
+$ grunt
+```
+
+## TODO:
+
+* Document features
+* Document generator and defaults like Ractive, RequireJS, Cleanslate.
+
 
 ## Development
+
+Building sqwidget
 
 ```
 npm install grunt-cli -g
