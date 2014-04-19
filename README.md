@@ -5,6 +5,23 @@ they are self contained and namespaced. It is great for buliding third party
 widgets.
 
 
+A typical embed code looks like the following:
+
+```
+<div data-sqwidget data-sqwidget-url="//example.com/my-widget"></div>
+<script src="//example.com/sqwidget.js"></script>
+```
+
+## Features
+
+1. Easy configurations and customisations: An embed code can have any number of
+   optional parameters that are passed to the constructer your widget.
+2. Sandboxed JavaScript: All your JS is completely sandboxed from the rest of
+   page not allowing you to leak any globals by default. It uses RequireJS to
+   call your widget.
+3. Widgets are RequireJS modules.
+
+
 ## Getting Started
 
 The easiest way to get started with using Sqwidget in your project is to use the
@@ -26,6 +43,8 @@ Finally, initiate your project in a new directory where you want to create your
 widget:
 
 ```
+$ mkdir my-awesome-project
+$ cd my-awesome-project
 $ yo sqwidget
 ```
 
@@ -38,7 +57,6 @@ $ grunt
 
 ## TODO:
 
-* Document features
 * Document generator and defaults like Ractive, RequireJS, Cleanslate.
 
 
