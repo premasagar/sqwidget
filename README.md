@@ -63,6 +63,52 @@ widget in action by doing:
 $ grunt
 ```
 
+## The Basic Widget
+
+At the minimum, your widget will have a `src/main.js` which is a RequireJS
+module. This module should return a function that accepts one `options`
+parameter (object).
+
+Example:
+
+```javascript
+
+define([], function() {
+    return function(options) {
+        // DOM element to append your content is available at options.el
+        // Config params are available at options.config
+    };
+});
+
+```
+
+### Configuration and Custom Parameters
+
+The embed code can also accept any number of parameters like:
+
+```html
+<div data-sqwidget data-sqwidget-url="//example.com/my-widget"
+    data-sqwidget-title="My Title" data-sqwidget-user="johndoe"
+    data-sqwidget-age="20"></div>
+```
+
+All parameters that begin with `data-sqwidget-` will be passed to the function
+called in your widget during initialisation. 
+
+In this case, the `options` object from above will have a `config` object that
+looks like:
+
+```javascript
+options = {
+    el: <DOM NODE>,
+    config = {
+        "title": "My Title",
+        "user": "johndoe",
+        "age": "20"
+    },
+    ...
+```
+
 ## Development
 
 Building sqwidget
