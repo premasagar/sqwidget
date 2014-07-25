@@ -5,7 +5,8 @@
   "homepage": "https://github.com/premasagar/sqwidget",
   "authors": [
     "Adhip Gupta <me@adhipg.in>",
-    "Simon Elliott <simon@papercreatures.com>"
+    "Simon Elliott <simon@papercreatures.com>",
+    "Premasagar Rose <p@premasagar.com>"
   ],
   "description": "A template/framework to build widgets.",
   "keywords": [

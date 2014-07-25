@@ -27,13 +27,13 @@ A typical embed code looks like the following:
     2. Lodash
     3. RequireJS
     
-The only hard dependence is RequireJS since sqwidget expects to find a RequireJS
+The only hard dependency is RequireJS, since sqwidget expects to find a RequireJS
 module to initialise.
 
 ## Getting Started
 
 The easiest way to get started with using Sqwidget in your project is to use the
-Yeoman generator that bulids out a project layout for you.
+Yeoman generator that builds a project layout for you.
 
 First, install Yeoman using:
 

@@ -7,7 +7,7 @@ module.exports = function(config) {
       { pattern: 'src/**/*.js', included: false },
       { pattern: 'test/spec/**/*.js', included: false },
       { pattern: 'test/fixture/*.js', included: false },
-      {pattern: 'node_modules/karma-chai-plugins/node_modules/chai/chai.js', included: false},
+      { pattern: 'node_modules/karma-chai-plugins/node_modules/chai/chai.js', included: false },
       'test/test-main.js'
     ],
     //exclude: ['test/spec/xxx.js'],

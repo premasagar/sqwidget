@@ -4,7 +4,8 @@
   "version": "2.0.9",
   "contributors": [
     "Adhip Gupta <me@adhipg.in>",
-    "Simon Elliott <simon@papercreatures.com>"
+    "Simon Elliott <simon@papercreatures.com>",
+    "Premasagar Rose <p@premasagar.com>"
   ],
   "main": "sqwidget.js",
   "files": [
@@ -43,7 +44,6 @@
   },
   "scripts": {
     "prepublish": "make dist",
-    "postinstall": "./grunt-scaffold/install.sh",
     "test": "grunt test:continuous"
   }
 }
